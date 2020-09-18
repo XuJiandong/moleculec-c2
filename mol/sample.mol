@@ -1,0 +1,32 @@
+
+array SampleByte2 [byte; 2];
+
+array Uint8 [byte; 1];
+array Int8 [byte; 1];
+array Uint16 [byte; 2];
+array Int16 [byte; 2];
+array Uint32 [byte; 4];
+array Int32 [byte; 4];
+array Uint64 [byte; 8];
+array Int64 [byte; 8];
+
+vector SampleFixedVector <byte>;
+vector SampleDynVector <SampleFixedVector>;
+
+struct SampleStruct {
+    u32: Uint32,
+    byte2: SampleByte2,
+}
+
+table SampleTable {
+    byte_2d_vector: SampleDynVector,
+    byte2: SampleByte2,
+}
+
+union SampleUnion {
+    SampleStruct,
+    SampleTable,
+}
+
+option SampleOptionTable (SampleTable);
+

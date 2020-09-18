@@ -1,0 +1,111 @@
+{
+  "namespace": "sample",
+  "imports": [],
+  "declarations": [
+    {
+      "type": "array",
+      "name": "SampleByte2",
+      "item": "byte",
+      "item_count": 2
+    },
+    {
+      "type": "array",
+      "name": "Uint8",
+      "item": "byte",
+      "item_count": 1
+    },
+    {
+      "type": "array",
+      "name": "Int8",
+      "item": "byte",
+      "item_count": 1
+    },
+    {
+      "type": "array",
+      "name": "Uint16",
+      "item": "byte",
+      "item_count": 2
+    },
+    {
+      "type": "array",
+      "name": "Int16",
+      "item": "byte",
+      "item_count": 2
+    },
+    {
+      "type": "array",
+      "name": "Uint32",
+      "item": "byte",
+      "item_count": 4
+    },
+    {
+      "type": "array",
+      "name": "Int32",
+      "item": "byte",
+      "item_count": 4
+    },
+    {
+      "type": "array",
+      "name": "Uint64",
+      "item": "byte",
+      "item_count": 8
+    },
+    {
+      "type": "array",
+      "name": "Int64",
+      "item": "byte",
+      "item_count": 8
+    },
+    {
+      "type": "fixvec",
+      "name": "SampleFixedVector",
+      "item": "byte"
+    },
+    {
+      "type": "dynvec",
+      "name": "SampleDynVector",
+      "item": "SampleFixedVector"
+    },
+    {
+      "type": "struct",
+      "name": "SampleStruct",
+      "fields": [
+        {
+          "name": "u32",
+          "type": "Uint32"
+        },
+        {
+          "name": "byte2",
+          "type": "SampleByte2"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "name": "SampleTable",
+      "fields": [
+        {
+          "name": "byte_2d_vector",
+          "type": "SampleDynVector"
+        },
+        {
+          "name": "byte2",
+          "type": "SampleByte2"
+        }
+      ]
+    },
+    {
+      "type": "union",
+      "name": "SampleUnion",
+      "items": [
+        "SampleStruct",
+        "SampleTable"
+      ]
+    },
+    {
+      "type": "option",
+      "name": "SampleOptionTable",
+      "item": "SampleTable"
+    }
+  ]
+}
