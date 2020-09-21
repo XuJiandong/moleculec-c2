@@ -43,9 +43,9 @@ fn main() {
         )
         .get_matches();
     let input = matches.value_of("input").unwrap_or("-");
-    println!("Using input file: {}", input);
+    eprintln!("Using input file: {}", input);
     let output = matches.value_of("output").unwrap_or("-");
-    println!("Using output file: {}", output);
+    eprintln!("Using output file: {}", output);
 
     let mut reader: Box<dyn Read>;
     if input != "-" {
