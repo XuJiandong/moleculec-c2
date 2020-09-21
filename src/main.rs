@@ -1,11 +1,16 @@
+//TODO remove them
+#![allow(unused_variables)]
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 mod generator;
 mod utils;
 
-use crate::utils::Writer;
+use crate::utils::Output;
 use clap::{App, Arg};
 use molecule_codegen::IntermediateFormat;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Result, Value};
+use serde_json::{Result, Value};
 use std::fs::File;
 use std::io::{self, Read, Write};
 
@@ -65,7 +70,6 @@ fn main() {
 
     let format = IntermediateFormat::JSON;
     let ast = format.recover(&content).unwrap();
-    println!("ast = {:?}", ast);
 
     let mut output = utils::Output::new();
     utils::generate(&mut output, &ast).unwrap();
