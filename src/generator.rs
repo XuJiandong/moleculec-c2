@@ -1,4 +1,4 @@
-use crate::utils::Output;
+use crate::utils::{Output, generate};
 use core::mem::size_of;
 use molecule_codegen::ast::{self, DefaultContent, HasName, *};
 use std::fmt::{Write, Result};
@@ -30,7 +30,7 @@ impl Generator for ast::Array {
 
 impl Generator for ast::Struct {
     fn generate(&self, output: &mut Output) -> Result {
-        Ok(())
+        generate_common(output, self.name(), self.fields(), Some(self.field_sizes()))
     }
 }
 
@@ -45,7 +45,10 @@ impl Generator for ast::DynVec {
         Ok(())
     }
 }
-fn generate_common(output: &mut Output, name: &str, fields: &[FieldDecl]) -> Result {
+
+
+fn generate_common(output: &mut Output, name: &str,
+                   fields: &[FieldDecl], field_sizes: Option<&[usize]>) -> Result {
     output.write_decl(&format!("struct {};", gen_class_name(name)));
     output.write_decl(&format!("struct {}VTable;", name));
     output.write_decl(&format!("struct {}VTable *Get{}VTable(void);", name, name));
@@ -93,38 +96,39 @@ fn generate_common(output: &mut Output, name: &str, fields: &[FieldDecl]) -> Res
     }
     output.write_def(&format!("return &s_vtable; }}"));
     // entries of virtual tables
-    let mut index = 0;
+    let mut index : usize = 0;
     for field in fields {
         let field_name = &field.name();
         let (field_type, ftc) = gen_field_type(field);
+        let slice_by = generate_slice_by(index, &field_sizes);
         match ftc {
             FieldTypeCategory::Type => {
                 output.write_def(&format!(r#"
     {2} {0}_get_{1}_impl(SampleTableType *this) {{
     {2} ret;
-    mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, {4});
+    mol2_cursor_t cur = {4};
     ret.cur = cur;
     ret.tbl = Get{3}VTable();
     return ret;
-    }}"#, name, field_name, field_type, raw_name(&field_type), index));
+    }}"#, name, field_name, field_type, raw_name(&field_type), slice_by));
             },
-            FieldTypeCategory::Primitive => {
-                let convert_func = "";
+            FieldTypeCategory::Primitive|FieldTypeCategory::Array => {
                 output.write_def(&format!(r#"
     {2} {0}_get_{1}_impl(SampleTableType *this) {{
     uint32_t ret;
-    mol2_cursor_t ret2 = mol2_slice_by_index(&this->cur, {3});
+    mol2_cursor_t ret2 = {3};
     ret = {4}(&ret2);
     return ret;
-    }}"#, name, field_name, field_type, index, get_convert_func(&field_type)));
+    }}"#, name, field_name, field_type, slice_by, get_convert_func(&field_type, &ftc)));
             },
-            FieldTypeCategory::Array => {
+            FieldTypeCategory::FixVec => {
                 output.write_def(&format!(r#"
     {2} {0}_get_{1}_impl(SampleTableType *this) {{
     mol2_cursor_t ret;
-    ret = mol2_table_slice_by_index(&this->cur, {3});
+    mol2_cursor_t re2 = {3};
+    ret = convert_to_rawbytes(&re2);
     return ret;
-    }}"#, name, field_name, field_type, index));
+    }}"#, name, field_name, field_type, slice_by));
             },
         }
         index += 1;
@@ -135,7 +139,7 @@ fn generate_common(output: &mut Output, name: &str, fields: &[FieldDecl]) -> Res
 
 impl Generator for ast::Table {
     fn generate(&self, output: &mut Output) -> Result {
-        generate_common(output, self.name(), self.fields())
+        generate_common(output, self.name(), self.fields(), None)
     }
 }
 
@@ -158,6 +162,7 @@ fn gen_class_name(name: &str) -> String {
 enum FieldTypeCategory {
     Primitive,
     Array,
+    FixVec,
     Type
 }
 
@@ -167,9 +172,11 @@ fn gen_field_type(field: &ast::FieldDecl) -> (String, FieldTypeCategory) {
 
     let mut name = format!("{}", gen_class_name(&String::from(field_type_name)));
     match field.typ().as_ref() {
+        // if the field type is array and the field type name is "uint8", "int8" ...
+        // then it's primitive
         TopDecl::Array(a) => {
-            let field_name = field.name().to_lowercase();
-            let new_name = match field_name.as_ref() {
+            let field_type_name = field.typ().name().to_lowercase();
+            let new_name = match field_type_name.as_ref() {
                 "uint8" => "uint8_t",
                 "int8" => "int8_t",
                 "uint16" => "uint16_t",
@@ -186,8 +193,9 @@ fn gen_field_type(field: &ast::FieldDecl) -> (String, FieldTypeCategory) {
             name = String::from(new_name)
         },
         TopDecl::FixVec(v) => {
+            // FixVec is different than Array: it has a header.
             name = String::from("mol2_cursor_t");
-            ftc = FieldTypeCategory::Array;
+            ftc = FieldTypeCategory::FixVec;
         },
         _ => {
             ftc = FieldTypeCategory::Type;
@@ -200,20 +208,45 @@ fn raw_name(type_name: &str) -> String {
     String::from(type_name).replace("Type", "")
 }
 
-fn get_convert_func(type_name: &str) -> &str {
+fn get_convert_func<'a>(type_name: &'a str, ftc: &FieldTypeCategory) -> &'a str {
     let t = type_name.to_lowercase();
     match t.as_ref() {
-        "i8" => "convert_to_Int8",
-        "u8" => "convert_to_Uint8",
-        "i16" => "convert_to_Int16",
-        "u16" => "convert_to_Uint16",
-        "i32" => "convert_to_Int32",
-        "u32" => "convert_to_Uint32",
-        "i64" => "convert_to_Int64",
-        "u64" => "convert_to_Uint64",
+        "int8_t" => "convert_to_Int8",
+        "uint8_t" => "convert_to_Uint8",
+        "int16_t" => "convert_to_Int16",
+        "uint16_t" => "convert_to_Uint16",
+        "int32_t" => "convert_to_Int32",
+        "uint32_t" => "convert_to_Uint32",
+        "int64_t" => "convert_to_Int64",
+        "uint64_t" => "convert_to_Uint64",
         _ => {
-            assert!(false);
-            ""
+            if let FieldTypeCategory::Array = ftc {
+                "convert_to_array"
+            } else {
+                assert!(false);
+                ""
+            }
         }
     }
+}
+
+// generate slice function for struct or table.
+// struct: mol2_slice_by_offset(&this->cur, 4, 2)
+// table:  mol2_table_slice_by_index(&this->cur, 1);
+fn generate_slice_by(index: usize, fields_sizes: &Option<&[usize]>) -> String {
+    if let Some(ref fs) = fields_sizes {
+        let size = fs[index];
+        let mut offset = 0;
+        for i in (0..index).rev() {
+            offset += fs[i];
+        }
+        format!("mol2_slice_by_offset(&this->cur, {}, {})", offset, size)
+    } else {
+        format!("mol2_table_slice_by_index(&this->cur, {})", index)
+    }
+}
+
+// generate entries of virtual tables for dynvec
+fn generate_entries_for_array() {
+
 }
