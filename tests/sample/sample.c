@@ -1,3 +1,4 @@
+#undef NDEBUG
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -72,7 +73,7 @@ int main(int argc, const char* argv[]) {
   verify_sample_option_table(&sample_table2);
   verify_sample_union();
 
-  printf("sample passed");
+  printf("\n------- sample passed---------\n\n");
   return 0;
 }
 

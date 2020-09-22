@@ -18,8 +18,8 @@ struct SampleDynVectorType;
 struct SampleDynVectorVTable;
 struct SampleDynVectorVTable *GetSampleDynVectorVTable(void);
 uint32_t SampleDynVector_len_impl(struct SampleDynVectorType *);
-struct mol2_cursor_t SampleDynVector_get_impl(struct SampleDynVectorType *,
-                                              uint32_t, int *);
+mol2_cursor_t SampleDynVector_get_impl(struct SampleDynVectorType *, uint32_t,
+                                       int *);
 struct SampleStructType;
 struct SampleStructVTable;
 struct SampleStructVTable *GetSampleStructVTable(void);
@@ -97,7 +97,7 @@ struct SampleStructVTable *GetSampleStructVTable(void) {
 }
 
 typedef struct SampleTableVTable {
-  SampleDynVectorType (*byte_2d_vector)(struct SampleTableType *);
+  struct SampleDynVectorType (*byte_2d_vector)(struct SampleTableType *);
   mol2_cursor_t (*byte2)(struct SampleTableType *);
 } SampleTableVTable;
 typedef struct SampleTableType {

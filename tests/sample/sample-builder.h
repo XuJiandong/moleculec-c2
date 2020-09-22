@@ -74,7 +74,8 @@ mol_seg_t build_SampleUnion() {
   mol_seg_t seg = build_SampleStruct();
 
   mol_builder_t b;
-  MolBuilder_SampleUnion_init(&b);
+  mol_union_builder_initialize(&b, 16, 0, MolDefault_SampleStruct, 6);
+
   MolBuilder_SampleUnion_set_SampleStruct(&b, seg.ptr, seg.size);
   mol_seg_res_t res = MolBuilder_SampleUnion_build(b);
   assert(res.errno == 0);

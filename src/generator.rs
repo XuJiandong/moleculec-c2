@@ -80,14 +80,14 @@ impl Generator for ast::Option_ {
         self.gen_decl(output)?;
 
         format_decl!(output, "bool {0}_is_none_impl(struct {0}Type *);", name);
-        format_decl!(output, "{0} {1}_unwrap_impl(struct {1}Type *);", need_struct_prefix(&c_type_name), name);
+        format_decl!(output, "{0} {1}_unwrap_impl(struct {1}Type *);", prefix_struct(&c_type_name), name);
         // --------- declaration above ------------
 
         // ----------definition below -------------
         // definition of virtual table
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "bool (*is_none)(struct {}Type *);", name);
-        format_def!(output, "{1} (*unwrap)(struct {0}Type *);", name, need_struct_prefix(&c_type_name));
+        format_def!(output, "{1} (*unwrap)(struct {0}Type *);", name, prefix_struct(&c_type_name));
         format_def!(output, "}} {}VTable;", name);
 
         self.gen_def(output)?;
@@ -152,7 +152,7 @@ impl Generator for ast::Union {
             let item_type_name = item.typ().name();
             let (c_type_name, _) = get_type_category(item.typ(), item_type_name);
             format_decl!(output, "{0} {1}_as_{2}_impl(struct {1}Type *);",
-            need_struct_prefix(&c_type_name), name, item_type_name);
+            prefix_struct(&c_type_name), name, item_type_name);
         }
         // --------- declaration above ------------
 
@@ -164,7 +164,7 @@ impl Generator for ast::Union {
             let item_type_name = item.typ().name();
             let (c_type_name, _) = get_type_category(item.typ(), item_type_name);
             format_def!(output, "{0} (*as_{2})(struct {1}Type *);",
-            need_struct_prefix(&c_type_name), name, item_type_name);
+            prefix_struct(&c_type_name), name, item_type_name);
         }
         format_def!(output, "}} {}VTable;", name);
 
@@ -265,19 +265,19 @@ fn get_dynvec_item_type(dynvec: &ast::DynVec) -> String {
 
 impl Generator for ast::DynVec {
     fn generate(&self, output: &mut Output) -> Result {
-        let item_type_name = get_dynvec_item_type(self);
+        let c_type_name = get_dynvec_item_type(self);
         let name = self.name();
         self.gen_decl(output)?;
 
         format_decl!(output, "uint32_t {0}_len_impl(struct {0}Type *);", name);
-        format_decl!(output, "struct {0} {1}_get_impl(struct {1}Type *, uint32_t, int *);", item_type_name, name);
+        format_decl!(output, "{0} {1}_get_impl(struct {1}Type *, uint32_t, int *);", prefix_struct(&c_type_name), name);
         // --------- declaration above ------------
 
         // ----------definition below -------------
         // definition of virtual table
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "uint32_t (*len)(struct {}Type *);", name);
-        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, int *);", name, item_type_name);
+        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, int *);", name, prefix_struct(&c_type_name));
         format_def!(output, "}} {}VTable;", name);
 
         self.gen_def(output)?;
@@ -299,7 +299,7 @@ impl Generator for ast::DynVec {
           return mol2_dynvec_length(&this->cur);
         }}"#, name);
 
-        if item_type_name == "mol2_cursor_t" {
+        if c_type_name == "mol2_cursor_t" {
             format_imp!(output, r#"
             mol2_cursor_t {0}_get_impl({0}Type *this,
                                     uint32_t index, int *existing) {{
@@ -316,9 +316,9 @@ impl Generator for ast::DynVec {
             }}"#, name);
         } else {
             format_imp!(output, r#"
-            {1}Type {0}_get_impl({0}Type *this,
+            {1} {0}_get_impl({0}Type *this,
                                     uint32_t index, int *existing) {{
-            {0}Type ret;
+            {1} ret;
             mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
             if (res.errno != 0) {{
                 *existing = 0;
@@ -327,15 +327,15 @@ impl Generator for ast::DynVec {
                 *existing = 1;
             }}
                 ret.cur = res.cur;
-                ret.tbl = Get{0}VTable();
+                ret.tbl = Get{2}VTable();
                 return ret;
-            }}"#, name, item_type_name);
+            }}"#, name, c_type_name, raw_name(&c_type_name));
         }
         Ok(())
     }
 }
 
-fn need_struct_prefix(field_type: &str) -> String {
+fn prefix_struct(field_type: &str) -> String {
     match field_type {
         "mol2_cursor_t"|"int8_t"|"uint8_t"|"int16_t"|"uint16_t"|
         "int32_t"|"uint32_t"|"int64_t"|"uint64_t" => {
@@ -356,7 +356,7 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
         let field_name = &field.name();
         let (field_type, _) = get_type_category(field.typ(), field.typ().name());
         format_decl!(output, "{0} {1}_get_{2}_impl(struct {1}Type *);",
-                                   need_struct_prefix(&field_type), name, field_name);
+                                   prefix_struct(&field_type), name, field_name);
     }
     // --------- declaration above ------------
 
@@ -365,8 +365,8 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     format_def!(output, "typedef struct {0}VTable {{", name);
     for field in fields {
         let field_name = &field.name();
-        let (field_type, _) = get_type_category(field.typ(), field.typ().name());
-        format_def!(output, "{0} (*{1})(struct {2}Type *);", field_type, field_name, name);
+        let (c_type_name, _) = get_type_category(field.typ(), field.typ().name());
+        format_def!(output, "{0} (*{1})(struct {2}Type *);", prefix_struct(&c_type_name), field_name, name);
     }
     format_def!(output, "}} {}VTable;", name);
     gen.gen_def(output)?;
@@ -482,6 +482,9 @@ fn get_type_category(typ: &TopDecl, type_name: &str) -> (String, TypeCategory) {
                 },
             };
             c_type_name = String::from(new_name)
+        },
+        TopDecl::Primitive(p) => {
+            c_type_name = String::from("uint8_t");
         },
         TopDecl::FixVec(v) => {
             // FixVec is different than Array: it has a header.
