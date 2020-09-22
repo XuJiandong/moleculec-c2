@@ -1,11 +1,24 @@
 # moleculec-c2
 Improved C plugin for the molecule serialization system.
-The following are optimized compared to the old C Reader API:
 
+### How to use
+First, install "moleculec" by "cargo install moleculec".
+Then, compile binary (moleculec-c2) by "cargo build --release", and put the binary in PATH.
+```bash
+$cargo install moleculec
+$cargo build --release
+$moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
+$target/release/moleculec-c2 -- --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
+```
+Note: "clang-format -style=Google" is not needed if you don't care about coding style.
+
+_________________
+
+
+The following are optimized compared to the old C Reader API:
 ### Strong type
 If we look into the code of old molecule API usage, 
 we find that mol_seg_t is everywhere: it's like a weak type in dynamic languages(Python, lua). 
-
 We can't use type system of C compilers to check whether we use the API correctly. 
 With new API, we can use the type system help us to reduce possibilities for bugs,  
 checking that the code is written in a consistent way, giving hint while coding.
@@ -43,7 +56,8 @@ Here are the mapping list:
 | `[byte; 8]`     | int64      |  int64_t   |   
 | `[byte; 8]`     | uint64     |  uint64_t  |   
 | `[byte; N]`     | /          |  mol2_cursor_t  |   
-| `<byte>`        | /          |  mol2_cursor_t  |   
+| `<byte>`        | /          |  mol2_cursor_t  |  
+ 
 The type name is case insensitive, for example, int8, Int8, INT8 are all mapped to int8_t.
 
 ### Load memory on demand
@@ -58,10 +72,10 @@ typedef struct {
 It comes with an assumption: the data has been loaded into memory already. It's not a good design to system like [CKB-VM](https://github.com/nervosnetwork/ckb-vm) which only has very limited memory. 
 
 As we look into the [Molecule Spec](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0008-serialization/0008-serialization.md),
-if we only need some part of data, we can get the data through some "hops". We can read the header only, estimating where to hop and don't need to read the remaining data. For a lot of scenarios which only need read part of data, we can have a load-on-demand mechanic.
+if we only need some part of data, we can get the data through some "hops". We can read the header only, estimating where to hop and don't need to read the remaining data. 
+For a lot of scenarios which only need some part of data, we can have a load-on-demand mechanic.
 
-This load-on-demand mechanic is introduced by the following [data structure](https://github.com/XuJiandong/molecule-toolkit/blob/2a843898f8bd228e93399c7d450948759c1edc35/include/molecule2_reader.h#L110-L115
-):
+This load-on-demand mechanic is introduced by the following data structure:
 ```C
 typedef struct mol2_cursor_t {
   uint32_t offset;     // offset of slice
@@ -84,7 +98,7 @@ uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
 ```
 We can also make another one based on syscall.
 
-When "mol2_cursor_t" is returned from one function, it doesn't access memory.
+When "mol2_cursor_t" is returned from functions, it doesn't access memory.
 As the name "cursor" suggests, it's only an cursor. We can access memory on demand by "mol2_read_at", for example:
 ```C
     mol2_cursor_t witness_cur = witnesses.tbl->at(&witnesses, 0);
@@ -92,4 +106,3 @@ As the name "cursor" suggests, it's only an cursor. We can access memory on dema
     mol2_read_at(&witness_cur, witness, witness_cur.size);
     assert(witness_cur.size == 3 && witness[0] == 0x12 && witness[1] == 0x34);
 ```
-The "mol2_read_at" is not called if we don't have interests on content of memory.
