@@ -60,7 +60,6 @@ impl Output {
 #define MOLECULE2_API_VERSION_MIN 5000
 
 #include "molecule2_reader.h"
-#include "molecule_builder.h"
 
 #ifndef _{1}_API2_H_
 #define _{1}_API2_H_

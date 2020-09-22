@@ -1,3 +1,22 @@
+
+/// ## Terminology
+/// - field, existing in "struct", "table"
+/// - field name, name of field
+/// - field type, type of field
+/// - field type name, name of field type
+/// - item, existing in "dynvec", "union" and "option"
+/// - item name, there is no such thing, the item is without name
+/// - item type, type of item
+/// - item type name, name of item type
+/// - type name, item type name or field type name
+/// - raw name, a struct name without "Type", same as name
+/// - type category, field type or item type are classified into 3 categories, see TypeCategory.
+///   Different category has different implementation.
+/// - C type name: transformed from "field type name" or "item type name",
+///   according to their type category, e.g. uint32_t, mol2_cursor_t, XXXType
+/// - name, used for class name only
+/// - class type name, name with "Type" suffix, e.g. SampleTableType
+
 use crate::utils::{Output, generate};
 use core::mem::size_of;
 use molecule_codegen::ast::{self, DefaultContent, HasName, *};
@@ -56,19 +75,19 @@ pub trait Generator: HasName  {
 
 impl Generator for ast::Option_ {
     fn generate(&self, output: &mut Output) -> Result {
-        let (item_type, ftc) = gen_field_type(self.item().typ(), self.item().typ().name());
+        let (c_type_name, ftc) = get_type_category(self.item().typ(), self.item().typ().name());
         let name = self.name();
         self.gen_decl(output)?;
 
         format_decl!(output, "bool {0}_is_none_impl(struct {0}Type *);", name);
-        format_decl!(output, "{0} {1}_unwrap_impl(struct {1}Type *);", need_struct_prefix(&item_type), name);
+        format_decl!(output, "{0} {1}_unwrap_impl(struct {1}Type *);", need_struct_prefix(&c_type_name), name);
         // --------- declaration above ------------
 
         // ----------definition below -------------
         // definition of virtual table
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "bool (*is_none)(struct {}Type *);", name);
-        format_def!(output, "{1} (*unwrap)(struct {0}Type *);", name, need_struct_prefix(&item_type));
+        format_def!(output, "{1} (*unwrap)(struct {0}Type *);", name, need_struct_prefix(&c_type_name));
         format_def!(output, "}} {}VTable;", name);
 
         self.gen_def(output)?;
@@ -91,7 +110,7 @@ impl Generator for ast::Option_ {
         }}"#, name);
 
         match ftc {
-            FieldTypeCategory::Type => {
+            TypeCategory::Type => {
                 format_imp!(output, r#"
             {1} {0}_unwrap_impl({0}Type *this) {{
             {1} ret;
@@ -99,23 +118,23 @@ impl Generator for ast::Option_ {
             ret.cur = cur;
             ret.tbl = Get{2}VTable();
             return ret;
-            }}"#, name, item_type, raw_name(&item_type));
+            }}"#, name, c_type_name, raw_name(&c_type_name));
             },
-            FieldTypeCategory::Primitive|FieldTypeCategory::Array => {
+            TypeCategory::Primitive| TypeCategory::Array => {
                 format_imp!(output, r#"
             {1} {0}_unwrap_impl({0}Type *this) {{
             {1} ret;
             ret = {2}(&this->cur);
             return ret;
-            }}"#, name, item_type, get_convert_func(&item_type, &ftc));
+            }}"#, name, c_type_name, get_convert_func(&c_type_name, &ftc));
             },
-            FieldTypeCategory::FixVec => {
+            TypeCategory::FixVec => {
                 format_imp!(output, r#"
             {1} {0}_unwrap_impl({0}Type *this) {{
             mol2_cursor_t ret;
             ret = convert_to_rawbytes(&this->cur);
             return ret;
-            }}"#, name, item_type);
+            }}"#, name, c_type_name);
             },
         }
 
@@ -130,10 +149,10 @@ impl Generator for ast::Union {
 
         format_decl!(output, "uint32_t {0}_item_id_impl(struct {0}Type *);", name);
         for item in self.items() {
-            let item_name = item.typ().name();
-            let (item_type, _) = gen_field_type(item.typ(), item_name);
+            let item_type_name = item.typ().name();
+            let (c_type_name, _) = get_type_category(item.typ(), item_type_name);
             format_decl!(output, "{0} {1}_as_{2}_impl(struct {1}Type *);",
-            need_struct_prefix(&item_type), name, item_name);
+            need_struct_prefix(&c_type_name), name, item_type_name);
         }
         // --------- declaration above ------------
 
@@ -142,10 +161,10 @@ impl Generator for ast::Union {
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "uint32_t (*item_id)(struct {}Type *);", name);
         for item in self.items() {
-            let item_name = item.typ().name();
-            let (item_type, _) = gen_field_type(item.typ(), item_name);
+            let item_type_name = item.typ().name();
+            let (c_type_name, _) = get_type_category(item.typ(), item_type_name);
             format_def!(output, "{0} (*as_{2})(struct {1}Type *);",
-            need_struct_prefix(&item_type), name, item_name);
+            need_struct_prefix(&c_type_name), name, item_type_name);
         }
         format_def!(output, "}} {}VTable;", name);
 
@@ -159,9 +178,8 @@ impl Generator for ast::Union {
 
         format_def!(output, "s_vtable.item_id = {}_item_id_impl;", name);
         for item in self.items() {
-            let item_name = item.typ().name();
-            let (item_type, _) = gen_field_type(item.typ(), item_name);
-            format_def!(output, "s_vtable.as_{1} = {0}_as_{1}_impl;", name, item_name);
+            let item_type_name = item.typ().name();
+            format_def!(output, "s_vtable.as_{1} = {0}_as_{1}_impl;", name, item_type_name);
         }
 
         format_def!(output, "return &s_vtable; }}");
@@ -172,10 +190,10 @@ impl Generator for ast::Union {
           return mol2_unpack_number(&this->cur);
         }}"#, name);
         for item in self.items() {
-            let item_name = item.typ().name();
-            let (item_type, ftc) = gen_field_type(item.typ(), item.typ().name());
+            let item_type_name = item.typ().name();
+            let (c_type_name, ftc) = get_type_category(item.typ(), item.typ().name());
             match ftc {
-                FieldTypeCategory::Type => {
+                TypeCategory::Type => {
                     format_imp!(output, r#"
                 {1} {0}_as_{2}_impl({0}Type *this) {{
                 {1} ret;
@@ -183,25 +201,25 @@ impl Generator for ast::Union {
                 ret.cur = u.cursor;
                 ret.tbl = Get{2}VTable();
                 return ret;
-                }}"#, name, item_type, item_name);
+                }}"#, name, c_type_name, item_type_name);
                 },
-                FieldTypeCategory::Primitive | FieldTypeCategory::Array => {
+                TypeCategory::Primitive | TypeCategory::Array => {
                     format_imp!(output, r#"
                 {1} {0}_as_{3}_impl({0}Type *this) {{
                 {1} ret;
                 mol2_union_t u = mol2_union_unpack(&this->cur);
                 ret = {2}(&u->cursor);
                 return ret;
-                }}"#, name, item_type, get_convert_func(&item_type, &ftc), item_name);
+                }}"#, name, c_type_name, get_convert_func(&c_type_name, &ftc), item_type_name);
                 },
-                FieldTypeCategory::FixVec => {
+                TypeCategory::FixVec => {
                     format_imp!(output, r#"
                 {1} {0}_as_{2}_impl({0}Type *this) {{
                 mol2_cursor_t ret;
                 mol2_union_t u = mol2_union_unpack(&this->cur);
                 ret = convert_to_rawbytes(&u->cursor);
                 return ret;
-                }}"#, name, item_type, item_name);
+                }}"#, name, c_type_name, item_type_name);
                 },
             }
         }
@@ -240,26 +258,26 @@ fn get_dynvec_item_type(dynvec: &ast::DynVec) -> String {
     if let TopDecl::FixVec(a) = item_type.as_ref() {
         String::from("mol2_cursor_t")
     } else {
-        String::from(item_type.name())
+        gen_class_name(item_type.name())
     }
 }
 
 
 impl Generator for ast::DynVec {
     fn generate(&self, output: &mut Output) -> Result {
-        let item_type = get_dynvec_item_type(self);
+        let item_type_name = get_dynvec_item_type(self);
         let name = self.name();
         self.gen_decl(output)?;
 
         format_decl!(output, "uint32_t {0}_len_impl(struct {0}Type *);", name);
-        format_decl!(output, "struct {0} {1}_get_impl(struct {1}Type *, uint32_t, int *);", item_type, name);
+        format_decl!(output, "struct {0} {1}_get_impl(struct {1}Type *, uint32_t, int *);", item_type_name, name);
         // --------- declaration above ------------
 
         // ----------definition below -------------
         // definition of virtual table
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "uint32_t (*len)(struct {}Type *);", name);
-        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, int *);", name, item_type);
+        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, int *);", name, item_type_name);
         format_def!(output, "}} {}VTable;", name);
 
         self.gen_def(output)?;
@@ -281,7 +299,7 @@ impl Generator for ast::DynVec {
           return mol2_dynvec_length(&this->cur);
         }}"#, name);
 
-        if item_type == "mol2_cursor_t" {
+        if item_type_name == "mol2_cursor_t" {
             format_imp!(output, r#"
             mol2_cursor_t {0}_get_impl({0}Type *this,
                                     uint32_t index, int *existing) {{
@@ -311,7 +329,7 @@ impl Generator for ast::DynVec {
                 ret.cur = res.cur;
                 ret.tbl = Get{0}VTable();
                 return ret;
-            }}"#, name, item_type);
+            }}"#, name, item_type_name);
         }
         Ok(())
     }
@@ -336,7 +354,7 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
 
     for field in fields {
         let field_name = &field.name();
-        let (field_type, _) = gen_field_type(field.typ(), field.typ().name());
+        let (field_type, _) = get_type_category(field.typ(), field.typ().name());
         format_decl!(output, "{0} {1}_get_{2}_impl(struct {1}Type *);",
                                    need_struct_prefix(&field_type), name, field_name);
     }
@@ -347,7 +365,7 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     format_def!(output, "typedef struct {0}VTable {{", name);
     for field in fields {
         let field_name = &field.name();
-        let (field_type, _) = gen_field_type(field.typ(), field.typ().name());
+        let (field_type, _) = get_type_category(field.typ(), field.typ().name());
         format_def!(output, "{0} (*{1})(struct {2}Type *);", field_type, field_name, name);
     }
     format_def!(output, "}} {}VTable;", name);
@@ -360,7 +378,7 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     "#, name);
     for field in fields {
         let field_name = &field.name();
-        let (field_type, _) = gen_field_type(field.typ(), field.typ().name());
+        let (field_type, _) = get_type_category(field.typ(), field.typ().name());
         format_def!(output, "s_vtable.{0} = {1}_get_{0}_impl;", field_name, name);
     }
     format_def!(output, "return &s_vtable; }}");
@@ -376,10 +394,10 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
 fn generate_impl(output: &mut Output, name: &str, field: &FieldDecl,
                  index: usize, field_sizes: Option<&[usize]>) {
     let field_name = field.name();
-    let (field_type, ftc) = gen_field_type(field.typ(), field.typ().name());
+    let (field_type, ftc) = get_type_category(field.typ(), field.typ().name());
     let slice_by = generate_slice_by(index, &field_sizes);
     match ftc {
-        FieldTypeCategory::Type => {
+        TypeCategory::Type => {
             format_imp!(output, r#"
             {2} {0}_get_{1}_impl({0}Type *this) {{
             {2} ret;
@@ -389,7 +407,7 @@ fn generate_impl(output: &mut Output, name: &str, field: &FieldDecl,
             return ret;
             }}"#, name, field_name, field_type, raw_name(&field_type), slice_by);
         },
-        FieldTypeCategory::Primitive|FieldTypeCategory::Array => {
+        TypeCategory::Primitive| TypeCategory::Array => {
             format_imp!(output, r#"
             {2} {0}_get_{1}_impl({0}Type *this) {{
             {2} ret;
@@ -398,7 +416,7 @@ fn generate_impl(output: &mut Output, name: &str, field: &FieldDecl,
             return ret;
             }}"#, name, field_name, field_type, slice_by, get_convert_func(&field_type, &ftc));
         },
-        FieldTypeCategory::FixVec => {
+        TypeCategory::FixVec => {
             format_imp!(output, r#"
             {2} {0}_get_{1}_impl({0}Type *this) {{
             mol2_cursor_t ret;
@@ -432,23 +450,23 @@ fn gen_class_name(name: &str) -> String {
 
 // 3. category 3, normal type
 
-enum FieldTypeCategory {
+enum TypeCategory {
     Primitive,
     Array,
     FixVec,
     Type
 }
 
-fn gen_field_type(field_type: &TopDecl, field_type_name: &str) -> (String, FieldTypeCategory) {
+fn get_type_category(typ: &TopDecl, type_name: &str) -> (String, TypeCategory) {
     // let field_type_name = field.typ().name();
-    let mut ftc = FieldTypeCategory::Primitive;
+    let mut ftc = TypeCategory::Primitive;
 
-    let mut name = format!("{}", gen_class_name(&String::from(field_type_name)));
-    match field_type {
+    let mut c_type_name = format!("{}", gen_class_name(&String::from(type_name)));
+    match typ {
         // if the field type is array and the field type name is "uint8", "int8" ...
         // then it's primitive
         TopDecl::Array(a) => {
-            let field_type_name = field_type_name.to_lowercase();
+            let field_type_name = type_name.to_lowercase();
             let new_name = match field_type_name.as_ref() {
                 "uint8" => "uint8_t",
                 "int8" => "int8_t",
@@ -459,30 +477,30 @@ fn gen_field_type(field_type: &TopDecl, field_type_name: &str) -> (String, Field
                 "uint64" => "uint64_t",
                 "int64" => "int64_t",
                 _ => {
-                    ftc = FieldTypeCategory::Array;
+                    ftc = TypeCategory::Array;
                     "mol2_cursor_t"
                 },
             };
-            name = String::from(new_name)
+            c_type_name = String::from(new_name)
         },
         TopDecl::FixVec(v) => {
             // FixVec is different than Array: it has a header.
-            name = String::from("mol2_cursor_t");
-            ftc = FieldTypeCategory::FixVec;
+            c_type_name = String::from("mol2_cursor_t");
+            ftc = TypeCategory::FixVec;
         },
         _ => {
-            ftc = FieldTypeCategory::Type;
+            ftc = TypeCategory::Type;
         },
     }
-    (name, ftc)
+    (c_type_name, ftc)
 }
 
 fn raw_name(type_name: &str) -> String {
     String::from(type_name).replace("Type", "")
 }
 
-fn get_convert_func<'a>(type_name: &'a str, ftc: &FieldTypeCategory) -> &'a str {
-    let t = type_name.to_lowercase();
+fn get_convert_func<'a>(c_type_name: &'a str, ftc: &TypeCategory) -> &'a str {
+    let t = c_type_name.to_lowercase();
     match t.as_ref() {
         "int8_t" => "convert_to_Int8",
         "uint8_t" => "convert_to_Uint8",
@@ -493,7 +511,7 @@ fn get_convert_func<'a>(type_name: &'a str, ftc: &FieldTypeCategory) -> &'a str 
         "int64_t" => "convert_to_Int64",
         "uint64_t" => "convert_to_Uint64",
         _ => {
-            if let FieldTypeCategory::Array = ftc {
+            if let TypeCategory::Array = ftc {
                 "convert_to_array"
             } else {
                 assert!(false);

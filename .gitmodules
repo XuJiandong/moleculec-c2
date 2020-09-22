@@ -1,3 +1,0 @@
-[submodule "deps/molecule-toolkit"]
-	path = deps/molecule-toolkit
-	url = git@github.com:XuJiandong/molecule-toolkit.git
