@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Result, Value};
 use std::fs::File;
 use std::io::{self, Read, Write};
+use std::path::Path;
+use std::ffi::OsString;
 
 fn main() {
     let matches = App::new("moleculec-c2")
@@ -57,7 +59,7 @@ fn main() {
     let stdout = io::stdout();
     let mut writer: Box<dyn Write>;
     if output != "-" {
-        writer = Box::new(File::open(input).expect("Failed to open output file"));
+        writer = Box::new(File::open(output).expect("Failed to open output file"));
     } else {
         let stdout_handle = stdout.lock();
         writer = Box::new(stdout_handle);
@@ -74,7 +76,12 @@ fn main() {
     let mut output = utils::Output::new();
     utils::generate(&mut output, &ast).unwrap();
 
-    let all_data = output.combine();
+    let mut file_name = OsString::from("STDIN");
+    if input != "-" {
+        let path = Path::new(input);
+        file_name = path.file_stem().unwrap().into();
+    }
+    let all_data = output.combine(file_name.to_str().unwrap());
     writer.write_all(all_data.as_bytes()).unwrap();
     writer.flush().unwrap();
 }

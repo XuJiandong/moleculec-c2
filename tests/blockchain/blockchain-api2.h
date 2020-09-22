@@ -8,8 +8,8 @@
 
 #include "molecule2_reader.h"
 
-#ifndef _SAMPLE_API2_H_
-#define _SAMPLE_API2_H_
+#ifndef _BLOCKCHAIN_API2_H_
+#define _BLOCKCHAIN_API2_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -1002,4 +1002,4 @@ BytesOptType WitnessArgs_get_output_type_impl(WitnessArgsType *this) {
 }
 #endif /* __cplusplus */
 
-#endif /* _SAMPLE_API2_H_ */
+#endif /* _BLOCKCHAIN_API2_H_ */
