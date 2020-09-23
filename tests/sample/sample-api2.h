@@ -8,32 +8,38 @@
 
 #include "molecule2_reader.h"
 
-#ifndef _SAMPLE_API2_H_
-#define _SAMPLE_API2_H_
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+#ifndef _SAMPLE_API2_H_
+#define _SAMPLE_API2_H_
+#ifndef MOLECULEC_C2_NO_IMPL
+// ----forward declaration--------
 struct SampleDynVectorType;
 struct SampleDynVectorVTable;
 struct SampleDynVectorVTable *GetSampleDynVectorVTable(void);
+struct SampleDynVectorType make_SampleDynVector(mol2_cursor_t *cur);
 uint32_t SampleDynVector_len_impl(struct SampleDynVectorType *);
 mol2_cursor_t SampleDynVector_get_impl(struct SampleDynVectorType *, uint32_t,
                                        bool *);
 struct SampleStructType;
 struct SampleStructVTable;
 struct SampleStructVTable *GetSampleStructVTable(void);
+struct SampleStructType make_SampleStruct(mol2_cursor_t *cur);
 uint32_t SampleStruct_get_u32_impl(struct SampleStructType *);
 mol2_cursor_t SampleStruct_get_byte2_impl(struct SampleStructType *);
 struct SampleTableType;
 struct SampleTableVTable;
 struct SampleTableVTable *GetSampleTableVTable(void);
+struct SampleTableType make_SampleTable(mol2_cursor_t *cur);
 struct SampleDynVectorType SampleTable_get_byte_2d_vector_impl(
     struct SampleTableType *);
 mol2_cursor_t SampleTable_get_byte2_impl(struct SampleTableType *);
 struct SampleUnionType;
 struct SampleUnionVTable;
 struct SampleUnionVTable *GetSampleUnionVTable(void);
+struct SampleUnionType make_SampleUnion(mol2_cursor_t *cur);
 uint32_t SampleUnion_item_id_impl(struct SampleUnionType *);
 struct SampleStructType SampleUnion_as_SampleStruct_impl(
     struct SampleUnionType *);
@@ -42,12 +48,13 @@ struct SampleTableType SampleUnion_as_SampleTable_impl(
 struct SampleOptionTableType;
 struct SampleOptionTableVTable;
 struct SampleOptionTableVTable *GetSampleOptionTableVTable(void);
+struct SampleOptionTableType make_SampleOptionTable(mol2_cursor_t *cur);
 bool SampleOptionTable_is_none_impl(struct SampleOptionTableType *);
 bool SampleOptionTable_is_some_impl(struct SampleOptionTableType *);
 struct SampleTableType SampleOptionTable_unwrap_impl(
     struct SampleOptionTableType *);
 
-// -------------------
+// ----definition-----------------
 typedef struct SampleDynVectorVTable {
   uint32_t (*len)(struct SampleDynVectorType *);
   mol2_cursor_t (*get)(struct SampleDynVectorType *, uint32_t, bool *);
@@ -57,6 +64,48 @@ typedef struct SampleDynVectorType {
   SampleDynVectorVTable *t;
 } SampleDynVectorType;
 
+typedef struct SampleStructVTable {
+  uint32_t (*u32)(struct SampleStructType *);
+  mol2_cursor_t (*byte2)(struct SampleStructType *);
+} SampleStructVTable;
+typedef struct SampleStructType {
+  mol2_cursor_t cur;
+  SampleStructVTable *t;
+} SampleStructType;
+
+typedef struct SampleTableVTable {
+  struct SampleDynVectorType (*byte_2d_vector)(struct SampleTableType *);
+  mol2_cursor_t (*byte2)(struct SampleTableType *);
+} SampleTableVTable;
+typedef struct SampleTableType {
+  mol2_cursor_t cur;
+  SampleTableVTable *t;
+} SampleTableType;
+
+typedef struct SampleUnionVTable {
+  uint32_t (*item_id)(struct SampleUnionType *);
+  struct SampleStructType (*as_SampleStruct)(struct SampleUnionType *);
+  struct SampleTableType (*as_SampleTable)(struct SampleUnionType *);
+} SampleUnionVTable;
+typedef struct SampleUnionType {
+  mol2_cursor_t cur;
+  SampleUnionVTable *t;
+} SampleUnionType;
+
+typedef struct SampleOptionTableVTable {
+  bool (*is_none)(struct SampleOptionTableType *);
+  bool (*is_some)(struct SampleOptionTableType *);
+  struct SampleTableType (*unwrap)(struct SampleOptionTableType *);
+} SampleOptionTableVTable;
+typedef struct SampleOptionTableType {
+  mol2_cursor_t cur;
+  SampleOptionTableVTable *t;
+} SampleOptionTableType;
+
+#endif  // MOLECULEC_C2_NO_IMPL
+#endif  // _SAMPLE_API2_H_
+#ifndef MOLECULEC_C2_NO_DECLARATION
+// ----implementation-------------
 struct SampleDynVectorType make_SampleDynVector(mol2_cursor_t *cur) {
   SampleDynVectorType ret;
   ret.cur = *cur;
@@ -71,111 +120,6 @@ struct SampleDynVectorVTable *GetSampleDynVectorVTable(void) {
   s_vtable.get = SampleDynVector_get_impl;
   return &s_vtable;
 }
-
-typedef struct SampleStructVTable {
-  uint32_t (*u32)(struct SampleStructType *);
-  mol2_cursor_t (*byte2)(struct SampleStructType *);
-} SampleStructVTable;
-typedef struct SampleStructType {
-  mol2_cursor_t cur;
-  SampleStructVTable *t;
-} SampleStructType;
-
-struct SampleStructType make_SampleStruct(mol2_cursor_t *cur) {
-  SampleStructType ret;
-  ret.cur = *cur;
-  ret.t = GetSampleStructVTable();
-  return ret;
-}
-struct SampleStructVTable *GetSampleStructVTable(void) {
-  static SampleStructVTable s_vtable;
-  static int inited = 0;
-  if (inited) return &s_vtable;
-
-  s_vtable.u32 = SampleStruct_get_u32_impl;
-  s_vtable.byte2 = SampleStruct_get_byte2_impl;
-  return &s_vtable;
-}
-
-typedef struct SampleTableVTable {
-  struct SampleDynVectorType (*byte_2d_vector)(struct SampleTableType *);
-  mol2_cursor_t (*byte2)(struct SampleTableType *);
-} SampleTableVTable;
-typedef struct SampleTableType {
-  mol2_cursor_t cur;
-  SampleTableVTable *t;
-} SampleTableType;
-
-struct SampleTableType make_SampleTable(mol2_cursor_t *cur) {
-  SampleTableType ret;
-  ret.cur = *cur;
-  ret.t = GetSampleTableVTable();
-  return ret;
-}
-struct SampleTableVTable *GetSampleTableVTable(void) {
-  static SampleTableVTable s_vtable;
-  static int inited = 0;
-  if (inited) return &s_vtable;
-
-  s_vtable.byte_2d_vector = SampleTable_get_byte_2d_vector_impl;
-  s_vtable.byte2 = SampleTable_get_byte2_impl;
-  return &s_vtable;
-}
-
-typedef struct SampleUnionVTable {
-  uint32_t (*item_id)(struct SampleUnionType *);
-  struct SampleStructType (*as_SampleStruct)(struct SampleUnionType *);
-  struct SampleTableType (*as_SampleTable)(struct SampleUnionType *);
-} SampleUnionVTable;
-typedef struct SampleUnionType {
-  mol2_cursor_t cur;
-  SampleUnionVTable *t;
-} SampleUnionType;
-
-struct SampleUnionType make_SampleUnion(mol2_cursor_t *cur) {
-  SampleUnionType ret;
-  ret.cur = *cur;
-  ret.t = GetSampleUnionVTable();
-  return ret;
-}
-struct SampleUnionVTable *GetSampleUnionVTable(void) {
-  static SampleUnionVTable s_vtable;
-  static int inited = 0;
-  if (inited) return &s_vtable;
-  s_vtable.item_id = SampleUnion_item_id_impl;
-  s_vtable.as_SampleStruct = SampleUnion_as_SampleStruct_impl;
-  s_vtable.as_SampleTable = SampleUnion_as_SampleTable_impl;
-  return &s_vtable;
-}
-
-typedef struct SampleOptionTableVTable {
-  bool (*is_none)(struct SampleOptionTableType *);
-  bool (*is_some)(struct SampleOptionTableType *);
-  struct SampleTableType (*unwrap)(struct SampleOptionTableType *);
-} SampleOptionTableVTable;
-typedef struct SampleOptionTableType {
-  mol2_cursor_t cur;
-  SampleOptionTableVTable *t;
-} SampleOptionTableType;
-
-struct SampleOptionTableType make_SampleOptionTable(mol2_cursor_t *cur) {
-  SampleOptionTableType ret;
-  ret.cur = *cur;
-  ret.t = GetSampleOptionTableVTable();
-  return ret;
-}
-struct SampleOptionTableVTable *GetSampleOptionTableVTable(void) {
-  static SampleOptionTableVTable s_vtable;
-  static int inited = 0;
-  if (inited) return &s_vtable;
-  s_vtable.is_none = SampleOptionTable_is_none_impl;
-  s_vtable.is_some = SampleOptionTable_is_some_impl;
-  s_vtable.unwrap = SampleOptionTable_unwrap_impl;
-  return &s_vtable;
-}
-
-// -------------------
-
 uint32_t SampleDynVector_len_impl(SampleDynVectorType *this) {
   return mol2_dynvec_length(&this->cur);
 }
@@ -192,6 +136,20 @@ mol2_cursor_t SampleDynVector_get_impl(SampleDynVectorType *this,
   ret = convert_to_rawbytes(&res.cur);
   return ret;
 }
+struct SampleStructType make_SampleStruct(mol2_cursor_t *cur) {
+  SampleStructType ret;
+  ret.cur = *cur;
+  ret.t = GetSampleStructVTable();
+  return ret;
+}
+struct SampleStructVTable *GetSampleStructVTable(void) {
+  static SampleStructVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.u32 = SampleStruct_get_u32_impl;
+  s_vtable.byte2 = SampleStruct_get_byte2_impl;
+  return &s_vtable;
+}
 uint32_t SampleStruct_get_u32_impl(SampleStructType *this) {
   uint32_t ret;
   mol2_cursor_t ret2 = mol2_slice_by_offset(&this->cur, 0, 4);
@@ -203,6 +161,20 @@ mol2_cursor_t SampleStruct_get_byte2_impl(SampleStructType *this) {
   mol2_cursor_t ret2 = mol2_slice_by_offset(&this->cur, 4, 2);
   ret = convert_to_array(&ret2);
   return ret;
+}
+struct SampleTableType make_SampleTable(mol2_cursor_t *cur) {
+  SampleTableType ret;
+  ret.cur = *cur;
+  ret.t = GetSampleTableVTable();
+  return ret;
+}
+struct SampleTableVTable *GetSampleTableVTable(void) {
+  static SampleTableVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.byte_2d_vector = SampleTable_get_byte_2d_vector_impl;
+  s_vtable.byte2 = SampleTable_get_byte2_impl;
+  return &s_vtable;
 }
 SampleDynVectorType SampleTable_get_byte_2d_vector_impl(SampleTableType *this) {
   SampleDynVectorType ret;
@@ -216,6 +188,21 @@ mol2_cursor_t SampleTable_get_byte2_impl(SampleTableType *this) {
   mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 1);
   ret = convert_to_array(&ret2);
   return ret;
+}
+struct SampleUnionType make_SampleUnion(mol2_cursor_t *cur) {
+  SampleUnionType ret;
+  ret.cur = *cur;
+  ret.t = GetSampleUnionVTable();
+  return ret;
+}
+struct SampleUnionVTable *GetSampleUnionVTable(void) {
+  static SampleUnionVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.item_id = SampleUnion_item_id_impl;
+  s_vtable.as_SampleStruct = SampleUnion_as_SampleStruct_impl;
+  s_vtable.as_SampleTable = SampleUnion_as_SampleTable_impl;
+  return &s_vtable;
 }
 uint32_t SampleUnion_item_id_impl(SampleUnionType *this) {
   return mol2_unpack_number(&this->cur);
@@ -234,6 +221,21 @@ SampleTableType SampleUnion_as_SampleTable_impl(SampleUnionType *this) {
   ret.t = GetSampleTableVTable();
   return ret;
 }
+struct SampleOptionTableType make_SampleOptionTable(mol2_cursor_t *cur) {
+  SampleOptionTableType ret;
+  ret.cur = *cur;
+  ret.t = GetSampleOptionTableVTable();
+  return ret;
+}
+struct SampleOptionTableVTable *GetSampleOptionTableVTable(void) {
+  static SampleOptionTableVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.is_none = SampleOptionTable_is_none_impl;
+  s_vtable.is_some = SampleOptionTable_is_some_impl;
+  s_vtable.unwrap = SampleOptionTable_unwrap_impl;
+  return &s_vtable;
+}
 bool SampleOptionTable_is_none_impl(SampleOptionTableType *this) {
   return mol2_option_is_none(&this->cur);
 }
@@ -247,8 +249,7 @@ SampleTableType SampleOptionTable_unwrap_impl(SampleOptionTableType *this) {
   ret.t = GetSampleTableVTable();
   return ret;
 }
+#endif  // MOLECULEC_C2_NO_DECLARATION
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif /* _SAMPLE_API2_H_ */

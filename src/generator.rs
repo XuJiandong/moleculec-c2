@@ -51,6 +51,7 @@ pub trait Generator: HasName  {
         format_decl!(output, "struct {};", gen_class_name(name));
         format_decl!(output, "struct {}VTable;", name);
         format_decl!(output, "struct {}VTable *Get{}VTable(void);", name, name);
+        format_decl!(output, "struct {0}Type make_{0}(mol2_cursor_t *cur);", name);
         Ok(())
     }
     fn gen_def(&self, output: &mut Output) -> Result {
@@ -62,7 +63,7 @@ pub trait Generator: HasName  {
         }} {0}Type;
         "#, name);
         // definition of "make" class instance
-        format_def!(output, r#"struct {0}Type make_{0}(mol2_cursor_t *cur) {{
+        format_imp!(output, r#"struct {0}Type make_{0}(mol2_cursor_t *cur) {{
         {0}Type ret;
         ret.cur = *cur;
         ret.t = Get{0}VTable();
@@ -95,16 +96,16 @@ impl Generator for ast::Option_ {
         self.gen_def(output)?;
 
         // definition of "get" class vtable
-        format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
         static {0}VTable s_vtable;
         static int inited = 0;
         if (inited) return &s_vtable; "#, name);
 
-        format_def!(output, "s_vtable.is_none = {}_is_none_impl;", name);
-        format_def!(output, "s_vtable.is_some = {}_is_some_impl;", name);
-        format_def!(output, "s_vtable.unwrap = {}_unwrap_impl;", name);
+        format_imp!(output, "s_vtable.is_none = {}_is_none_impl;", name);
+        format_imp!(output, "s_vtable.is_some = {}_is_some_impl;", name);
+        format_imp!(output, "s_vtable.unwrap = {}_unwrap_impl;", name);
 
-        format_def!(output, "return &s_vtable; }}");
+        format_imp!(output, "return &s_vtable; }}");
 
         // entries of virtual tables
         format_imp!(output, r#"
@@ -178,18 +179,18 @@ impl Generator for ast::Union {
         self.gen_def(output)?;
 
         // definition of "get" class vtable
-        format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
         static {0}VTable s_vtable;
         static int inited = 0;
         if (inited) return &s_vtable; "#, name);
 
-        format_def!(output, "s_vtable.item_id = {}_item_id_impl;", name);
+        format_imp!(output, "s_vtable.item_id = {}_item_id_impl;", name);
         for item in self.items() {
             let item_type_name = item.typ().name();
-            format_def!(output, "s_vtable.as_{1} = {0}_as_{1}_impl;", name, item_type_name);
+            format_imp!(output, "s_vtable.as_{1} = {0}_as_{1}_impl;", name, item_type_name);
         }
 
-        format_def!(output, "return &s_vtable; }}");
+        format_imp!(output, "return &s_vtable; }}");
 
         // entries of virtual tables
         format_imp!(output, r#"
@@ -290,15 +291,15 @@ impl Generator for ast::DynVec {
         self.gen_def(output)?;
 
         // definition of "get" class vtable
-        format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
         static {0}VTable s_vtable;
         static int inited = 0;
         if (inited) return &s_vtable; "#, name);
 
-        format_def!(output, "s_vtable.len = {}_len_impl;", name);
-        format_def!(output, "s_vtable.get = {}_get_impl;", name);
+        format_imp!(output, "s_vtable.len = {}_len_impl;", name);
+        format_imp!(output, "s_vtable.get = {}_get_impl;", name);
 
-        format_def!(output, "return &s_vtable; }}");
+        format_imp!(output, "return &s_vtable; }}");
 
         // entries of virtual tables
         format_imp!(output, r#"
@@ -378,7 +379,7 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     format_def!(output, "}} {}VTable;", name);
     gen.gen_def(output)?;
     // definition of "get" class vtable
-    format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+    format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
     static {0}VTable s_vtable;
     static int inited = 0;
     if (inited) return &s_vtable;
@@ -386,9 +387,9 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     for field in fields {
         let field_name = &field.name();
         let (field_type, _) = get_type_category(field.typ(), field.typ().name());
-        format_def!(output, "s_vtable.{0} = {1}_get_{0}_impl;", field_name, name);
+        format_imp!(output, "s_vtable.{0} = {1}_get_{0}_impl;", field_name, name);
     }
-    format_def!(output, "return &s_vtable; }}");
+    format_imp!(output, "return &s_vtable; }}");
     // entries of virtual tables
     let mut index : usize = 0;
     for field in fields {

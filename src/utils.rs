@@ -62,26 +62,38 @@ impl Output {
 
 #include "molecule2_reader.h"
 
-#ifndef _{1}_API2_H_
-#define _{1}_API2_H_
-
 #ifdef __cplusplus
 extern "C" {{
 #endif /* __cplusplus */
-        "###, VERSION, name);
+        "###, VERSION);
         res.push_str(&prefix);
+
+        res.push_str(&format!(r###"
+        #ifndef _{0}_API2_H_
+        #define _{0}_API2_H_
+        "###, name));
+
+        res.push_str("#ifndef MOLECULEC_C2_NO_IMPL");
+        res.push_str("\n// ----forward declaration--------\n");
         res.push_str(&self.decl);
-        res.push_str("\n// -------------------\n");
+        res.push_str("\n// ----definition-----------------\n");
         res.push_str(&self.def);
-        res.push_str("\n// -------------------\n");
+        res.push_str("#endif // MOLECULEC_C2_NO_IMPL");
+
+        res.push_str(&format!(r###"
+        #endif // _{0}_API2_H_
+        "###, name));
+
+        res.push_str("#ifndef MOLECULEC_C2_NO_DECLARATION");
+        res.push_str("\n// ----implementation-------------\n");
         res.push_str(&self.imp);
+        res.push_str("#endif // MOLECULEC_C2_NO_DECLARATION");
+
         let suffix = format!(r###"
 #ifdef __cplusplus
 }}
 #endif /* __cplusplus */
-
-#endif /* _{0}_API2_H_ */
-        "###, name);
+        "###);
         res.push_str(&suffix);
         return res;
     }
