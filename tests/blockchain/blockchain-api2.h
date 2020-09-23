@@ -18,35 +18,37 @@ struct BytesOptType;
 struct BytesOptVTable;
 struct BytesOptVTable *GetBytesOptVTable(void);
 bool BytesOpt_is_none_impl(struct BytesOptType *);
+bool BytesOpt_is_some_impl(struct BytesOptType *);
 mol2_cursor_t BytesOpt_unwrap_impl(struct BytesOptType *);
 struct BytesVecType;
 struct BytesVecVTable;
 struct BytesVecVTable *GetBytesVecVTable(void);
 uint32_t BytesVec_len_impl(struct BytesVecType *);
-mol2_cursor_t BytesVec_get_impl(struct BytesVecType *, uint32_t, int *);
+mol2_cursor_t BytesVec_get_impl(struct BytesVecType *, uint32_t, bool *);
 struct ScriptOptType;
 struct ScriptOptVTable;
 struct ScriptOptVTable *GetScriptOptVTable(void);
 bool ScriptOpt_is_none_impl(struct ScriptOptType *);
+bool ScriptOpt_is_some_impl(struct ScriptOptType *);
 struct ScriptType ScriptOpt_unwrap_impl(struct ScriptOptType *);
 struct UncleBlockVecType;
 struct UncleBlockVecVTable;
 struct UncleBlockVecVTable *GetUncleBlockVecVTable(void);
 uint32_t UncleBlockVec_len_impl(struct UncleBlockVecType *);
 struct UncleBlockType UncleBlockVec_get_impl(struct UncleBlockVecType *,
-                                             uint32_t, int *);
+                                             uint32_t, bool *);
 struct TransactionVecType;
 struct TransactionVecVTable;
 struct TransactionVecVTable *GetTransactionVecVTable(void);
 uint32_t TransactionVec_len_impl(struct TransactionVecType *);
 struct TransactionType TransactionVec_get_impl(struct TransactionVecType *,
-                                               uint32_t, int *);
+                                               uint32_t, bool *);
 struct CellOutputVecType;
 struct CellOutputVecVTable;
 struct CellOutputVecVTable *GetCellOutputVecVTable(void);
 uint32_t CellOutputVec_len_impl(struct CellOutputVecType *);
 struct CellOutputType CellOutputVec_get_impl(struct CellOutputVecType *,
-                                             uint32_t, int *);
+                                             uint32_t, bool *);
 struct ScriptType;
 struct ScriptVTable;
 struct ScriptVTable *GetScriptVTable(void);
@@ -135,17 +137,18 @@ struct BytesOptType WitnessArgs_get_output_type_impl(struct WitnessArgsType *);
 // -------------------
 typedef struct BytesOptVTable {
   bool (*is_none)(struct BytesOptType *);
+  bool (*is_some)(struct BytesOptType *);
   mol2_cursor_t (*unwrap)(struct BytesOptType *);
 } BytesOptVTable;
 typedef struct BytesOptType {
   mol2_cursor_t cur;
-  BytesOptVTable *tbl;
+  BytesOptVTable *t;
 } BytesOptType;
 
 struct BytesOptType make_BytesOpt(mol2_cursor_t *cur) {
   BytesOptType ret;
   ret.cur = *cur;
-  ret.tbl = GetBytesOptVTable();
+  ret.t = GetBytesOptVTable();
   return ret;
 }
 struct BytesOptVTable *GetBytesOptVTable(void) {
@@ -153,23 +156,24 @@ struct BytesOptVTable *GetBytesOptVTable(void) {
   static int inited = 0;
   if (inited) return &s_vtable;
   s_vtable.is_none = BytesOpt_is_none_impl;
+  s_vtable.is_some = BytesOpt_is_some_impl;
   s_vtable.unwrap = BytesOpt_unwrap_impl;
   return &s_vtable;
 }
 
 typedef struct BytesVecVTable {
   uint32_t (*len)(struct BytesVecType *);
-  mol2_cursor_t (*get)(struct BytesVecType *, uint32_t, int *);
+  mol2_cursor_t (*get)(struct BytesVecType *, uint32_t, bool *);
 } BytesVecVTable;
 typedef struct BytesVecType {
   mol2_cursor_t cur;
-  BytesVecVTable *tbl;
+  BytesVecVTable *t;
 } BytesVecType;
 
 struct BytesVecType make_BytesVec(mol2_cursor_t *cur) {
   BytesVecType ret;
   ret.cur = *cur;
-  ret.tbl = GetBytesVecVTable();
+  ret.t = GetBytesVecVTable();
   return ret;
 }
 struct BytesVecVTable *GetBytesVecVTable(void) {
@@ -183,17 +187,18 @@ struct BytesVecVTable *GetBytesVecVTable(void) {
 
 typedef struct ScriptOptVTable {
   bool (*is_none)(struct ScriptOptType *);
+  bool (*is_some)(struct ScriptOptType *);
   struct ScriptType (*unwrap)(struct ScriptOptType *);
 } ScriptOptVTable;
 typedef struct ScriptOptType {
   mol2_cursor_t cur;
-  ScriptOptVTable *tbl;
+  ScriptOptVTable *t;
 } ScriptOptType;
 
 struct ScriptOptType make_ScriptOpt(mol2_cursor_t *cur) {
   ScriptOptType ret;
   ret.cur = *cur;
-  ret.tbl = GetScriptOptVTable();
+  ret.t = GetScriptOptVTable();
   return ret;
 }
 struct ScriptOptVTable *GetScriptOptVTable(void) {
@@ -201,23 +206,24 @@ struct ScriptOptVTable *GetScriptOptVTable(void) {
   static int inited = 0;
   if (inited) return &s_vtable;
   s_vtable.is_none = ScriptOpt_is_none_impl;
+  s_vtable.is_some = ScriptOpt_is_some_impl;
   s_vtable.unwrap = ScriptOpt_unwrap_impl;
   return &s_vtable;
 }
 
 typedef struct UncleBlockVecVTable {
   uint32_t (*len)(struct UncleBlockVecType *);
-  struct UncleBlockType (*get)(struct UncleBlockVecType *, uint32_t, int *);
+  struct UncleBlockType (*get)(struct UncleBlockVecType *, uint32_t, bool *);
 } UncleBlockVecVTable;
 typedef struct UncleBlockVecType {
   mol2_cursor_t cur;
-  UncleBlockVecVTable *tbl;
+  UncleBlockVecVTable *t;
 } UncleBlockVecType;
 
 struct UncleBlockVecType make_UncleBlockVec(mol2_cursor_t *cur) {
   UncleBlockVecType ret;
   ret.cur = *cur;
-  ret.tbl = GetUncleBlockVecVTable();
+  ret.t = GetUncleBlockVecVTable();
   return ret;
 }
 struct UncleBlockVecVTable *GetUncleBlockVecVTable(void) {
@@ -231,17 +237,17 @@ struct UncleBlockVecVTable *GetUncleBlockVecVTable(void) {
 
 typedef struct TransactionVecVTable {
   uint32_t (*len)(struct TransactionVecType *);
-  struct TransactionType (*get)(struct TransactionVecType *, uint32_t, int *);
+  struct TransactionType (*get)(struct TransactionVecType *, uint32_t, bool *);
 } TransactionVecVTable;
 typedef struct TransactionVecType {
   mol2_cursor_t cur;
-  TransactionVecVTable *tbl;
+  TransactionVecVTable *t;
 } TransactionVecType;
 
 struct TransactionVecType make_TransactionVec(mol2_cursor_t *cur) {
   TransactionVecType ret;
   ret.cur = *cur;
-  ret.tbl = GetTransactionVecVTable();
+  ret.t = GetTransactionVecVTable();
   return ret;
 }
 struct TransactionVecVTable *GetTransactionVecVTable(void) {
@@ -255,17 +261,17 @@ struct TransactionVecVTable *GetTransactionVecVTable(void) {
 
 typedef struct CellOutputVecVTable {
   uint32_t (*len)(struct CellOutputVecType *);
-  struct CellOutputType (*get)(struct CellOutputVecType *, uint32_t, int *);
+  struct CellOutputType (*get)(struct CellOutputVecType *, uint32_t, bool *);
 } CellOutputVecVTable;
 typedef struct CellOutputVecType {
   mol2_cursor_t cur;
-  CellOutputVecVTable *tbl;
+  CellOutputVecVTable *t;
 } CellOutputVecType;
 
 struct CellOutputVecType make_CellOutputVec(mol2_cursor_t *cur) {
   CellOutputVecType ret;
   ret.cur = *cur;
-  ret.tbl = GetCellOutputVecVTable();
+  ret.t = GetCellOutputVecVTable();
   return ret;
 }
 struct CellOutputVecVTable *GetCellOutputVecVTable(void) {
@@ -284,13 +290,13 @@ typedef struct ScriptVTable {
 } ScriptVTable;
 typedef struct ScriptType {
   mol2_cursor_t cur;
-  ScriptVTable *tbl;
+  ScriptVTable *t;
 } ScriptType;
 
 struct ScriptType make_Script(mol2_cursor_t *cur) {
   ScriptType ret;
   ret.cur = *cur;
-  ret.tbl = GetScriptVTable();
+  ret.t = GetScriptVTable();
   return ret;
 }
 struct ScriptVTable *GetScriptVTable(void) {
@@ -310,13 +316,13 @@ typedef struct OutPointVTable {
 } OutPointVTable;
 typedef struct OutPointType {
   mol2_cursor_t cur;
-  OutPointVTable *tbl;
+  OutPointVTable *t;
 } OutPointType;
 
 struct OutPointType make_OutPoint(mol2_cursor_t *cur) {
   OutPointType ret;
   ret.cur = *cur;
-  ret.tbl = GetOutPointVTable();
+  ret.t = GetOutPointVTable();
   return ret;
 }
 struct OutPointVTable *GetOutPointVTable(void) {
@@ -335,13 +341,13 @@ typedef struct CellInputVTable {
 } CellInputVTable;
 typedef struct CellInputType {
   mol2_cursor_t cur;
-  CellInputVTable *tbl;
+  CellInputVTable *t;
 } CellInputType;
 
 struct CellInputType make_CellInput(mol2_cursor_t *cur) {
   CellInputType ret;
   ret.cur = *cur;
-  ret.tbl = GetCellInputVTable();
+  ret.t = GetCellInputVTable();
   return ret;
 }
 struct CellInputVTable *GetCellInputVTable(void) {
@@ -361,13 +367,13 @@ typedef struct CellOutputVTable {
 } CellOutputVTable;
 typedef struct CellOutputType {
   mol2_cursor_t cur;
-  CellOutputVTable *tbl;
+  CellOutputVTable *t;
 } CellOutputType;
 
 struct CellOutputType make_CellOutput(mol2_cursor_t *cur) {
   CellOutputType ret;
   ret.cur = *cur;
-  ret.tbl = GetCellOutputVTable();
+  ret.t = GetCellOutputVTable();
   return ret;
 }
 struct CellOutputVTable *GetCellOutputVTable(void) {
@@ -387,13 +393,13 @@ typedef struct CellDepVTable {
 } CellDepVTable;
 typedef struct CellDepType {
   mol2_cursor_t cur;
-  CellDepVTable *tbl;
+  CellDepVTable *t;
 } CellDepType;
 
 struct CellDepType make_CellDep(mol2_cursor_t *cur) {
   CellDepType ret;
   ret.cur = *cur;
-  ret.tbl = GetCellDepVTable();
+  ret.t = GetCellDepVTable();
   return ret;
 }
 struct CellDepVTable *GetCellDepVTable(void) {
@@ -416,13 +422,13 @@ typedef struct RawTransactionVTable {
 } RawTransactionVTable;
 typedef struct RawTransactionType {
   mol2_cursor_t cur;
-  RawTransactionVTable *tbl;
+  RawTransactionVTable *t;
 } RawTransactionType;
 
 struct RawTransactionType make_RawTransaction(mol2_cursor_t *cur) {
   RawTransactionType ret;
   ret.cur = *cur;
-  ret.tbl = GetRawTransactionVTable();
+  ret.t = GetRawTransactionVTable();
   return ret;
 }
 struct RawTransactionVTable *GetRawTransactionVTable(void) {
@@ -445,13 +451,13 @@ typedef struct TransactionVTable {
 } TransactionVTable;
 typedef struct TransactionType {
   mol2_cursor_t cur;
-  TransactionVTable *tbl;
+  TransactionVTable *t;
 } TransactionType;
 
 struct TransactionType make_Transaction(mol2_cursor_t *cur) {
   TransactionType ret;
   ret.cur = *cur;
-  ret.tbl = GetTransactionVTable();
+  ret.t = GetTransactionVTable();
   return ret;
 }
 struct TransactionVTable *GetTransactionVTable(void) {
@@ -478,13 +484,13 @@ typedef struct RawHeaderVTable {
 } RawHeaderVTable;
 typedef struct RawHeaderType {
   mol2_cursor_t cur;
-  RawHeaderVTable *tbl;
+  RawHeaderVTable *t;
 } RawHeaderType;
 
 struct RawHeaderType make_RawHeader(mol2_cursor_t *cur) {
   RawHeaderType ret;
   ret.cur = *cur;
-  ret.tbl = GetRawHeaderVTable();
+  ret.t = GetRawHeaderVTable();
   return ret;
 }
 struct RawHeaderVTable *GetRawHeaderVTable(void) {
@@ -511,13 +517,13 @@ typedef struct HeaderVTable {
 } HeaderVTable;
 typedef struct HeaderType {
   mol2_cursor_t cur;
-  HeaderVTable *tbl;
+  HeaderVTable *t;
 } HeaderType;
 
 struct HeaderType make_Header(mol2_cursor_t *cur) {
   HeaderType ret;
   ret.cur = *cur;
-  ret.tbl = GetHeaderVTable();
+  ret.t = GetHeaderVTable();
   return ret;
 }
 struct HeaderVTable *GetHeaderVTable(void) {
@@ -536,13 +542,13 @@ typedef struct UncleBlockVTable {
 } UncleBlockVTable;
 typedef struct UncleBlockType {
   mol2_cursor_t cur;
-  UncleBlockVTable *tbl;
+  UncleBlockVTable *t;
 } UncleBlockType;
 
 struct UncleBlockType make_UncleBlock(mol2_cursor_t *cur) {
   UncleBlockType ret;
   ret.cur = *cur;
-  ret.tbl = GetUncleBlockVTable();
+  ret.t = GetUncleBlockVTable();
   return ret;
 }
 struct UncleBlockVTable *GetUncleBlockVTable(void) {
@@ -563,13 +569,13 @@ typedef struct BlockVTable {
 } BlockVTable;
 typedef struct BlockType {
   mol2_cursor_t cur;
-  BlockVTable *tbl;
+  BlockVTable *t;
 } BlockType;
 
 struct BlockType make_Block(mol2_cursor_t *cur) {
   BlockType ret;
   ret.cur = *cur;
-  ret.tbl = GetBlockVTable();
+  ret.t = GetBlockVTable();
   return ret;
 }
 struct BlockVTable *GetBlockVTable(void) {
@@ -590,13 +596,13 @@ typedef struct CellbaseWitnessVTable {
 } CellbaseWitnessVTable;
 typedef struct CellbaseWitnessType {
   mol2_cursor_t cur;
-  CellbaseWitnessVTable *tbl;
+  CellbaseWitnessVTable *t;
 } CellbaseWitnessType;
 
 struct CellbaseWitnessType make_CellbaseWitness(mol2_cursor_t *cur) {
   CellbaseWitnessType ret;
   ret.cur = *cur;
-  ret.tbl = GetCellbaseWitnessVTable();
+  ret.t = GetCellbaseWitnessVTable();
   return ret;
 }
 struct CellbaseWitnessVTable *GetCellbaseWitnessVTable(void) {
@@ -616,13 +622,13 @@ typedef struct WitnessArgsVTable {
 } WitnessArgsVTable;
 typedef struct WitnessArgsType {
   mol2_cursor_t cur;
-  WitnessArgsVTable *tbl;
+  WitnessArgsVTable *t;
 } WitnessArgsType;
 
 struct WitnessArgsType make_WitnessArgs(mol2_cursor_t *cur) {
   WitnessArgsType ret;
   ret.cur = *cur;
-  ret.tbl = GetWitnessArgsVTable();
+  ret.t = GetWitnessArgsVTable();
   return ret;
 }
 struct WitnessArgsVTable *GetWitnessArgsVTable(void) {
@@ -641,6 +647,9 @@ struct WitnessArgsVTable *GetWitnessArgsVTable(void) {
 bool BytesOpt_is_none_impl(BytesOptType *this) {
   return mol2_option_is_none(&this->cur);
 }
+bool BytesOpt_is_some_impl(BytesOptType *this) {
+  return !mol2_option_is_none(&this->cur);
+}
 mol2_cursor_t BytesOpt_unwrap_impl(BytesOptType *this) {
   mol2_cursor_t ret;
   ret = convert_to_rawbytes(&this->cur);
@@ -650,14 +659,14 @@ uint32_t BytesVec_len_impl(BytesVecType *this) {
   return mol2_dynvec_length(&this->cur);
 }
 mol2_cursor_t BytesVec_get_impl(BytesVecType *this, uint32_t index,
-                                int *existing) {
-  mol2_cursor_t ret;
+                                bool *existing) {
+  mol2_cursor_t ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
   if (res.errno != 0) {
-    *existing = 0;
+    *existing = false;
     return ret;
   } else {
-    *existing = 1;
+    *existing = true;
   }
   ret = convert_to_rawbytes(&res.cur);
   return ret;
@@ -665,62 +674,65 @@ mol2_cursor_t BytesVec_get_impl(BytesVecType *this, uint32_t index,
 bool ScriptOpt_is_none_impl(ScriptOptType *this) {
   return mol2_option_is_none(&this->cur);
 }
+bool ScriptOpt_is_some_impl(ScriptOptType *this) {
+  return !mol2_option_is_none(&this->cur);
+}
 ScriptType ScriptOpt_unwrap_impl(ScriptOptType *this) {
   ScriptType ret;
   mol2_cursor_t cur = this->cur;
   ret.cur = cur;
-  ret.tbl = GetScriptVTable();
+  ret.t = GetScriptVTable();
   return ret;
 }
 uint32_t UncleBlockVec_len_impl(UncleBlockVecType *this) {
   return mol2_dynvec_length(&this->cur);
 }
 UncleBlockType UncleBlockVec_get_impl(UncleBlockVecType *this, uint32_t index,
-                                      int *existing) {
-  UncleBlockType ret;
+                                      bool *existing) {
+  UncleBlockType ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
   if (res.errno != 0) {
-    *existing = 0;
+    *existing = false;
     return ret;
   } else {
-    *existing = 1;
+    *existing = true;
   }
   ret.cur = res.cur;
-  ret.tbl = GetUncleBlockVTable();
+  ret.t = GetUncleBlockVTable();
   return ret;
 }
 uint32_t TransactionVec_len_impl(TransactionVecType *this) {
   return mol2_dynvec_length(&this->cur);
 }
 TransactionType TransactionVec_get_impl(TransactionVecType *this,
-                                        uint32_t index, int *existing) {
-  TransactionType ret;
+                                        uint32_t index, bool *existing) {
+  TransactionType ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
   if (res.errno != 0) {
-    *existing = 0;
+    *existing = false;
     return ret;
   } else {
-    *existing = 1;
+    *existing = true;
   }
   ret.cur = res.cur;
-  ret.tbl = GetTransactionVTable();
+  ret.t = GetTransactionVTable();
   return ret;
 }
 uint32_t CellOutputVec_len_impl(CellOutputVecType *this) {
   return mol2_dynvec_length(&this->cur);
 }
 CellOutputType CellOutputVec_get_impl(CellOutputVecType *this, uint32_t index,
-                                      int *existing) {
-  CellOutputType ret;
+                                      bool *existing) {
+  CellOutputType ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
   if (res.errno != 0) {
-    *existing = 0;
+    *existing = false;
     return ret;
   } else {
-    *existing = 1;
+    *existing = true;
   }
   ret.cur = res.cur;
-  ret.tbl = GetCellOutputVTable();
+  ret.t = GetCellOutputVTable();
   return ret;
 }
 mol2_cursor_t Script_get_code_hash_impl(ScriptType *this) {
@@ -763,7 +775,7 @@ OutPointType CellInput_get_previous_output_impl(CellInputType *this) {
   OutPointType ret;
   mol2_cursor_t cur = mol2_slice_by_offset(&this->cur, 8, 36);
   ret.cur = cur;
-  ret.tbl = GetOutPointVTable();
+  ret.t = GetOutPointVTable();
   return ret;
 }
 uint64_t CellOutput_get_capacity_impl(CellOutputType *this) {
@@ -776,21 +788,21 @@ ScriptType CellOutput_get_lock_impl(CellOutputType *this) {
   ScriptType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
   ret.cur = cur;
-  ret.tbl = GetScriptVTable();
+  ret.t = GetScriptVTable();
   return ret;
 }
 ScriptOptType CellOutput_get_type__impl(CellOutputType *this) {
   ScriptOptType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 2);
   ret.cur = cur;
-  ret.tbl = GetScriptOptVTable();
+  ret.t = GetScriptOptVTable();
   return ret;
 }
 OutPointType CellDep_get_out_point_impl(CellDepType *this) {
   OutPointType ret;
   mol2_cursor_t cur = mol2_slice_by_offset(&this->cur, 0, 36);
   ret.cur = cur;
-  ret.tbl = GetOutPointVTable();
+  ret.t = GetOutPointVTable();
   return ret;
 }
 uint8_t CellDep_get_dep_type_impl(CellDepType *this) {
@@ -827,28 +839,28 @@ CellOutputVecType RawTransaction_get_outputs_impl(RawTransactionType *this) {
   CellOutputVecType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 4);
   ret.cur = cur;
-  ret.tbl = GetCellOutputVecVTable();
+  ret.t = GetCellOutputVecVTable();
   return ret;
 }
 BytesVecType RawTransaction_get_outputs_data_impl(RawTransactionType *this) {
   BytesVecType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 5);
   ret.cur = cur;
-  ret.tbl = GetBytesVecVTable();
+  ret.t = GetBytesVecVTable();
   return ret;
 }
 RawTransactionType Transaction_get_raw_impl(TransactionType *this) {
   RawTransactionType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
   ret.cur = cur;
-  ret.tbl = GetRawTransactionVTable();
+  ret.t = GetRawTransactionVTable();
   return ret;
 }
 BytesVecType Transaction_get_witnesses_impl(TransactionType *this) {
   BytesVecType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
   ret.cur = cur;
-  ret.tbl = GetBytesVecVTable();
+  ret.t = GetBytesVecVTable();
   return ret;
 }
 uint32_t RawHeader_get_version_impl(RawHeaderType *this) {
@@ -915,7 +927,7 @@ RawHeaderType Header_get_raw_impl(HeaderType *this) {
   RawHeaderType ret;
   mol2_cursor_t cur = mol2_slice_by_offset(&this->cur, 0, 192);
   ret.cur = cur;
-  ret.tbl = GetRawHeaderVTable();
+  ret.t = GetRawHeaderVTable();
   return ret;
 }
 mol2_cursor_t Header_get_nonce_impl(HeaderType *this) {
@@ -928,7 +940,7 @@ HeaderType UncleBlock_get_header_impl(UncleBlockType *this) {
   HeaderType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
   ret.cur = cur;
-  ret.tbl = GetHeaderVTable();
+  ret.t = GetHeaderVTable();
   return ret;
 }
 mol2_cursor_t UncleBlock_get_proposals_impl(UncleBlockType *this) {
@@ -941,21 +953,21 @@ HeaderType Block_get_header_impl(BlockType *this) {
   HeaderType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
   ret.cur = cur;
-  ret.tbl = GetHeaderVTable();
+  ret.t = GetHeaderVTable();
   return ret;
 }
 UncleBlockVecType Block_get_uncles_impl(BlockType *this) {
   UncleBlockVecType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
   ret.cur = cur;
-  ret.tbl = GetUncleBlockVecVTable();
+  ret.t = GetUncleBlockVecVTable();
   return ret;
 }
 TransactionVecType Block_get_transactions_impl(BlockType *this) {
   TransactionVecType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 2);
   ret.cur = cur;
-  ret.tbl = GetTransactionVecVTable();
+  ret.t = GetTransactionVecVTable();
   return ret;
 }
 mol2_cursor_t Block_get_proposals_impl(BlockType *this) {
@@ -968,7 +980,7 @@ ScriptType CellbaseWitness_get_lock_impl(CellbaseWitnessType *this) {
   ScriptType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
   ret.cur = cur;
-  ret.tbl = GetScriptVTable();
+  ret.t = GetScriptVTable();
   return ret;
 }
 mol2_cursor_t CellbaseWitness_get_message_impl(CellbaseWitnessType *this) {
@@ -981,21 +993,21 @@ BytesOptType WitnessArgs_get_lock_impl(WitnessArgsType *this) {
   BytesOptType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
   ret.cur = cur;
-  ret.tbl = GetBytesOptVTable();
+  ret.t = GetBytesOptVTable();
   return ret;
 }
 BytesOptType WitnessArgs_get_input_type_impl(WitnessArgsType *this) {
   BytesOptType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
   ret.cur = cur;
-  ret.tbl = GetBytesOptVTable();
+  ret.t = GetBytesOptVTable();
   return ret;
 }
 BytesOptType WitnessArgs_get_output_type_impl(WitnessArgsType *this) {
   BytesOptType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 2);
   ret.cur = cur;
-  ret.tbl = GetBytesOptVTable();
+  ret.t = GetBytesOptVTable();
   return ret;
 }
 #ifdef __cplusplus

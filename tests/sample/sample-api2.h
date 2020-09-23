@@ -19,7 +19,7 @@ struct SampleDynVectorVTable;
 struct SampleDynVectorVTable *GetSampleDynVectorVTable(void);
 uint32_t SampleDynVector_len_impl(struct SampleDynVectorType *);
 mol2_cursor_t SampleDynVector_get_impl(struct SampleDynVectorType *, uint32_t,
-                                       int *);
+                                       bool *);
 struct SampleStructType;
 struct SampleStructVTable;
 struct SampleStructVTable *GetSampleStructVTable(void);
@@ -43,23 +43,24 @@ struct SampleOptionTableType;
 struct SampleOptionTableVTable;
 struct SampleOptionTableVTable *GetSampleOptionTableVTable(void);
 bool SampleOptionTable_is_none_impl(struct SampleOptionTableType *);
+bool SampleOptionTable_is_some_impl(struct SampleOptionTableType *);
 struct SampleTableType SampleOptionTable_unwrap_impl(
     struct SampleOptionTableType *);
 
 // -------------------
 typedef struct SampleDynVectorVTable {
   uint32_t (*len)(struct SampleDynVectorType *);
-  mol2_cursor_t (*get)(struct SampleDynVectorType *, uint32_t, int *);
+  mol2_cursor_t (*get)(struct SampleDynVectorType *, uint32_t, bool *);
 } SampleDynVectorVTable;
 typedef struct SampleDynVectorType {
   mol2_cursor_t cur;
-  SampleDynVectorVTable *tbl;
+  SampleDynVectorVTable *t;
 } SampleDynVectorType;
 
 struct SampleDynVectorType make_SampleDynVector(mol2_cursor_t *cur) {
   SampleDynVectorType ret;
   ret.cur = *cur;
-  ret.tbl = GetSampleDynVectorVTable();
+  ret.t = GetSampleDynVectorVTable();
   return ret;
 }
 struct SampleDynVectorVTable *GetSampleDynVectorVTable(void) {
@@ -77,13 +78,13 @@ typedef struct SampleStructVTable {
 } SampleStructVTable;
 typedef struct SampleStructType {
   mol2_cursor_t cur;
-  SampleStructVTable *tbl;
+  SampleStructVTable *t;
 } SampleStructType;
 
 struct SampleStructType make_SampleStruct(mol2_cursor_t *cur) {
   SampleStructType ret;
   ret.cur = *cur;
-  ret.tbl = GetSampleStructVTable();
+  ret.t = GetSampleStructVTable();
   return ret;
 }
 struct SampleStructVTable *GetSampleStructVTable(void) {
@@ -102,13 +103,13 @@ typedef struct SampleTableVTable {
 } SampleTableVTable;
 typedef struct SampleTableType {
   mol2_cursor_t cur;
-  SampleTableVTable *tbl;
+  SampleTableVTable *t;
 } SampleTableType;
 
 struct SampleTableType make_SampleTable(mol2_cursor_t *cur) {
   SampleTableType ret;
   ret.cur = *cur;
-  ret.tbl = GetSampleTableVTable();
+  ret.t = GetSampleTableVTable();
   return ret;
 }
 struct SampleTableVTable *GetSampleTableVTable(void) {
@@ -128,13 +129,13 @@ typedef struct SampleUnionVTable {
 } SampleUnionVTable;
 typedef struct SampleUnionType {
   mol2_cursor_t cur;
-  SampleUnionVTable *tbl;
+  SampleUnionVTable *t;
 } SampleUnionType;
 
 struct SampleUnionType make_SampleUnion(mol2_cursor_t *cur) {
   SampleUnionType ret;
   ret.cur = *cur;
-  ret.tbl = GetSampleUnionVTable();
+  ret.t = GetSampleUnionVTable();
   return ret;
 }
 struct SampleUnionVTable *GetSampleUnionVTable(void) {
@@ -149,17 +150,18 @@ struct SampleUnionVTable *GetSampleUnionVTable(void) {
 
 typedef struct SampleOptionTableVTable {
   bool (*is_none)(struct SampleOptionTableType *);
+  bool (*is_some)(struct SampleOptionTableType *);
   struct SampleTableType (*unwrap)(struct SampleOptionTableType *);
 } SampleOptionTableVTable;
 typedef struct SampleOptionTableType {
   mol2_cursor_t cur;
-  SampleOptionTableVTable *tbl;
+  SampleOptionTableVTable *t;
 } SampleOptionTableType;
 
 struct SampleOptionTableType make_SampleOptionTable(mol2_cursor_t *cur) {
   SampleOptionTableType ret;
   ret.cur = *cur;
-  ret.tbl = GetSampleOptionTableVTable();
+  ret.t = GetSampleOptionTableVTable();
   return ret;
 }
 struct SampleOptionTableVTable *GetSampleOptionTableVTable(void) {
@@ -167,6 +169,7 @@ struct SampleOptionTableVTable *GetSampleOptionTableVTable(void) {
   static int inited = 0;
   if (inited) return &s_vtable;
   s_vtable.is_none = SampleOptionTable_is_none_impl;
+  s_vtable.is_some = SampleOptionTable_is_some_impl;
   s_vtable.unwrap = SampleOptionTable_unwrap_impl;
   return &s_vtable;
 }
@@ -177,14 +180,14 @@ uint32_t SampleDynVector_len_impl(SampleDynVectorType *this) {
   return mol2_dynvec_length(&this->cur);
 }
 mol2_cursor_t SampleDynVector_get_impl(SampleDynVectorType *this,
-                                       uint32_t index, int *existing) {
-  mol2_cursor_t ret;
+                                       uint32_t index, bool *existing) {
+  mol2_cursor_t ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
   if (res.errno != 0) {
-    *existing = 0;
+    *existing = false;
     return ret;
   } else {
-    *existing = 1;
+    *existing = true;
   }
   ret = convert_to_rawbytes(&res.cur);
   return ret;
@@ -205,7 +208,7 @@ SampleDynVectorType SampleTable_get_byte_2d_vector_impl(SampleTableType *this) {
   SampleDynVectorType ret;
   mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
   ret.cur = cur;
-  ret.tbl = GetSampleDynVectorVTable();
+  ret.t = GetSampleDynVectorVTable();
   return ret;
 }
 mol2_cursor_t SampleTable_get_byte2_impl(SampleTableType *this) {
@@ -221,24 +224,27 @@ SampleStructType SampleUnion_as_SampleStruct_impl(SampleUnionType *this) {
   SampleStructType ret;
   mol2_union_t u = mol2_union_unpack(&this->cur);
   ret.cur = u.cursor;
-  ret.tbl = GetSampleStructVTable();
+  ret.t = GetSampleStructVTable();
   return ret;
 }
 SampleTableType SampleUnion_as_SampleTable_impl(SampleUnionType *this) {
   SampleTableType ret;
   mol2_union_t u = mol2_union_unpack(&this->cur);
   ret.cur = u.cursor;
-  ret.tbl = GetSampleTableVTable();
+  ret.t = GetSampleTableVTable();
   return ret;
 }
 bool SampleOptionTable_is_none_impl(SampleOptionTableType *this) {
   return mol2_option_is_none(&this->cur);
 }
+bool SampleOptionTable_is_some_impl(SampleOptionTableType *this) {
+  return !mol2_option_is_none(&this->cur);
+}
 SampleTableType SampleOptionTable_unwrap_impl(SampleOptionTableType *this) {
   SampleTableType ret;
   mol2_cursor_t cur = this->cur;
   ret.cur = cur;
-  ret.tbl = GetSampleTableVTable();
+  ret.t = GetSampleTableVTable();
   return ret;
 }
 #ifdef __cplusplus
