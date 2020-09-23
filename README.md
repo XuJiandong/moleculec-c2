@@ -8,7 +8,7 @@ Then, compile binary (moleculec-c2) by "cargo build --release", and put the bina
 $cargo install moleculec
 $cargo build --release
 $moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
-$target/release/moleculec-c2 -- --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
+$target/release/moleculec-c2 --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
 ```
 Note: "clang-format -style=Google" is not needed if you don't care about coding style.
 
