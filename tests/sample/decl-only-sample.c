@@ -5,8 +5,13 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+// Split declaration and implementation
+// step 1.
+// add macro and #include the header file
+#define MOLECULEC_C2_DECLARATION_ONLY
 #include "sample-api2.h"
-//#include "sample-api2.h"
+
 #include "sample-builder.h"
 
 void verify_sample_option_table(mol2_cursor_t* sample_table2) {
@@ -75,7 +80,7 @@ int main(int argc, const char* argv[]) {
   verify_sample_option_table(&sample_table2);
   verify_sample_union();
 
-  printf("\n------- sample passed---------\n\n");
+  printf("\n------- decl-only-sample passed---------\n\n");
   return 0;
 }
 

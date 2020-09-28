@@ -51,6 +51,7 @@ pub trait Generator: HasName  {
         format_decl!(output, "struct {};", gen_class_name(name));
         format_decl!(output, "struct {}VTable;", name);
         format_decl!(output, "struct {}VTable *Get{}VTable(void);", name, name);
+        format_decl!(output, "struct {0}Type make_{0}(mol2_cursor_t *cur);", name);
         Ok(())
     }
     fn gen_def(&self, output: &mut Output) -> Result {
@@ -58,14 +59,14 @@ pub trait Generator: HasName  {
         // definition of class
         format_def!(output, r#"typedef struct {0}Type {{
         mol2_cursor_t cur;
-        {0}VTable *tbl;
+        {0}VTable *t;
         }} {0}Type;
         "#, name);
         // definition of "make" class instance
-        format_def!(output, r#"struct {0}Type make_{0}(mol2_cursor_t *cur) {{
+        format_imp!(output, r#"struct {0}Type make_{0}(mol2_cursor_t *cur) {{
         {0}Type ret;
         ret.cur = *cur;
-        ret.tbl = Get{0}VTable();
+        ret.t = Get{0}VTable();
         return ret;
         }}"#, name);
         Ok(())
@@ -80,6 +81,7 @@ impl Generator for ast::Option_ {
         self.gen_decl(output)?;
 
         format_decl!(output, "bool {0}_is_none_impl(struct {0}Type *);", name);
+        format_decl!(output, "bool {0}_is_some_impl(struct {0}Type *);", name);
         format_decl!(output, "{0} {1}_unwrap_impl(struct {1}Type *);", prefix_struct(&c_type_name), name);
         // --------- declaration above ------------
 
@@ -87,26 +89,32 @@ impl Generator for ast::Option_ {
         // definition of virtual table
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "bool (*is_none)(struct {}Type *);", name);
+        format_def!(output, "bool (*is_some)(struct {}Type *);", name);
         format_def!(output, "{1} (*unwrap)(struct {0}Type *);", name, prefix_struct(&c_type_name));
         format_def!(output, "}} {}VTable;", name);
 
         self.gen_def(output)?;
 
         // definition of "get" class vtable
-        format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
         static {0}VTable s_vtable;
         static int inited = 0;
         if (inited) return &s_vtable; "#, name);
 
-        format_def!(output, "s_vtable.is_none = {}_is_none_impl;", name);
-        format_def!(output, "s_vtable.unwrap = {}_unwrap_impl;", name);
+        format_imp!(output, "s_vtable.is_none = {}_is_none_impl;", name);
+        format_imp!(output, "s_vtable.is_some = {}_is_some_impl;", name);
+        format_imp!(output, "s_vtable.unwrap = {}_unwrap_impl;", name);
 
-        format_def!(output, "return &s_vtable; }}");
+        format_imp!(output, "return &s_vtable; }}");
 
         // entries of virtual tables
         format_imp!(output, r#"
         bool {0}_is_none_impl({0}Type *this) {{
           return mol2_option_is_none(&this->cur);
+        }}"#, name);
+        format_imp!(output, r#"
+        bool {0}_is_some_impl({0}Type *this) {{
+          return !mol2_option_is_none(&this->cur);
         }}"#, name);
 
         match ftc {
@@ -116,7 +124,7 @@ impl Generator for ast::Option_ {
             {1} ret;
             mol2_cursor_t cur = this->cur;
             ret.cur = cur;
-            ret.tbl = Get{2}VTable();
+            ret.t = Get{2}VTable();
             return ret;
             }}"#, name, c_type_name, raw_name(&c_type_name));
             },
@@ -171,18 +179,18 @@ impl Generator for ast::Union {
         self.gen_def(output)?;
 
         // definition of "get" class vtable
-        format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
         static {0}VTable s_vtable;
         static int inited = 0;
         if (inited) return &s_vtable; "#, name);
 
-        format_def!(output, "s_vtable.item_id = {}_item_id_impl;", name);
+        format_imp!(output, "s_vtable.item_id = {}_item_id_impl;", name);
         for item in self.items() {
             let item_type_name = item.typ().name();
-            format_def!(output, "s_vtable.as_{1} = {0}_as_{1}_impl;", name, item_type_name);
+            format_imp!(output, "s_vtable.as_{1} = {0}_as_{1}_impl;", name, item_type_name);
         }
 
-        format_def!(output, "return &s_vtable; }}");
+        format_imp!(output, "return &s_vtable; }}");
 
         // entries of virtual tables
         format_imp!(output, r#"
@@ -199,7 +207,7 @@ impl Generator for ast::Union {
                 {1} ret;
                 mol2_union_t u = mol2_union_unpack(&this->cur);
                 ret.cur = u.cursor;
-                ret.tbl = Get{2}VTable();
+                ret.t = Get{2}VTable();
                 return ret;
                 }}"#, name, c_type_name, item_type_name);
                 },
@@ -270,28 +278,28 @@ impl Generator for ast::DynVec {
         self.gen_decl(output)?;
 
         format_decl!(output, "uint32_t {0}_len_impl(struct {0}Type *);", name);
-        format_decl!(output, "{0} {1}_get_impl(struct {1}Type *, uint32_t, int *);", prefix_struct(&c_type_name), name);
+        format_decl!(output, "{0} {1}_get_impl(struct {1}Type *, uint32_t, bool *);", prefix_struct(&c_type_name), name);
         // --------- declaration above ------------
 
         // ----------definition below -------------
         // definition of virtual table
         format_def!(output, "typedef struct {0}VTable {{", name);
         format_def!(output, "uint32_t (*len)(struct {}Type *);", name);
-        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, int *);", name, prefix_struct(&c_type_name));
+        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, bool *);", name, prefix_struct(&c_type_name));
         format_def!(output, "}} {}VTable;", name);
 
         self.gen_def(output)?;
 
         // definition of "get" class vtable
-        format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
         static {0}VTable s_vtable;
         static int inited = 0;
         if (inited) return &s_vtable; "#, name);
 
-        format_def!(output, "s_vtable.len = {}_len_impl;", name);
-        format_def!(output, "s_vtable.get = {}_get_impl;", name);
+        format_imp!(output, "s_vtable.len = {}_len_impl;", name);
+        format_imp!(output, "s_vtable.get = {}_get_impl;", name);
 
-        format_def!(output, "return &s_vtable; }}");
+        format_imp!(output, "return &s_vtable; }}");
 
         // entries of virtual tables
         format_imp!(output, r#"
@@ -302,14 +310,14 @@ impl Generator for ast::DynVec {
         if c_type_name == "mol2_cursor_t" {
             format_imp!(output, r#"
             mol2_cursor_t {0}_get_impl({0}Type *this,
-                                    uint32_t index, int *existing) {{
-            mol2_cursor_t ret;
+                                    uint32_t index, bool *existing) {{
+            mol2_cursor_t ret = {{0}};
             mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
             if (res.errno != 0) {{
-                *existing = 0;
+                *existing = false;
                 return ret;
             }} else {{
-                *existing = 1;
+                *existing = true;
             }}
             ret = convert_to_rawbytes(&res.cur);
             return ret;
@@ -317,17 +325,17 @@ impl Generator for ast::DynVec {
         } else {
             format_imp!(output, r#"
             {1} {0}_get_impl({0}Type *this,
-                                    uint32_t index, int *existing) {{
-            {1} ret;
+                                    uint32_t index, bool *existing) {{
+            {1} ret = {{0}};
             mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
             if (res.errno != 0) {{
-                *existing = 0;
+                *existing = false;
                 return ret;
             }} else {{
-                *existing = 1;
+                *existing = true;
             }}
                 ret.cur = res.cur;
-                ret.tbl = Get{2}VTable();
+                ret.t = Get{2}VTable();
                 return ret;
             }}"#, name, c_type_name, raw_name(&c_type_name));
         }
@@ -371,7 +379,7 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     format_def!(output, "}} {}VTable;", name);
     gen.gen_def(output)?;
     // definition of "get" class vtable
-    format_def!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+    format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
     static {0}VTable s_vtable;
     static int inited = 0;
     if (inited) return &s_vtable;
@@ -379,9 +387,9 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     for field in fields {
         let field_name = &field.name();
         let (field_type, _) = get_type_category(field.typ(), field.typ().name());
-        format_def!(output, "s_vtable.{0} = {1}_get_{0}_impl;", field_name, name);
+        format_imp!(output, "s_vtable.{0} = {1}_get_{0}_impl;", field_name, name);
     }
-    format_def!(output, "return &s_vtable; }}");
+    format_imp!(output, "return &s_vtable; }}");
     // entries of virtual tables
     let mut index : usize = 0;
     for field in fields {
@@ -403,7 +411,7 @@ fn generate_impl(output: &mut Output, name: &str, field: &FieldDecl,
             {2} ret;
             mol2_cursor_t cur = {4};
             ret.cur = cur;
-            ret.tbl = Get{3}VTable();
+            ret.t = Get{3}VTable();
             return ret;
             }}"#, name, field_name, field_type, raw_name(&field_type), slice_by);
         },

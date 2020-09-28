@@ -1,4 +1,5 @@
-
+MOLC    := moleculec
+MOLC_VERSION := 0.6.1
 
 all: sample blockchain
 
@@ -26,6 +27,14 @@ mol/blockchain.json: mol/blockchain.mol
 tests/blockchain/blockchain-api.h: mol/blockchain.mol
 	moleculec --language c --schema-file mol/blockchain.mol > tests/blockchain/blockchain-api.h
 
+fmt:
+	clang-format -i -style=Google $(wildcard include/*.h)
+	git diff --exit-code $(wildcard include/*.h)
+
+ci:
+	cargo install moleculec --vers ${MOLC_VERSION}
+	cargo install --path .
+	make all
 
 clean:
 	rm -f tests/sample/sample-api2.h
