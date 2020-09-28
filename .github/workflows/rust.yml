@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install
-      run: cargo install moleculec --vers ${MOLC_VERSION}
+      run: cargo install moleculec --vers 0.6.1
     - name: install2
       run: cargo install --path .
     - name: Run ci tests
