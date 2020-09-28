@@ -1,10 +1,5 @@
 sudo: true
 
-language: c
-
-c:
-  - master
-
 before_install:
   - curl -sSf https://build.travis-ci.com/files/rustup-init.sh | sh -s -- --default-toolchain=stable --profile=minimal -y
   - source $HOME/.cargo/env
