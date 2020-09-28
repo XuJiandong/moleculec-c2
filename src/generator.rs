@@ -216,7 +216,7 @@ impl Generator for ast::Union {
                 {1} {0}_as_{3}_impl({0}Type *this) {{
                 {1} ret;
                 mol2_union_t u = mol2_union_unpack(&this->cur);
-                ret = {2}(&u->cursor);
+                ret = {2}(&u.cursor);
                 return ret;
                 }}"#, name, c_type_name, get_convert_func(&c_type_name, &ftc), item_type_name);
                 },
@@ -225,7 +225,7 @@ impl Generator for ast::Union {
                 {1} {0}_as_{2}_impl({0}Type *this) {{
                 mol2_cursor_t ret;
                 mol2_union_t u = mol2_union_unpack(&this->cur);
-                ret = convert_to_rawbytes(&u->cursor);
+                ret = convert_to_rawbytes(&u.cursor);
                 return ret;
                 }}"#, name, c_type_name, item_type_name);
                 },

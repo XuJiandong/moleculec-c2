@@ -1,7 +1,7 @@
 MOLC    := moleculec
 MOLC_VERSION := 0.6.1
 
-all: sample blockchain
+all: sample blockchain types
 
 sample: mol/sample.json tests/sample/sample-api.h tests/sample/sample-api2.h
 	make -C tests/sample
@@ -27,6 +27,17 @@ mol/blockchain.json: mol/blockchain.mol
 tests/blockchain/blockchain-api.h: mol/blockchain.mol
 	moleculec --language c --schema-file mol/blockchain.mol > tests/blockchain/blockchain-api.h
 
+
+mol/types.json: mol/types.mol
+	moleculec --language - --schema-file mol/types.mol --format json > mol/types.json
+
+tests/types/types-api2.h: mol/types.json
+	cargo run -- --input mol/types.json | clang-format -style=Google > tests/types/types-api2.h
+
+types: mol/types.json tests/types/types-api2.h
+	make -C tests/types
+
+
 fmt:
 	clang-format -i -style=Google $(wildcard include/*.h)
 	git diff --exit-code $(wildcard include/*.h)
@@ -44,4 +55,6 @@ clean:
 	rm -f mol/*.json
 	make -C tests/sample clean
 	make -C tests/blockchain clean
+	make -C tests/types clean
+
 
