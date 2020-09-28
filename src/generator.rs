@@ -238,8 +238,14 @@ impl Generator for ast::Union {
 
 impl Generator for ast::Array {
     fn generate(&self, output: &mut Output) -> Result {
-        // it's not needed
-        Ok(())
+        let typ = get_array_item_type(self);
+        if let Some(c_type_name) = typ {
+            generate_common_array(self, output, self.name(), c_type_name.as_str(), Some(self), None)?;
+            Ok(())
+        } else {
+            // do nothing, normally array, it's type should be mol2_cursor_t
+            Ok(())
+        }
     }
 }
 
@@ -249,10 +255,17 @@ impl Generator for ast::Struct {
     }
 }
 
+// in FixVec, all item size is same and known already, the count is unknown.
 impl Generator for ast::FixVec {
     fn generate(&self, output: &mut Output) -> Result {
-        // it's not needed
-        Ok(())
+        let typ = get_fixvec_item_type(self);
+        if let Some(c_type_name) = typ {
+            generate_common_array(self, output, self.name(), c_type_name.as_str(), None, Some(self))?;
+            Ok(())
+        } else {
+            // do nothing, normally array, it's type should be mol2_cursor_t
+            Ok(())
+        }
     }
 }
 
@@ -270,76 +283,160 @@ fn get_dynvec_item_type(dynvec: &ast::DynVec) -> String {
     }
 }
 
+// the possible types as Array's item
+// 1. Array
+// 2. Byte
+//
+fn get_array_item_type(array: &ast::Array) -> Option<String> {
+    let item_type = array.item().typ();
+    if let TopDecl::Primitive(a) = item_type.as_ref() {
+        None
+    } else {
+        if let TopDecl::Array(aa) = item_type.as_ref() {
+            if let TopDecl::Primitive(aaa) = aa.item().typ().as_ref() {
+                return Some(String::from("mol2_cursor_t"));
+            }
+        }
+        Some(gen_class_name(item_type.name()))
+    }
+}
 
-impl Generator for ast::DynVec {
-    fn generate(&self, output: &mut Output) -> Result {
-        let c_type_name = get_dynvec_item_type(self);
-        let name = self.name();
-        self.gen_decl(output)?;
+fn get_fixvec_item_type(fixvec: &ast::FixVec) -> Option<String> {
+    let item_type = fixvec.item().typ();
+    if let TopDecl::Primitive(a) = item_type.as_ref() {
+        None
+    } else {
+        if let TopDecl::Array(aa) = item_type.as_ref() {
+            if let TopDecl::Primitive(aaa) = aa.item().typ().as_ref() {
+                return Some(String::from("mol2_cursor_t"));
+            }
+        }
+        Some(gen_class_name(item_type.name()))
+    }
+}
 
-        format_decl!(output, "uint32_t {0}_len_impl(struct {0}Type *);", name);
-        format_decl!(output, "{0} {1}_get_impl(struct {1}Type *, uint32_t, bool *);", prefix_struct(&c_type_name), name);
-        // --------- declaration above ------------
 
-        // ----------definition below -------------
-        // definition of virtual table
-        format_def!(output, "typedef struct {0}VTable {{", name);
-        format_def!(output, "uint32_t (*len)(struct {}Type *);", name);
-        format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, bool *);", name, prefix_struct(&c_type_name));
-        format_def!(output, "}} {}VTable;", name);
+// Process:
+// 1. Arrray
+// 2. FixVec
+// 3. DynVec
+fn generate_common_array(gen: &dyn Generator, output: &mut Output,
+                         name: &str, c_type_name: &str, array: Option<&ast::Array>, fixvec: Option<&ast::FixVec>) -> Result {
+    gen.gen_decl(output)?;
 
-        self.gen_def(output)?;
+    format_decl!(output, "uint32_t {0}_len_impl(struct {0}Type *);", name);
+    format_decl!(output, "{0} {1}_get_impl(struct {1}Type *, uint32_t, bool *);", prefix_struct(&c_type_name), name);
+    // --------- declaration above ------------
 
-        // definition of "get" class vtable
-        format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
-        static {0}VTable s_vtable;
-        static int inited = 0;
-        if (inited) return &s_vtable; "#, name);
+    // ----------definition below -------------
+    // definition of virtual table
+    format_def!(output, "typedef struct {0}VTable {{", name);
+    format_def!(output, "uint32_t (*len)(struct {}Type *);", name);
+    format_def!(output, "{1} (*get)(struct {0}Type *, uint32_t, bool *);", name, prefix_struct(&c_type_name));
+    format_def!(output, "}} {}VTable;", name);
 
-        format_imp!(output, "s_vtable.len = {}_len_impl;", name);
-        format_imp!(output, "s_vtable.get = {}_get_impl;", name);
+    gen.gen_def(output)?;
 
-        format_imp!(output, "return &s_vtable; }}");
+    // definition of "get" class vtable
+    format_imp!(output, r#"struct {0}VTable *Get{0}VTable(void) {{
+            static {0}VTable s_vtable;
+            static int inited = 0;
+            if (inited) return &s_vtable; "#, name);
 
-        // entries of virtual tables
+    format_imp!(output, "s_vtable.len = {}_len_impl;", name);
+    format_imp!(output, "s_vtable.get = {}_get_impl;", name);
+
+    format_imp!(output, "return &s_vtable; }}");
+
+    // entries of virtual tables
+    if let Some(arr) = array {
         format_imp!(output, r#"
-        uint32_t {0}_len_impl({0}Type *this) {{
-          return mol2_dynvec_length(&this->cur);
-        }}"#, name);
+                uint32_t {0}_len_impl({0}Type *this) {{
+                  return {1};
+                }}"#, name, arr.item_count());
+    } else if let Some(fv) = fixvec {
+        format_imp!(output, r#"
+                uint32_t {0}_len_impl({0}Type *this) {{
+                return mol2_fixvec_length(&this->cur);
+                }}"#, name);
+    } else {
+        format_imp!(output, r#"
+                uint32_t {0}_len_impl({0}Type *this) {{
+                  return mol2_dynvec_length(&this->cur);
+                }}"#, name);
+    }
 
+    if let Some(arr) = array {
+        let item_size = arr.item_size();
         if c_type_name == "mol2_cursor_t" {
             format_imp!(output, r#"
-            mol2_cursor_t {0}_get_impl({0}Type *this,
-                                    uint32_t index, bool *existing) {{
-            mol2_cursor_t ret = {{0}};
-            mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
-            if (res.errno != 0) {{
-                *existing = false;
-                return ret;
-            }} else {{
-                *existing = true;
-            }}
-            ret = convert_to_rawbytes(&res.cur);
-            return ret;
-            }}"#, name);
+            mol2_cursor_t {0}_get_impl({0}Type *this, uint32_t index, bool *existing) {{
+            *existing = true;
+            return mol2_slice_by_offset(&this->cur, {1}*index, {1});
+            }}"#, name, item_size);
         } else {
             format_imp!(output, r#"
             {1} {0}_get_impl({0}Type *this,
                                     uint32_t index, bool *existing) {{
             {1} ret = {{0}};
-            mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
+            ret.cur = mol2_slice_by_offset(&this->cur, {3}*index, {3});
+            ret.t = Get{2}VTable();
+            *existing = true;
+            return ret;
+            }}"#, name, c_type_name, raw_name(&c_type_name), item_size);
+        }
+    } else {
+        let slice_by = if let Some(fv) = fixvec {
+            format!("mol2_fixvec_slice_by_index(&this->cur, {}, index)", fv.item_size())
+        } else {
+            format!("mol2_dynvec_slice_by_index(&this->cur, index)")
+        };
+        if c_type_name == "mol2_cursor_t" {
+            let convert_by = if let Some(fv) = fixvec {
+                format!("convert_to_array")
+            } else {
+                format!("convert_to_rawbytes")
+            };
+            format_imp!(output, r#"
+            mol2_cursor_t {0}_get_impl({0}Type *this,
+                                    uint32_t index, bool *existing) {{
+            mol2_cursor_t ret = {{0}};
+            mol2_cursor_res_t res = {1};
             if (res.errno != 0) {{
                 *existing = false;
                 return ret;
             }} else {{
                 *existing = true;
             }}
-                ret.cur = res.cur;
-                ret.t = Get{2}VTable();
+            ret = {2}(&res.cur);
+            return ret;
+            }}"#, name, slice_by, convert_by);
+        } else {
+            format_imp!(output, r#"
+            {1} {0}_get_impl({0}Type *this,
+                                    uint32_t index, bool *existing) {{
+            {1} ret = {{0}};
+            mol2_cursor_res_t res = {3};
+            if (res.errno != 0) {{
+                *existing = false;
                 return ret;
-            }}"#, name, c_type_name, raw_name(&c_type_name));
+            }} else {{
+                *existing = true;
+            }}
+            ret.cur = res.cur;
+            ret.t = Get{2}VTable();
+            return ret;
+            }}"#, name, c_type_name, raw_name(&c_type_name), slice_by);
         }
-        Ok(())
+    }
+    Ok(())
+}
+
+
+impl Generator for ast::DynVec {
+    fn generate(&self, output: &mut Output) -> Result {
+        let c_type_name = get_dynvec_item_type(self);
+        generate_common_array(self, output, self.name(), c_type_name.as_str(), None, None)
     }
 }
 
@@ -485,8 +582,14 @@ fn get_type_category(typ: &TopDecl, type_name: &str) -> (String, TypeCategory) {
                 "uint64" => "uint64_t",
                 "int64" => "int64_t",
                 _ => {
-                    ftc = TypeCategory::Array;
-                    "mol2_cursor_t"
+                    if let TopDecl::Primitive(_) = a.item().typ().as_ref() {
+                        // array of byte
+                        ftc = TypeCategory::Array;
+                        "mol2_cursor_t"
+                    } else {
+                        ftc = TypeCategory::Type;
+                        c_type_name.as_str()
+                    }
                 },
             };
             c_type_name = String::from(new_name)
@@ -496,8 +599,13 @@ fn get_type_category(typ: &TopDecl, type_name: &str) -> (String, TypeCategory) {
         },
         TopDecl::FixVec(v) => {
             // FixVec is different than Array: it has a header.
-            c_type_name = String::from("mol2_cursor_t");
-            ftc = TypeCategory::FixVec;
+            if let TopDecl::Primitive(_) = v.item().typ().as_ref() {
+                // array of byte
+                c_type_name = String::from("mol2_cursor_t");
+                ftc = TypeCategory::FixVec;
+            } else {
+                ftc = TypeCategory::Type;
+            }
         },
         _ => {
             ftc = TypeCategory::Type;

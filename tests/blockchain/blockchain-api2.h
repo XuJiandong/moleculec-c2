@@ -29,6 +29,12 @@ struct BytesVecVTable *GetBytesVecVTable(void);
 struct BytesVecType make_BytesVec(mol2_cursor_t *cur);
 uint32_t BytesVec_len_impl(struct BytesVecType *);
 mol2_cursor_t BytesVec_get_impl(struct BytesVecType *, uint32_t, bool *);
+struct Byte32VecType;
+struct Byte32VecVTable;
+struct Byte32VecVTable *GetByte32VecVTable(void);
+struct Byte32VecType make_Byte32Vec(mol2_cursor_t *cur);
+uint32_t Byte32Vec_len_impl(struct Byte32VecType *);
+mol2_cursor_t Byte32Vec_get_impl(struct Byte32VecType *, uint32_t, bool *);
 struct ScriptOptType;
 struct ScriptOptVTable;
 struct ScriptOptVTable *GetScriptOptVTable(void);
@@ -50,6 +56,27 @@ struct TransactionVecType make_TransactionVec(mol2_cursor_t *cur);
 uint32_t TransactionVec_len_impl(struct TransactionVecType *);
 struct TransactionType TransactionVec_get_impl(struct TransactionVecType *,
                                                uint32_t, bool *);
+struct ProposalShortIdVecType;
+struct ProposalShortIdVecVTable;
+struct ProposalShortIdVecVTable *GetProposalShortIdVecVTable(void);
+struct ProposalShortIdVecType make_ProposalShortIdVec(mol2_cursor_t *cur);
+uint32_t ProposalShortIdVec_len_impl(struct ProposalShortIdVecType *);
+mol2_cursor_t ProposalShortIdVec_get_impl(struct ProposalShortIdVecType *,
+                                          uint32_t, bool *);
+struct CellDepVecType;
+struct CellDepVecVTable;
+struct CellDepVecVTable *GetCellDepVecVTable(void);
+struct CellDepVecType make_CellDepVec(mol2_cursor_t *cur);
+uint32_t CellDepVec_len_impl(struct CellDepVecType *);
+struct CellDepType CellDepVec_get_impl(struct CellDepVecType *, uint32_t,
+                                       bool *);
+struct CellInputVecType;
+struct CellInputVecVTable;
+struct CellInputVecVTable *GetCellInputVecVTable(void);
+struct CellInputVecType make_CellInputVec(mol2_cursor_t *cur);
+uint32_t CellInputVec_len_impl(struct CellInputVecType *);
+struct CellInputType CellInputVec_get_impl(struct CellInputVecType *, uint32_t,
+                                           bool *);
 struct CellOutputVecType;
 struct CellOutputVecVTable;
 struct CellOutputVecVTable *GetCellOutputVecVTable(void);
@@ -94,9 +121,12 @@ struct RawTransactionVTable;
 struct RawTransactionVTable *GetRawTransactionVTable(void);
 struct RawTransactionType make_RawTransaction(mol2_cursor_t *cur);
 uint32_t RawTransaction_get_version_impl(struct RawTransactionType *);
-mol2_cursor_t RawTransaction_get_cell_deps_impl(struct RawTransactionType *);
-mol2_cursor_t RawTransaction_get_header_deps_impl(struct RawTransactionType *);
-mol2_cursor_t RawTransaction_get_inputs_impl(struct RawTransactionType *);
+struct CellDepVecType RawTransaction_get_cell_deps_impl(
+    struct RawTransactionType *);
+struct Byte32VecType RawTransaction_get_header_deps_impl(
+    struct RawTransactionType *);
+struct CellInputVecType RawTransaction_get_inputs_impl(
+    struct RawTransactionType *);
 struct CellOutputVecType RawTransaction_get_outputs_impl(
     struct RawTransactionType *);
 struct BytesVecType RawTransaction_get_outputs_data_impl(
@@ -132,7 +162,8 @@ struct UncleBlockVTable;
 struct UncleBlockVTable *GetUncleBlockVTable(void);
 struct UncleBlockType make_UncleBlock(mol2_cursor_t *cur);
 struct HeaderType UncleBlock_get_header_impl(struct UncleBlockType *);
-mol2_cursor_t UncleBlock_get_proposals_impl(struct UncleBlockType *);
+struct ProposalShortIdVecType UncleBlock_get_proposals_impl(
+    struct UncleBlockType *);
 struct BlockType;
 struct BlockVTable;
 struct BlockVTable *GetBlockVTable(void);
@@ -140,7 +171,7 @@ struct BlockType make_Block(mol2_cursor_t *cur);
 struct HeaderType Block_get_header_impl(struct BlockType *);
 struct UncleBlockVecType Block_get_uncles_impl(struct BlockType *);
 struct TransactionVecType Block_get_transactions_impl(struct BlockType *);
-mol2_cursor_t Block_get_proposals_impl(struct BlockType *);
+struct ProposalShortIdVecType Block_get_proposals_impl(struct BlockType *);
 struct CellbaseWitnessType;
 struct CellbaseWitnessVTable;
 struct CellbaseWitnessVTable *GetCellbaseWitnessVTable(void);
@@ -175,6 +206,15 @@ typedef struct BytesVecType {
   BytesVecVTable *t;
 } BytesVecType;
 
+typedef struct Byte32VecVTable {
+  uint32_t (*len)(struct Byte32VecType *);
+  mol2_cursor_t (*get)(struct Byte32VecType *, uint32_t, bool *);
+} Byte32VecVTable;
+typedef struct Byte32VecType {
+  mol2_cursor_t cur;
+  Byte32VecVTable *t;
+} Byte32VecType;
+
 typedef struct ScriptOptVTable {
   bool (*is_none)(struct ScriptOptType *);
   bool (*is_some)(struct ScriptOptType *);
@@ -202,6 +242,33 @@ typedef struct TransactionVecType {
   mol2_cursor_t cur;
   TransactionVecVTable *t;
 } TransactionVecType;
+
+typedef struct ProposalShortIdVecVTable {
+  uint32_t (*len)(struct ProposalShortIdVecType *);
+  mol2_cursor_t (*get)(struct ProposalShortIdVecType *, uint32_t, bool *);
+} ProposalShortIdVecVTable;
+typedef struct ProposalShortIdVecType {
+  mol2_cursor_t cur;
+  ProposalShortIdVecVTable *t;
+} ProposalShortIdVecType;
+
+typedef struct CellDepVecVTable {
+  uint32_t (*len)(struct CellDepVecType *);
+  struct CellDepType (*get)(struct CellDepVecType *, uint32_t, bool *);
+} CellDepVecVTable;
+typedef struct CellDepVecType {
+  mol2_cursor_t cur;
+  CellDepVecVTable *t;
+} CellDepVecType;
+
+typedef struct CellInputVecVTable {
+  uint32_t (*len)(struct CellInputVecType *);
+  struct CellInputType (*get)(struct CellInputVecType *, uint32_t, bool *);
+} CellInputVecVTable;
+typedef struct CellInputVecType {
+  mol2_cursor_t cur;
+  CellInputVecVTable *t;
+} CellInputVecType;
 
 typedef struct CellOutputVecVTable {
   uint32_t (*len)(struct CellOutputVecType *);
@@ -261,9 +328,9 @@ typedef struct CellDepType {
 
 typedef struct RawTransactionVTable {
   uint32_t (*version)(struct RawTransactionType *);
-  mol2_cursor_t (*cell_deps)(struct RawTransactionType *);
-  mol2_cursor_t (*header_deps)(struct RawTransactionType *);
-  mol2_cursor_t (*inputs)(struct RawTransactionType *);
+  struct CellDepVecType (*cell_deps)(struct RawTransactionType *);
+  struct Byte32VecType (*header_deps)(struct RawTransactionType *);
+  struct CellInputVecType (*inputs)(struct RawTransactionType *);
   struct CellOutputVecType (*outputs)(struct RawTransactionType *);
   struct BytesVecType (*outputs_data)(struct RawTransactionType *);
 } RawTransactionVTable;
@@ -309,7 +376,7 @@ typedef struct HeaderType {
 
 typedef struct UncleBlockVTable {
   struct HeaderType (*header)(struct UncleBlockType *);
-  mol2_cursor_t (*proposals)(struct UncleBlockType *);
+  struct ProposalShortIdVecType (*proposals)(struct UncleBlockType *);
 } UncleBlockVTable;
 typedef struct UncleBlockType {
   mol2_cursor_t cur;
@@ -320,7 +387,7 @@ typedef struct BlockVTable {
   struct HeaderType (*header)(struct BlockType *);
   struct UncleBlockVecType (*uncles)(struct BlockType *);
   struct TransactionVecType (*transactions)(struct BlockType *);
-  mol2_cursor_t (*proposals)(struct BlockType *);
+  struct ProposalShortIdVecType (*proposals)(struct BlockType *);
 } BlockVTable;
 typedef struct BlockType {
   mol2_cursor_t cur;
@@ -403,6 +470,36 @@ mol2_cursor_t BytesVec_get_impl(BytesVecType *this, uint32_t index,
     *existing = true;
   }
   ret = convert_to_rawbytes(&res.cur);
+  return ret;
+}
+struct Byte32VecType make_Byte32Vec(mol2_cursor_t *cur) {
+  Byte32VecType ret;
+  ret.cur = *cur;
+  ret.t = GetByte32VecVTable();
+  return ret;
+}
+struct Byte32VecVTable *GetByte32VecVTable(void) {
+  static Byte32VecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte32Vec_len_impl;
+  s_vtable.get = Byte32Vec_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte32Vec_len_impl(Byte32VecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+mol2_cursor_t Byte32Vec_get_impl(Byte32VecType *this, uint32_t index,
+                                 bool *existing) {
+  mol2_cursor_t ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 32, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_array(&res.cur);
   return ret;
 }
 struct ScriptOptType make_ScriptOpt(mol2_cursor_t *cur) {
@@ -493,6 +590,98 @@ TransactionType TransactionVec_get_impl(TransactionVecType *this,
   }
   ret.cur = res.cur;
   ret.t = GetTransactionVTable();
+  return ret;
+}
+struct ProposalShortIdVecType make_ProposalShortIdVec(mol2_cursor_t *cur) {
+  ProposalShortIdVecType ret;
+  ret.cur = *cur;
+  ret.t = GetProposalShortIdVecVTable();
+  return ret;
+}
+struct ProposalShortIdVecVTable *GetProposalShortIdVecVTable(void) {
+  static ProposalShortIdVecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = ProposalShortIdVec_len_impl;
+  s_vtable.get = ProposalShortIdVec_get_impl;
+  return &s_vtable;
+}
+uint32_t ProposalShortIdVec_len_impl(ProposalShortIdVecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+mol2_cursor_t ProposalShortIdVec_get_impl(ProposalShortIdVecType *this,
+                                          uint32_t index, bool *existing) {
+  mol2_cursor_t ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 10, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_array(&res.cur);
+  return ret;
+}
+struct CellDepVecType make_CellDepVec(mol2_cursor_t *cur) {
+  CellDepVecType ret;
+  ret.cur = *cur;
+  ret.t = GetCellDepVecVTable();
+  return ret;
+}
+struct CellDepVecVTable *GetCellDepVecVTable(void) {
+  static CellDepVecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = CellDepVec_len_impl;
+  s_vtable.get = CellDepVec_get_impl;
+  return &s_vtable;
+}
+uint32_t CellDepVec_len_impl(CellDepVecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+CellDepType CellDepVec_get_impl(CellDepVecType *this, uint32_t index,
+                                bool *existing) {
+  CellDepType ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 37, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret.cur = res.cur;
+  ret.t = GetCellDepVTable();
+  return ret;
+}
+struct CellInputVecType make_CellInputVec(mol2_cursor_t *cur) {
+  CellInputVecType ret;
+  ret.cur = *cur;
+  ret.t = GetCellInputVecVTable();
+  return ret;
+}
+struct CellInputVecVTable *GetCellInputVecVTable(void) {
+  static CellInputVecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = CellInputVec_len_impl;
+  s_vtable.get = CellInputVec_get_impl;
+  return &s_vtable;
+}
+uint32_t CellInputVec_len_impl(CellInputVecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+CellInputType CellInputVec_get_impl(CellInputVecType *this, uint32_t index,
+                                    bool *existing) {
+  CellInputType ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 44, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret.cur = res.cur;
+  ret.t = GetCellInputVTable();
   return ret;
 }
 struct CellOutputVecType make_CellOutputVec(mol2_cursor_t *cur) {
@@ -698,22 +887,25 @@ uint32_t RawTransaction_get_version_impl(RawTransactionType *this) {
   ret = convert_to_Uint32(&ret2);
   return ret;
 }
-mol2_cursor_t RawTransaction_get_cell_deps_impl(RawTransactionType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_rawbytes(&re2);
+CellDepVecType RawTransaction_get_cell_deps_impl(RawTransactionType *this) {
+  CellDepVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetCellDepVecVTable();
   return ret;
 }
-mol2_cursor_t RawTransaction_get_header_deps_impl(RawTransactionType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 2);
-  ret = convert_to_rawbytes(&re2);
+Byte32VecType RawTransaction_get_header_deps_impl(RawTransactionType *this) {
+  Byte32VecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 2);
+  ret.cur = cur;
+  ret.t = GetByte32VecVTable();
   return ret;
 }
-mol2_cursor_t RawTransaction_get_inputs_impl(RawTransactionType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 3);
-  ret = convert_to_rawbytes(&re2);
+CellInputVecType RawTransaction_get_inputs_impl(RawTransactionType *this) {
+  CellInputVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 3);
+  ret.cur = cur;
+  ret.t = GetCellInputVecVTable();
   return ret;
 }
 CellOutputVecType RawTransaction_get_outputs_impl(RawTransactionType *this) {
@@ -888,10 +1080,11 @@ HeaderType UncleBlock_get_header_impl(UncleBlockType *this) {
   ret.t = GetHeaderVTable();
   return ret;
 }
-mol2_cursor_t UncleBlock_get_proposals_impl(UncleBlockType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_rawbytes(&re2);
+ProposalShortIdVecType UncleBlock_get_proposals_impl(UncleBlockType *this) {
+  ProposalShortIdVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetProposalShortIdVecVTable();
   return ret;
 }
 struct BlockType make_Block(mol2_cursor_t *cur) {
@@ -931,10 +1124,11 @@ TransactionVecType Block_get_transactions_impl(BlockType *this) {
   ret.t = GetTransactionVecVTable();
   return ret;
 }
-mol2_cursor_t Block_get_proposals_impl(BlockType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 3);
-  ret = convert_to_rawbytes(&re2);
+ProposalShortIdVecType Block_get_proposals_impl(BlockType *this) {
+  ProposalShortIdVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 3);
+  ret.cur = cur;
+  ret.t = GetProposalShortIdVecVTable();
   return ret;
 }
 struct CellbaseWitnessType make_CellbaseWitness(mol2_cursor_t *cur) {

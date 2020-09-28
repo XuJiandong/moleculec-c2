@@ -16,6 +16,72 @@ extern "C" {
 #endif /* __cplusplus */
 
 // ----forward declaration--------
+struct Word2Type;
+struct Word2VTable;
+struct Word2VTable *GetWord2VTable(void);
+struct Word2Type make_Word2(mol2_cursor_t *cur);
+uint32_t Word2_len_impl(struct Word2Type *);
+mol2_cursor_t Word2_get_impl(struct Word2Type *, uint32_t, bool *);
+struct Word3Type;
+struct Word3VTable;
+struct Word3VTable *GetWord3VTable(void);
+struct Word3Type make_Word3(mol2_cursor_t *cur);
+uint32_t Word3_len_impl(struct Word3Type *);
+mol2_cursor_t Word3_get_impl(struct Word3Type *, uint32_t, bool *);
+struct Word4Type;
+struct Word4VTable;
+struct Word4VTable *GetWord4VTable(void);
+struct Word4Type make_Word4(mol2_cursor_t *cur);
+uint32_t Word4_len_impl(struct Word4Type *);
+mol2_cursor_t Word4_get_impl(struct Word4Type *, uint32_t, bool *);
+struct Word5Type;
+struct Word5VTable;
+struct Word5VTable *GetWord5VTable(void);
+struct Word5Type make_Word5(mol2_cursor_t *cur);
+uint32_t Word5_len_impl(struct Word5Type *);
+mol2_cursor_t Word5_get_impl(struct Word5Type *, uint32_t, bool *);
+struct Word6Type;
+struct Word6VTable;
+struct Word6VTable *GetWord6VTable(void);
+struct Word6Type make_Word6(mol2_cursor_t *cur);
+uint32_t Word6_len_impl(struct Word6Type *);
+mol2_cursor_t Word6_get_impl(struct Word6Type *, uint32_t, bool *);
+struct Word7Type;
+struct Word7VTable;
+struct Word7VTable *GetWord7VTable(void);
+struct Word7Type make_Word7(mol2_cursor_t *cur);
+uint32_t Word7_len_impl(struct Word7Type *);
+mol2_cursor_t Word7_get_impl(struct Word7Type *, uint32_t, bool *);
+struct Word8Type;
+struct Word8VTable;
+struct Word8VTable *GetWord8VTable(void);
+struct Word8Type make_Word8(mol2_cursor_t *cur);
+uint32_t Word8_len_impl(struct Word8Type *);
+mol2_cursor_t Word8_get_impl(struct Word8Type *, uint32_t, bool *);
+struct Byte3x3Type;
+struct Byte3x3VTable;
+struct Byte3x3VTable *GetByte3x3VTable(void);
+struct Byte3x3Type make_Byte3x3(mol2_cursor_t *cur);
+uint32_t Byte3x3_len_impl(struct Byte3x3Type *);
+mol2_cursor_t Byte3x3_get_impl(struct Byte3x3Type *, uint32_t, bool *);
+struct Byte5x3Type;
+struct Byte5x3VTable;
+struct Byte5x3VTable *GetByte5x3VTable(void);
+struct Byte5x3Type make_Byte5x3(mol2_cursor_t *cur);
+uint32_t Byte5x3_len_impl(struct Byte5x3Type *);
+mol2_cursor_t Byte5x3_get_impl(struct Byte5x3Type *, uint32_t, bool *);
+struct Byte7x3Type;
+struct Byte7x3VTable;
+struct Byte7x3VTable *GetByte7x3VTable(void);
+struct Byte7x3Type make_Byte7x3(mol2_cursor_t *cur);
+uint32_t Byte7x3_len_impl(struct Byte7x3Type *);
+mol2_cursor_t Byte7x3_get_impl(struct Byte7x3Type *, uint32_t, bool *);
+struct Byte9x3Type;
+struct Byte9x3VTable;
+struct Byte9x3VTable *GetByte9x3VTable(void);
+struct Byte9x3Type make_Byte9x3(mol2_cursor_t *cur);
+uint32_t Byte9x3_len_impl(struct Byte9x3Type *);
+mol2_cursor_t Byte9x3_get_impl(struct Byte9x3Type *, uint32_t, bool *);
 struct StructAType;
 struct StructAVTable;
 struct StructAVTable *GetStructAVTable(void);
@@ -70,7 +136,7 @@ struct StructGType make_StructG(mol2_cursor_t *cur);
 mol2_cursor_t StructG_get_f1_impl(struct StructGType *);
 uint8_t StructG_get_f2_impl(struct StructGType *);
 mol2_cursor_t StructG_get_f3_impl(struct StructGType *);
-mol2_cursor_t StructG_get_f4_impl(struct StructGType *);
+struct Word2Type StructG_get_f4_impl(struct StructGType *);
 struct StructHType;
 struct StructHVTable;
 struct StructHVTable *GetStructHVTable(void);
@@ -91,11 +157,17 @@ struct StructJVTable *GetStructJVTable(void);
 struct StructJType make_StructJ(mol2_cursor_t *cur);
 mol2_cursor_t StructJ_get_f1_impl(struct StructJType *);
 uint8_t StructJ_get_f2_impl(struct StructJType *);
+struct StructIx3Type;
+struct StructIx3VTable;
+struct StructIx3VTable *GetStructIx3VTable(void);
+struct StructIx3Type make_StructIx3(mol2_cursor_t *cur);
+uint32_t StructIx3_len_impl(struct StructIx3Type *);
+struct StructIType StructIx3_get_impl(struct StructIx3Type *, uint32_t, bool *);
 struct StructOType;
 struct StructOVTable;
 struct StructOVTable *GetStructOVTable(void);
 struct StructOType make_StructO(mol2_cursor_t *cur);
-mol2_cursor_t StructO_get_f1_impl(struct StructOType *);
+struct StructIx3Type StructO_get_f1_impl(struct StructOType *);
 uint8_t StructO_get_f2_impl(struct StructOType *);
 struct StructPType;
 struct StructPVTable;
@@ -103,6 +175,45 @@ struct StructPVTable *GetStructPVTable(void);
 struct StructPType make_StructP(mol2_cursor_t *cur);
 struct StructJType StructP_get_f1_impl(struct StructPType *);
 uint8_t StructP_get_f2_impl(struct StructPType *);
+struct WordsType;
+struct WordsVTable;
+struct WordsVTable *GetWordsVTable(void);
+struct WordsType make_Words(mol2_cursor_t *cur);
+uint32_t Words_len_impl(struct WordsType *);
+mol2_cursor_t Words_get_impl(struct WordsType *, uint32_t, bool *);
+struct Byte3VecType;
+struct Byte3VecVTable;
+struct Byte3VecVTable *GetByte3VecVTable(void);
+struct Byte3VecType make_Byte3Vec(mol2_cursor_t *cur);
+uint32_t Byte3Vec_len_impl(struct Byte3VecType *);
+mol2_cursor_t Byte3Vec_get_impl(struct Byte3VecType *, uint32_t, bool *);
+struct Byte7VecType;
+struct Byte7VecVTable;
+struct Byte7VecVTable *GetByte7VecVTable(void);
+struct Byte7VecType make_Byte7Vec(mol2_cursor_t *cur);
+uint32_t Byte7Vec_len_impl(struct Byte7VecType *);
+mol2_cursor_t Byte7Vec_get_impl(struct Byte7VecType *, uint32_t, bool *);
+struct StructIVecType;
+struct StructIVecVTable;
+struct StructIVecVTable *GetStructIVecVTable(void);
+struct StructIVecType make_StructIVec(mol2_cursor_t *cur);
+uint32_t StructIVec_len_impl(struct StructIVecType *);
+struct StructIType StructIVec_get_impl(struct StructIVecType *, uint32_t,
+                                       bool *);
+struct StructJVecType;
+struct StructJVecVTable;
+struct StructJVecVTable *GetStructJVecVTable(void);
+struct StructJVecType make_StructJVec(mol2_cursor_t *cur);
+uint32_t StructJVec_len_impl(struct StructJVecType *);
+struct StructJType StructJVec_get_impl(struct StructJVecType *, uint32_t,
+                                       bool *);
+struct StructPVecType;
+struct StructPVecVTable;
+struct StructPVecVTable *GetStructPVecVTable(void);
+struct StructPVecType make_StructPVec(mol2_cursor_t *cur);
+uint32_t StructPVec_len_impl(struct StructPVecType *);
+struct StructPType StructPVec_get_impl(struct StructPVecType *, uint32_t,
+                                       bool *);
 struct BytesVecType;
 struct BytesVecVTable;
 struct BytesVecVTable *GetBytesVecVTable(void);
@@ -129,20 +240,20 @@ struct Table2VTable;
 struct Table2VTable *GetTable2VTable(void);
 struct Table2Type make_Table2(mol2_cursor_t *cur);
 uint8_t Table2_get_f1_impl(struct Table2Type *);
-mol2_cursor_t Table2_get_f2_impl(struct Table2Type *);
+struct Word2Type Table2_get_f2_impl(struct Table2Type *);
 struct Table3Type;
 struct Table3VTable;
 struct Table3VTable *GetTable3VTable(void);
 struct Table3Type make_Table3(mol2_cursor_t *cur);
 uint8_t Table3_get_f1_impl(struct Table3Type *);
-mol2_cursor_t Table3_get_f2_impl(struct Table3Type *);
+struct Word2Type Table3_get_f2_impl(struct Table3Type *);
 struct StructAType Table3_get_f3_impl(struct Table3Type *);
 struct Table4Type;
 struct Table4VTable;
 struct Table4VTable *GetTable4VTable(void);
 struct Table4Type make_Table4(mol2_cursor_t *cur);
 uint8_t Table4_get_f1_impl(struct Table4Type *);
-mol2_cursor_t Table4_get_f2_impl(struct Table4Type *);
+struct Word2Type Table4_get_f2_impl(struct Table4Type *);
 struct StructAType Table4_get_f3_impl(struct Table4Type *);
 mol2_cursor_t Table4_get_f4_impl(struct Table4Type *);
 struct Table5Type;
@@ -150,7 +261,7 @@ struct Table5VTable;
 struct Table5VTable *GetTable5VTable(void);
 struct Table5Type make_Table5(mol2_cursor_t *cur);
 uint8_t Table5_get_f1_impl(struct Table5Type *);
-mol2_cursor_t Table5_get_f2_impl(struct Table5Type *);
+struct Word2Type Table5_get_f2_impl(struct Table5Type *);
 struct StructAType Table5_get_f3_impl(struct Table5Type *);
 mol2_cursor_t Table5_get_f4_impl(struct Table5Type *);
 struct BytesVecType Table5_get_f5_impl(struct Table5Type *);
@@ -159,7 +270,7 @@ struct Table6VTable;
 struct Table6VTable *GetTable6VTable(void);
 struct Table6Type make_Table6(mol2_cursor_t *cur);
 uint8_t Table6_get_f1_impl(struct Table6Type *);
-mol2_cursor_t Table6_get_f2_impl(struct Table6Type *);
+struct Word2Type Table6_get_f2_impl(struct Table6Type *);
 struct StructAType Table6_get_f3_impl(struct Table6Type *);
 mol2_cursor_t Table6_get_f4_impl(struct Table6Type *);
 struct BytesVecType Table6_get_f5_impl(struct Table6Type *);
@@ -205,7 +316,7 @@ struct WordsOptVTable *GetWordsOptVTable(void);
 struct WordsOptType make_WordsOpt(mol2_cursor_t *cur);
 bool WordsOpt_is_none_impl(struct WordsOptType *);
 bool WordsOpt_is_some_impl(struct WordsOptType *);
-mol2_cursor_t WordsOpt_unwrap_impl(struct WordsOptType *);
+struct WordsType WordsOpt_unwrap_impl(struct WordsOptType *);
 struct BytesVecOptType;
 struct BytesVecOptVTable;
 struct BytesVecOptVTable *GetBytesVecOptVTable(void);
@@ -278,7 +389,7 @@ uint8_t UnionA_as_byte_impl(struct UnionAType *);
 mol2_cursor_t UnionA_as_Word_impl(struct UnionAType *);
 struct StructAType UnionA_as_StructA_impl(struct UnionAType *);
 mol2_cursor_t UnionA_as_Bytes_impl(struct UnionAType *);
-mol2_cursor_t UnionA_as_Words_impl(struct UnionAType *);
+struct WordsType UnionA_as_Words_impl(struct UnionAType *);
 struct Table0Type UnionA_as_Table0_impl(struct UnionAType *);
 struct Table6Type UnionA_as_Table6_impl(struct UnionAType *);
 struct Table6OptType UnionA_as_Table6Opt_impl(struct UnionAType *);
@@ -286,7 +397,7 @@ struct TableAType;
 struct TableAVTable;
 struct TableAVTable *GetTableAVTable(void);
 struct TableAType make_TableA(mol2_cursor_t *cur);
-mol2_cursor_t TableA_get_f1_impl(struct TableAType *);
+struct Word2Type TableA_get_f1_impl(struct TableAType *);
 struct StructAType TableA_get_f2_impl(struct TableAType *);
 mol2_cursor_t TableA_get_f3_impl(struct TableAType *);
 struct BytesVecType TableA_get_f4_impl(struct TableAType *);
@@ -315,17 +426,17 @@ mol2_cursor_t AllInOne_get_f13_impl(struct AllInOneType *);
 mol2_cursor_t AllInOne_get_f14_impl(struct AllInOneType *);
 mol2_cursor_t AllInOne_get_f15_impl(struct AllInOneType *);
 mol2_cursor_t AllInOne_get_f16_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f17_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f18_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f19_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f20_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f21_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f22_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f23_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f24_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f25_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f26_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f27_impl(struct AllInOneType *);
+struct Word2Type AllInOne_get_f17_impl(struct AllInOneType *);
+struct Word3Type AllInOne_get_f18_impl(struct AllInOneType *);
+struct Word4Type AllInOne_get_f19_impl(struct AllInOneType *);
+struct Word5Type AllInOne_get_f20_impl(struct AllInOneType *);
+struct Word6Type AllInOne_get_f21_impl(struct AllInOneType *);
+struct Word7Type AllInOne_get_f22_impl(struct AllInOneType *);
+struct Word8Type AllInOne_get_f23_impl(struct AllInOneType *);
+struct Byte3x3Type AllInOne_get_f24_impl(struct AllInOneType *);
+struct Byte5x3Type AllInOne_get_f25_impl(struct AllInOneType *);
+struct Byte7x3Type AllInOne_get_f26_impl(struct AllInOneType *);
+struct Byte9x3Type AllInOne_get_f27_impl(struct AllInOneType *);
 struct StructAType AllInOne_get_f28_impl(struct AllInOneType *);
 struct StructBType AllInOne_get_f29_impl(struct AllInOneType *);
 struct StructCType AllInOne_get_f30_impl(struct AllInOneType *);
@@ -336,16 +447,16 @@ struct StructGType AllInOne_get_f34_impl(struct AllInOneType *);
 struct StructHType AllInOne_get_f35_impl(struct AllInOneType *);
 struct StructIType AllInOne_get_f36_impl(struct AllInOneType *);
 struct StructJType AllInOne_get_f37_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f38_impl(struct AllInOneType *);
+struct StructIx3Type AllInOne_get_f38_impl(struct AllInOneType *);
 struct StructOType AllInOne_get_f39_impl(struct AllInOneType *);
 struct StructPType AllInOne_get_f40_impl(struct AllInOneType *);
 mol2_cursor_t AllInOne_get_f41_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f42_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f43_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f44_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f45_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f46_impl(struct AllInOneType *);
-mol2_cursor_t AllInOne_get_f47_impl(struct AllInOneType *);
+struct WordsType AllInOne_get_f42_impl(struct AllInOneType *);
+struct Byte3VecType AllInOne_get_f43_impl(struct AllInOneType *);
+struct Byte7VecType AllInOne_get_f44_impl(struct AllInOneType *);
+struct StructIVecType AllInOne_get_f45_impl(struct AllInOneType *);
+struct StructJVecType AllInOne_get_f46_impl(struct AllInOneType *);
+struct StructPVecType AllInOne_get_f47_impl(struct AllInOneType *);
 struct BytesVecType AllInOne_get_f48_impl(struct AllInOneType *);
 struct WordsVecType AllInOne_get_f49_impl(struct AllInOneType *);
 struct Table0Type AllInOne_get_f50_impl(struct AllInOneType *);
@@ -374,6 +485,105 @@ struct UnionAType AllInOne_get_f72_impl(struct AllInOneType *);
 struct TableAType AllInOne_get_f73_impl(struct AllInOneType *);
 
 // ----definition-----------------
+typedef struct Word2VTable {
+  uint32_t (*len)(struct Word2Type *);
+  mol2_cursor_t (*get)(struct Word2Type *, uint32_t, bool *);
+} Word2VTable;
+typedef struct Word2Type {
+  mol2_cursor_t cur;
+  Word2VTable *t;
+} Word2Type;
+
+typedef struct Word3VTable {
+  uint32_t (*len)(struct Word3Type *);
+  mol2_cursor_t (*get)(struct Word3Type *, uint32_t, bool *);
+} Word3VTable;
+typedef struct Word3Type {
+  mol2_cursor_t cur;
+  Word3VTable *t;
+} Word3Type;
+
+typedef struct Word4VTable {
+  uint32_t (*len)(struct Word4Type *);
+  mol2_cursor_t (*get)(struct Word4Type *, uint32_t, bool *);
+} Word4VTable;
+typedef struct Word4Type {
+  mol2_cursor_t cur;
+  Word4VTable *t;
+} Word4Type;
+
+typedef struct Word5VTable {
+  uint32_t (*len)(struct Word5Type *);
+  mol2_cursor_t (*get)(struct Word5Type *, uint32_t, bool *);
+} Word5VTable;
+typedef struct Word5Type {
+  mol2_cursor_t cur;
+  Word5VTable *t;
+} Word5Type;
+
+typedef struct Word6VTable {
+  uint32_t (*len)(struct Word6Type *);
+  mol2_cursor_t (*get)(struct Word6Type *, uint32_t, bool *);
+} Word6VTable;
+typedef struct Word6Type {
+  mol2_cursor_t cur;
+  Word6VTable *t;
+} Word6Type;
+
+typedef struct Word7VTable {
+  uint32_t (*len)(struct Word7Type *);
+  mol2_cursor_t (*get)(struct Word7Type *, uint32_t, bool *);
+} Word7VTable;
+typedef struct Word7Type {
+  mol2_cursor_t cur;
+  Word7VTable *t;
+} Word7Type;
+
+typedef struct Word8VTable {
+  uint32_t (*len)(struct Word8Type *);
+  mol2_cursor_t (*get)(struct Word8Type *, uint32_t, bool *);
+} Word8VTable;
+typedef struct Word8Type {
+  mol2_cursor_t cur;
+  Word8VTable *t;
+} Word8Type;
+
+typedef struct Byte3x3VTable {
+  uint32_t (*len)(struct Byte3x3Type *);
+  mol2_cursor_t (*get)(struct Byte3x3Type *, uint32_t, bool *);
+} Byte3x3VTable;
+typedef struct Byte3x3Type {
+  mol2_cursor_t cur;
+  Byte3x3VTable *t;
+} Byte3x3Type;
+
+typedef struct Byte5x3VTable {
+  uint32_t (*len)(struct Byte5x3Type *);
+  mol2_cursor_t (*get)(struct Byte5x3Type *, uint32_t, bool *);
+} Byte5x3VTable;
+typedef struct Byte5x3Type {
+  mol2_cursor_t cur;
+  Byte5x3VTable *t;
+} Byte5x3Type;
+
+typedef struct Byte7x3VTable {
+  uint32_t (*len)(struct Byte7x3Type *);
+  mol2_cursor_t (*get)(struct Byte7x3Type *, uint32_t, bool *);
+} Byte7x3VTable;
+typedef struct Byte7x3Type {
+  mol2_cursor_t cur;
+  Byte7x3VTable *t;
+} Byte7x3Type;
+
+typedef struct Byte9x3VTable {
+  uint32_t (*len)(struct Byte9x3Type *);
+  mol2_cursor_t (*get)(struct Byte9x3Type *, uint32_t, bool *);
+} Byte9x3VTable;
+typedef struct Byte9x3Type {
+  mol2_cursor_t cur;
+  Byte9x3VTable *t;
+} Byte9x3Type;
+
 typedef struct StructAVTable {
   uint8_t (*f1)(struct StructAType *);
   uint8_t (*f2)(struct StructAType *);
@@ -443,7 +653,7 @@ typedef struct StructGVTable {
   mol2_cursor_t (*f1)(struct StructGType *);
   uint8_t (*f2)(struct StructGType *);
   mol2_cursor_t (*f3)(struct StructGType *);
-  mol2_cursor_t (*f4)(struct StructGType *);
+  struct Word2Type (*f4)(struct StructGType *);
 } StructGVTable;
 typedef struct StructGType {
   mol2_cursor_t cur;
@@ -479,8 +689,17 @@ typedef struct StructJType {
   StructJVTable *t;
 } StructJType;
 
+typedef struct StructIx3VTable {
+  uint32_t (*len)(struct StructIx3Type *);
+  struct StructIType (*get)(struct StructIx3Type *, uint32_t, bool *);
+} StructIx3VTable;
+typedef struct StructIx3Type {
+  mol2_cursor_t cur;
+  StructIx3VTable *t;
+} StructIx3Type;
+
 typedef struct StructOVTable {
-  mol2_cursor_t (*f1)(struct StructOType *);
+  struct StructIx3Type (*f1)(struct StructOType *);
   uint8_t (*f2)(struct StructOType *);
 } StructOVTable;
 typedef struct StructOType {
@@ -496,6 +715,60 @@ typedef struct StructPType {
   mol2_cursor_t cur;
   StructPVTable *t;
 } StructPType;
+
+typedef struct WordsVTable {
+  uint32_t (*len)(struct WordsType *);
+  mol2_cursor_t (*get)(struct WordsType *, uint32_t, bool *);
+} WordsVTable;
+typedef struct WordsType {
+  mol2_cursor_t cur;
+  WordsVTable *t;
+} WordsType;
+
+typedef struct Byte3VecVTable {
+  uint32_t (*len)(struct Byte3VecType *);
+  mol2_cursor_t (*get)(struct Byte3VecType *, uint32_t, bool *);
+} Byte3VecVTable;
+typedef struct Byte3VecType {
+  mol2_cursor_t cur;
+  Byte3VecVTable *t;
+} Byte3VecType;
+
+typedef struct Byte7VecVTable {
+  uint32_t (*len)(struct Byte7VecType *);
+  mol2_cursor_t (*get)(struct Byte7VecType *, uint32_t, bool *);
+} Byte7VecVTable;
+typedef struct Byte7VecType {
+  mol2_cursor_t cur;
+  Byte7VecVTable *t;
+} Byte7VecType;
+
+typedef struct StructIVecVTable {
+  uint32_t (*len)(struct StructIVecType *);
+  struct StructIType (*get)(struct StructIVecType *, uint32_t, bool *);
+} StructIVecVTable;
+typedef struct StructIVecType {
+  mol2_cursor_t cur;
+  StructIVecVTable *t;
+} StructIVecType;
+
+typedef struct StructJVecVTable {
+  uint32_t (*len)(struct StructJVecType *);
+  struct StructJType (*get)(struct StructJVecType *, uint32_t, bool *);
+} StructJVecVTable;
+typedef struct StructJVecType {
+  mol2_cursor_t cur;
+  StructJVecVTable *t;
+} StructJVecType;
+
+typedef struct StructPVecVTable {
+  uint32_t (*len)(struct StructPVecType *);
+  struct StructPType (*get)(struct StructPVecType *, uint32_t, bool *);
+} StructPVecVTable;
+typedef struct StructPVecType {
+  mol2_cursor_t cur;
+  StructPVecVTable *t;
+} StructPVecType;
 
 typedef struct BytesVecVTable {
   uint32_t (*len)(struct BytesVecType *);
@@ -532,7 +805,7 @@ typedef struct Table1Type {
 
 typedef struct Table2VTable {
   uint8_t (*f1)(struct Table2Type *);
-  mol2_cursor_t (*f2)(struct Table2Type *);
+  struct Word2Type (*f2)(struct Table2Type *);
 } Table2VTable;
 typedef struct Table2Type {
   mol2_cursor_t cur;
@@ -541,7 +814,7 @@ typedef struct Table2Type {
 
 typedef struct Table3VTable {
   uint8_t (*f1)(struct Table3Type *);
-  mol2_cursor_t (*f2)(struct Table3Type *);
+  struct Word2Type (*f2)(struct Table3Type *);
   struct StructAType (*f3)(struct Table3Type *);
 } Table3VTable;
 typedef struct Table3Type {
@@ -551,7 +824,7 @@ typedef struct Table3Type {
 
 typedef struct Table4VTable {
   uint8_t (*f1)(struct Table4Type *);
-  mol2_cursor_t (*f2)(struct Table4Type *);
+  struct Word2Type (*f2)(struct Table4Type *);
   struct StructAType (*f3)(struct Table4Type *);
   mol2_cursor_t (*f4)(struct Table4Type *);
 } Table4VTable;
@@ -562,7 +835,7 @@ typedef struct Table4Type {
 
 typedef struct Table5VTable {
   uint8_t (*f1)(struct Table5Type *);
-  mol2_cursor_t (*f2)(struct Table5Type *);
+  struct Word2Type (*f2)(struct Table5Type *);
   struct StructAType (*f3)(struct Table5Type *);
   mol2_cursor_t (*f4)(struct Table5Type *);
   struct BytesVecType (*f5)(struct Table5Type *);
@@ -574,7 +847,7 @@ typedef struct Table5Type {
 
 typedef struct Table6VTable {
   uint8_t (*f1)(struct Table6Type *);
-  mol2_cursor_t (*f2)(struct Table6Type *);
+  struct Word2Type (*f2)(struct Table6Type *);
   struct StructAType (*f3)(struct Table6Type *);
   mol2_cursor_t (*f4)(struct Table6Type *);
   struct BytesVecType (*f5)(struct Table6Type *);
@@ -638,7 +911,7 @@ typedef struct BytesOptType {
 typedef struct WordsOptVTable {
   bool (*is_none)(struct WordsOptType *);
   bool (*is_some)(struct WordsOptType *);
-  mol2_cursor_t (*unwrap)(struct WordsOptType *);
+  struct WordsType (*unwrap)(struct WordsOptType *);
 } WordsOptVTable;
 typedef struct WordsOptType {
   mol2_cursor_t cur;
@@ -737,7 +1010,7 @@ typedef struct UnionAVTable {
   mol2_cursor_t (*as_Word)(struct UnionAType *);
   struct StructAType (*as_StructA)(struct UnionAType *);
   mol2_cursor_t (*as_Bytes)(struct UnionAType *);
-  mol2_cursor_t (*as_Words)(struct UnionAType *);
+  struct WordsType (*as_Words)(struct UnionAType *);
   struct Table0Type (*as_Table0)(struct UnionAType *);
   struct Table6Type (*as_Table6)(struct UnionAType *);
   struct Table6OptType (*as_Table6Opt)(struct UnionAType *);
@@ -748,7 +1021,7 @@ typedef struct UnionAType {
 } UnionAType;
 
 typedef struct TableAVTable {
-  mol2_cursor_t (*f1)(struct TableAType *);
+  struct Word2Type (*f1)(struct TableAType *);
   struct StructAType (*f2)(struct TableAType *);
   mol2_cursor_t (*f3)(struct TableAType *);
   struct BytesVecType (*f4)(struct TableAType *);
@@ -780,17 +1053,17 @@ typedef struct AllInOneVTable {
   mol2_cursor_t (*f14)(struct AllInOneType *);
   mol2_cursor_t (*f15)(struct AllInOneType *);
   mol2_cursor_t (*f16)(struct AllInOneType *);
-  mol2_cursor_t (*f17)(struct AllInOneType *);
-  mol2_cursor_t (*f18)(struct AllInOneType *);
-  mol2_cursor_t (*f19)(struct AllInOneType *);
-  mol2_cursor_t (*f20)(struct AllInOneType *);
-  mol2_cursor_t (*f21)(struct AllInOneType *);
-  mol2_cursor_t (*f22)(struct AllInOneType *);
-  mol2_cursor_t (*f23)(struct AllInOneType *);
-  mol2_cursor_t (*f24)(struct AllInOneType *);
-  mol2_cursor_t (*f25)(struct AllInOneType *);
-  mol2_cursor_t (*f26)(struct AllInOneType *);
-  mol2_cursor_t (*f27)(struct AllInOneType *);
+  struct Word2Type (*f17)(struct AllInOneType *);
+  struct Word3Type (*f18)(struct AllInOneType *);
+  struct Word4Type (*f19)(struct AllInOneType *);
+  struct Word5Type (*f20)(struct AllInOneType *);
+  struct Word6Type (*f21)(struct AllInOneType *);
+  struct Word7Type (*f22)(struct AllInOneType *);
+  struct Word8Type (*f23)(struct AllInOneType *);
+  struct Byte3x3Type (*f24)(struct AllInOneType *);
+  struct Byte5x3Type (*f25)(struct AllInOneType *);
+  struct Byte7x3Type (*f26)(struct AllInOneType *);
+  struct Byte9x3Type (*f27)(struct AllInOneType *);
   struct StructAType (*f28)(struct AllInOneType *);
   struct StructBType (*f29)(struct AllInOneType *);
   struct StructCType (*f30)(struct AllInOneType *);
@@ -801,16 +1074,16 @@ typedef struct AllInOneVTable {
   struct StructHType (*f35)(struct AllInOneType *);
   struct StructIType (*f36)(struct AllInOneType *);
   struct StructJType (*f37)(struct AllInOneType *);
-  mol2_cursor_t (*f38)(struct AllInOneType *);
+  struct StructIx3Type (*f38)(struct AllInOneType *);
   struct StructOType (*f39)(struct AllInOneType *);
   struct StructPType (*f40)(struct AllInOneType *);
   mol2_cursor_t (*f41)(struct AllInOneType *);
-  mol2_cursor_t (*f42)(struct AllInOneType *);
-  mol2_cursor_t (*f43)(struct AllInOneType *);
-  mol2_cursor_t (*f44)(struct AllInOneType *);
-  mol2_cursor_t (*f45)(struct AllInOneType *);
-  mol2_cursor_t (*f46)(struct AllInOneType *);
-  mol2_cursor_t (*f47)(struct AllInOneType *);
+  struct WordsType (*f42)(struct AllInOneType *);
+  struct Byte3VecType (*f43)(struct AllInOneType *);
+  struct Byte7VecType (*f44)(struct AllInOneType *);
+  struct StructIVecType (*f45)(struct AllInOneType *);
+  struct StructJVecType (*f46)(struct AllInOneType *);
+  struct StructPVecType (*f47)(struct AllInOneType *);
   struct BytesVecType (*f48)(struct AllInOneType *);
   struct WordsVecType (*f49)(struct AllInOneType *);
   struct Table0Type (*f50)(struct AllInOneType *);
@@ -846,6 +1119,219 @@ typedef struct AllInOneType {
 #ifndef MOLECULEC_C2_DECLARATION_ONLY
 
 // ----implementation-------------
+struct Word2Type make_Word2(mol2_cursor_t *cur) {
+  Word2Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord2VTable();
+  return ret;
+}
+struct Word2VTable *GetWord2VTable(void) {
+  static Word2VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word2_len_impl;
+  s_vtable.get = Word2_get_impl;
+  return &s_vtable;
+}
+uint32_t Word2_len_impl(Word2Type *this) { return 2; }
+mol2_cursor_t Word2_get_impl(Word2Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Word3Type make_Word3(mol2_cursor_t *cur) {
+  Word3Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord3VTable();
+  return ret;
+}
+struct Word3VTable *GetWord3VTable(void) {
+  static Word3VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word3_len_impl;
+  s_vtable.get = Word3_get_impl;
+  return &s_vtable;
+}
+uint32_t Word3_len_impl(Word3Type *this) { return 3; }
+mol2_cursor_t Word3_get_impl(Word3Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Word4Type make_Word4(mol2_cursor_t *cur) {
+  Word4Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord4VTable();
+  return ret;
+}
+struct Word4VTable *GetWord4VTable(void) {
+  static Word4VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word4_len_impl;
+  s_vtable.get = Word4_get_impl;
+  return &s_vtable;
+}
+uint32_t Word4_len_impl(Word4Type *this) { return 4; }
+mol2_cursor_t Word4_get_impl(Word4Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Word5Type make_Word5(mol2_cursor_t *cur) {
+  Word5Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord5VTable();
+  return ret;
+}
+struct Word5VTable *GetWord5VTable(void) {
+  static Word5VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word5_len_impl;
+  s_vtable.get = Word5_get_impl;
+  return &s_vtable;
+}
+uint32_t Word5_len_impl(Word5Type *this) { return 5; }
+mol2_cursor_t Word5_get_impl(Word5Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Word6Type make_Word6(mol2_cursor_t *cur) {
+  Word6Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord6VTable();
+  return ret;
+}
+struct Word6VTable *GetWord6VTable(void) {
+  static Word6VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word6_len_impl;
+  s_vtable.get = Word6_get_impl;
+  return &s_vtable;
+}
+uint32_t Word6_len_impl(Word6Type *this) { return 6; }
+mol2_cursor_t Word6_get_impl(Word6Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Word7Type make_Word7(mol2_cursor_t *cur) {
+  Word7Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord7VTable();
+  return ret;
+}
+struct Word7VTable *GetWord7VTable(void) {
+  static Word7VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word7_len_impl;
+  s_vtable.get = Word7_get_impl;
+  return &s_vtable;
+}
+uint32_t Word7_len_impl(Word7Type *this) { return 7; }
+mol2_cursor_t Word7_get_impl(Word7Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Word8Type make_Word8(mol2_cursor_t *cur) {
+  Word8Type ret;
+  ret.cur = *cur;
+  ret.t = GetWord8VTable();
+  return ret;
+}
+struct Word8VTable *GetWord8VTable(void) {
+  static Word8VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Word8_len_impl;
+  s_vtable.get = Word8_get_impl;
+  return &s_vtable;
+}
+uint32_t Word8_len_impl(Word8Type *this) { return 8; }
+mol2_cursor_t Word8_get_impl(Word8Type *this, uint32_t index, bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 2 * index, 2);
+}
+struct Byte3x3Type make_Byte3x3(mol2_cursor_t *cur) {
+  Byte3x3Type ret;
+  ret.cur = *cur;
+  ret.t = GetByte3x3VTable();
+  return ret;
+}
+struct Byte3x3VTable *GetByte3x3VTable(void) {
+  static Byte3x3VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte3x3_len_impl;
+  s_vtable.get = Byte3x3_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte3x3_len_impl(Byte3x3Type *this) { return 3; }
+mol2_cursor_t Byte3x3_get_impl(Byte3x3Type *this, uint32_t index,
+                               bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 3 * index, 3);
+}
+struct Byte5x3Type make_Byte5x3(mol2_cursor_t *cur) {
+  Byte5x3Type ret;
+  ret.cur = *cur;
+  ret.t = GetByte5x3VTable();
+  return ret;
+}
+struct Byte5x3VTable *GetByte5x3VTable(void) {
+  static Byte5x3VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte5x3_len_impl;
+  s_vtable.get = Byte5x3_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte5x3_len_impl(Byte5x3Type *this) { return 3; }
+mol2_cursor_t Byte5x3_get_impl(Byte5x3Type *this, uint32_t index,
+                               bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 5 * index, 5);
+}
+struct Byte7x3Type make_Byte7x3(mol2_cursor_t *cur) {
+  Byte7x3Type ret;
+  ret.cur = *cur;
+  ret.t = GetByte7x3VTable();
+  return ret;
+}
+struct Byte7x3VTable *GetByte7x3VTable(void) {
+  static Byte7x3VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte7x3_len_impl;
+  s_vtable.get = Byte7x3_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte7x3_len_impl(Byte7x3Type *this) { return 3; }
+mol2_cursor_t Byte7x3_get_impl(Byte7x3Type *this, uint32_t index,
+                               bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 7 * index, 7);
+}
+struct Byte9x3Type make_Byte9x3(mol2_cursor_t *cur) {
+  Byte9x3Type ret;
+  ret.cur = *cur;
+  ret.t = GetByte9x3VTable();
+  return ret;
+}
+struct Byte9x3VTable *GetByte9x3VTable(void) {
+  static Byte9x3VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte9x3_len_impl;
+  s_vtable.get = Byte9x3_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte9x3_len_impl(Byte9x3Type *this) { return 3; }
+mol2_cursor_t Byte9x3_get_impl(Byte9x3Type *this, uint32_t index,
+                               bool *existing) {
+  *existing = true;
+  return mol2_slice_by_offset(&this->cur, 9 * index, 9);
+}
 struct StructAType make_StructA(mol2_cursor_t *cur) {
   StructAType ret;
   ret.cur = *cur;
@@ -1113,10 +1599,11 @@ mol2_cursor_t StructG_get_f3_impl(StructGType *this) {
   ret = convert_to_array(&ret2);
   return ret;
 }
-mol2_cursor_t StructG_get_f4_impl(StructGType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_slice_by_offset(&this->cur, 6, 4);
-  ret = convert_to_array(&ret2);
+Word2Type StructG_get_f4_impl(StructGType *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_slice_by_offset(&this->cur, 6, 4);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 struct StructHType make_StructH(mol2_cursor_t *cur) {
@@ -1211,6 +1698,29 @@ uint8_t StructJ_get_f2_impl(StructJType *this) {
   ret = convert_to_Uint8(&ret2);
   return ret;
 }
+struct StructIx3Type make_StructIx3(mol2_cursor_t *cur) {
+  StructIx3Type ret;
+  ret.cur = *cur;
+  ret.t = GetStructIx3VTable();
+  return ret;
+}
+struct StructIx3VTable *GetStructIx3VTable(void) {
+  static StructIx3VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = StructIx3_len_impl;
+  s_vtable.get = StructIx3_get_impl;
+  return &s_vtable;
+}
+uint32_t StructIx3_len_impl(StructIx3Type *this) { return 3; }
+StructIType StructIx3_get_impl(StructIx3Type *this, uint32_t index,
+                               bool *existing) {
+  StructIType ret = {0};
+  ret.cur = mol2_slice_by_offset(&this->cur, 4 * index, 4);
+  ret.t = GetStructIVTable();
+  *existing = true;
+  return ret;
+}
 struct StructOType make_StructO(mol2_cursor_t *cur) {
   StructOType ret;
   ret.cur = *cur;
@@ -1225,10 +1735,11 @@ struct StructOVTable *GetStructOVTable(void) {
   s_vtable.f2 = StructO_get_f2_impl;
   return &s_vtable;
 }
-mol2_cursor_t StructO_get_f1_impl(StructOType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_slice_by_offset(&this->cur, 0, 12);
-  ret = convert_to_array(&ret2);
+StructIx3Type StructO_get_f1_impl(StructOType *this) {
+  StructIx3Type ret;
+  mol2_cursor_t cur = mol2_slice_by_offset(&this->cur, 0, 12);
+  ret.cur = cur;
+  ret.t = GetStructIx3VTable();
   return ret;
 }
 uint8_t StructO_get_f2_impl(StructOType *this) {
@@ -1262,6 +1773,188 @@ uint8_t StructP_get_f2_impl(StructPType *this) {
   uint8_t ret;
   mol2_cursor_t ret2 = mol2_slice_by_offset(&this->cur, 7, 1);
   ret = convert_to_Uint8(&ret2);
+  return ret;
+}
+struct WordsType make_Words(mol2_cursor_t *cur) {
+  WordsType ret;
+  ret.cur = *cur;
+  ret.t = GetWordsVTable();
+  return ret;
+}
+struct WordsVTable *GetWordsVTable(void) {
+  static WordsVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Words_len_impl;
+  s_vtable.get = Words_get_impl;
+  return &s_vtable;
+}
+uint32_t Words_len_impl(WordsType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+mol2_cursor_t Words_get_impl(WordsType *this, uint32_t index, bool *existing) {
+  mol2_cursor_t ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 2, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_array(&res.cur);
+  return ret;
+}
+struct Byte3VecType make_Byte3Vec(mol2_cursor_t *cur) {
+  Byte3VecType ret;
+  ret.cur = *cur;
+  ret.t = GetByte3VecVTable();
+  return ret;
+}
+struct Byte3VecVTable *GetByte3VecVTable(void) {
+  static Byte3VecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte3Vec_len_impl;
+  s_vtable.get = Byte3Vec_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte3Vec_len_impl(Byte3VecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+mol2_cursor_t Byte3Vec_get_impl(Byte3VecType *this, uint32_t index,
+                                bool *existing) {
+  mol2_cursor_t ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 3, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_array(&res.cur);
+  return ret;
+}
+struct Byte7VecType make_Byte7Vec(mol2_cursor_t *cur) {
+  Byte7VecType ret;
+  ret.cur = *cur;
+  ret.t = GetByte7VecVTable();
+  return ret;
+}
+struct Byte7VecVTable *GetByte7VecVTable(void) {
+  static Byte7VecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte7Vec_len_impl;
+  s_vtable.get = Byte7Vec_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte7Vec_len_impl(Byte7VecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+mol2_cursor_t Byte7Vec_get_impl(Byte7VecType *this, uint32_t index,
+                                bool *existing) {
+  mol2_cursor_t ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 7, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_array(&res.cur);
+  return ret;
+}
+struct StructIVecType make_StructIVec(mol2_cursor_t *cur) {
+  StructIVecType ret;
+  ret.cur = *cur;
+  ret.t = GetStructIVecVTable();
+  return ret;
+}
+struct StructIVecVTable *GetStructIVecVTable(void) {
+  static StructIVecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = StructIVec_len_impl;
+  s_vtable.get = StructIVec_get_impl;
+  return &s_vtable;
+}
+uint32_t StructIVec_len_impl(StructIVecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+StructIType StructIVec_get_impl(StructIVecType *this, uint32_t index,
+                                bool *existing) {
+  StructIType ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 4, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret.cur = res.cur;
+  ret.t = GetStructIVTable();
+  return ret;
+}
+struct StructJVecType make_StructJVec(mol2_cursor_t *cur) {
+  StructJVecType ret;
+  ret.cur = *cur;
+  ret.t = GetStructJVecVTable();
+  return ret;
+}
+struct StructJVecVTable *GetStructJVecVTable(void) {
+  static StructJVecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = StructJVec_len_impl;
+  s_vtable.get = StructJVec_get_impl;
+  return &s_vtable;
+}
+uint32_t StructJVec_len_impl(StructJVecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+StructJType StructJVec_get_impl(StructJVecType *this, uint32_t index,
+                                bool *existing) {
+  StructJType ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 7, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret.cur = res.cur;
+  ret.t = GetStructJVTable();
+  return ret;
+}
+struct StructPVecType make_StructPVec(mol2_cursor_t *cur) {
+  StructPVecType ret;
+  ret.cur = *cur;
+  ret.t = GetStructPVecVTable();
+  return ret;
+}
+struct StructPVecVTable *GetStructPVecVTable(void) {
+  static StructPVecVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = StructPVec_len_impl;
+  s_vtable.get = StructPVec_get_impl;
+  return &s_vtable;
+}
+uint32_t StructPVec_len_impl(StructPVecType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+StructPType StructPVec_get_impl(StructPVecType *this, uint32_t index,
+                                bool *existing) {
+  StructPType ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 8, index);
+  if (res.errno != 0) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret.cur = res.cur;
+  ret.t = GetStructPVTable();
   return ret;
 }
 struct BytesVecType make_BytesVec(mol2_cursor_t *cur) {
@@ -1375,10 +2068,11 @@ uint8_t Table2_get_f1_impl(Table2Type *this) {
   ret = convert_to_Uint8(&ret2);
   return ret;
 }
-mol2_cursor_t Table2_get_f2_impl(Table2Type *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_array(&ret2);
+Word2Type Table2_get_f2_impl(Table2Type *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 struct Table3Type make_Table3(mol2_cursor_t *cur) {
@@ -1402,10 +2096,11 @@ uint8_t Table3_get_f1_impl(Table3Type *this) {
   ret = convert_to_Uint8(&ret2);
   return ret;
 }
-mol2_cursor_t Table3_get_f2_impl(Table3Type *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_array(&ret2);
+Word2Type Table3_get_f2_impl(Table3Type *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 StructAType Table3_get_f3_impl(Table3Type *this) {
@@ -1437,10 +2132,11 @@ uint8_t Table4_get_f1_impl(Table4Type *this) {
   ret = convert_to_Uint8(&ret2);
   return ret;
 }
-mol2_cursor_t Table4_get_f2_impl(Table4Type *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_array(&ret2);
+Word2Type Table4_get_f2_impl(Table4Type *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 StructAType Table4_get_f3_impl(Table4Type *this) {
@@ -1479,10 +2175,11 @@ uint8_t Table5_get_f1_impl(Table5Type *this) {
   ret = convert_to_Uint8(&ret2);
   return ret;
 }
-mol2_cursor_t Table5_get_f2_impl(Table5Type *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_array(&ret2);
+Word2Type Table5_get_f2_impl(Table5Type *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 StructAType Table5_get_f3_impl(Table5Type *this) {
@@ -1529,10 +2226,11 @@ uint8_t Table6_get_f1_impl(Table6Type *this) {
   ret = convert_to_Uint8(&ret2);
   return ret;
 }
-mol2_cursor_t Table6_get_f2_impl(Table6Type *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 1);
-  ret = convert_to_array(&ret2);
+Word2Type Table6_get_f2_impl(Table6Type *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 1);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 StructAType Table6_get_f3_impl(Table6Type *this) {
@@ -1717,9 +2415,11 @@ bool WordsOpt_is_none_impl(WordsOptType *this) {
 bool WordsOpt_is_some_impl(WordsOptType *this) {
   return !mol2_option_is_none(&this->cur);
 }
-mol2_cursor_t WordsOpt_unwrap_impl(WordsOptType *this) {
-  mol2_cursor_t ret;
-  ret = convert_to_rawbytes(&this->cur);
+WordsType WordsOpt_unwrap_impl(WordsOptType *this) {
+  WordsType ret;
+  mol2_cursor_t cur = this->cur;
+  ret.cur = cur;
+  ret.t = GetWordsVTable();
   return ret;
 }
 struct BytesVecOptType make_BytesVecOpt(mol2_cursor_t *cur) {
@@ -2035,10 +2735,11 @@ mol2_cursor_t UnionA_as_Bytes_impl(UnionAType *this) {
   ret = convert_to_rawbytes(&u.cursor);
   return ret;
 }
-mol2_cursor_t UnionA_as_Words_impl(UnionAType *this) {
-  mol2_cursor_t ret;
+WordsType UnionA_as_Words_impl(UnionAType *this) {
+  WordsType ret;
   mol2_union_t u = mol2_union_unpack(&this->cur);
-  ret = convert_to_rawbytes(&u.cursor);
+  ret.cur = u.cursor;
+  ret.t = GetWordsVTable();
   return ret;
 }
 Table0Type UnionA_as_Table0_impl(UnionAType *this) {
@@ -2082,10 +2783,11 @@ struct TableAVTable *GetTableAVTable(void) {
   s_vtable.f8 = TableA_get_f8_impl;
   return &s_vtable;
 }
-mol2_cursor_t TableA_get_f1_impl(TableAType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 0);
-  ret = convert_to_array(&ret2);
+Word2Type TableA_get_f1_impl(TableAType *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 0);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
 StructAType TableA_get_f2_impl(TableAType *this) {
@@ -2323,70 +3025,81 @@ mol2_cursor_t AllInOne_get_f16_impl(AllInOneType *this) {
   ret = convert_to_array(&ret2);
   return ret;
 }
-mol2_cursor_t AllInOne_get_f17_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 17);
-  ret = convert_to_array(&ret2);
+Word2Type AllInOne_get_f17_impl(AllInOneType *this) {
+  Word2Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 17);
+  ret.cur = cur;
+  ret.t = GetWord2VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f18_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 18);
-  ret = convert_to_array(&ret2);
+Word3Type AllInOne_get_f18_impl(AllInOneType *this) {
+  Word3Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 18);
+  ret.cur = cur;
+  ret.t = GetWord3VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f19_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 19);
-  ret = convert_to_array(&ret2);
+Word4Type AllInOne_get_f19_impl(AllInOneType *this) {
+  Word4Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 19);
+  ret.cur = cur;
+  ret.t = GetWord4VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f20_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 20);
-  ret = convert_to_array(&ret2);
+Word5Type AllInOne_get_f20_impl(AllInOneType *this) {
+  Word5Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 20);
+  ret.cur = cur;
+  ret.t = GetWord5VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f21_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 21);
-  ret = convert_to_array(&ret2);
+Word6Type AllInOne_get_f21_impl(AllInOneType *this) {
+  Word6Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 21);
+  ret.cur = cur;
+  ret.t = GetWord6VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f22_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 22);
-  ret = convert_to_array(&ret2);
+Word7Type AllInOne_get_f22_impl(AllInOneType *this) {
+  Word7Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 22);
+  ret.cur = cur;
+  ret.t = GetWord7VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f23_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 23);
-  ret = convert_to_array(&ret2);
+Word8Type AllInOne_get_f23_impl(AllInOneType *this) {
+  Word8Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 23);
+  ret.cur = cur;
+  ret.t = GetWord8VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f24_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 24);
-  ret = convert_to_array(&ret2);
+Byte3x3Type AllInOne_get_f24_impl(AllInOneType *this) {
+  Byte3x3Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 24);
+  ret.cur = cur;
+  ret.t = GetByte3x3VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f25_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 25);
-  ret = convert_to_array(&ret2);
+Byte5x3Type AllInOne_get_f25_impl(AllInOneType *this) {
+  Byte5x3Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 25);
+  ret.cur = cur;
+  ret.t = GetByte5x3VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f26_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 26);
-  ret = convert_to_array(&ret2);
+Byte7x3Type AllInOne_get_f26_impl(AllInOneType *this) {
+  Byte7x3Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 26);
+  ret.cur = cur;
+  ret.t = GetByte7x3VTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f27_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 27);
-  ret = convert_to_array(&ret2);
+Byte9x3Type AllInOne_get_f27_impl(AllInOneType *this) {
+  Byte9x3Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 27);
+  ret.cur = cur;
+  ret.t = GetByte9x3VTable();
   return ret;
 }
 StructAType AllInOne_get_f28_impl(AllInOneType *this) {
@@ -2459,10 +3172,11 @@ StructJType AllInOne_get_f37_impl(AllInOneType *this) {
   ret.t = GetStructJVTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f38_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t ret2 = mol2_table_slice_by_index(&this->cur, 38);
-  ret = convert_to_array(&ret2);
+StructIx3Type AllInOne_get_f38_impl(AllInOneType *this) {
+  StructIx3Type ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 38);
+  ret.cur = cur;
+  ret.t = GetStructIx3VTable();
   return ret;
 }
 StructOType AllInOne_get_f39_impl(AllInOneType *this) {
@@ -2485,40 +3199,46 @@ mol2_cursor_t AllInOne_get_f41_impl(AllInOneType *this) {
   ret = convert_to_rawbytes(&re2);
   return ret;
 }
-mol2_cursor_t AllInOne_get_f42_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 42);
-  ret = convert_to_rawbytes(&re2);
+WordsType AllInOne_get_f42_impl(AllInOneType *this) {
+  WordsType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 42);
+  ret.cur = cur;
+  ret.t = GetWordsVTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f43_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 43);
-  ret = convert_to_rawbytes(&re2);
+Byte3VecType AllInOne_get_f43_impl(AllInOneType *this) {
+  Byte3VecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 43);
+  ret.cur = cur;
+  ret.t = GetByte3VecVTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f44_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 44);
-  ret = convert_to_rawbytes(&re2);
+Byte7VecType AllInOne_get_f44_impl(AllInOneType *this) {
+  Byte7VecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 44);
+  ret.cur = cur;
+  ret.t = GetByte7VecVTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f45_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 45);
-  ret = convert_to_rawbytes(&re2);
+StructIVecType AllInOne_get_f45_impl(AllInOneType *this) {
+  StructIVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 45);
+  ret.cur = cur;
+  ret.t = GetStructIVecVTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f46_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 46);
-  ret = convert_to_rawbytes(&re2);
+StructJVecType AllInOne_get_f46_impl(AllInOneType *this) {
+  StructJVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 46);
+  ret.cur = cur;
+  ret.t = GetStructJVecVTable();
   return ret;
 }
-mol2_cursor_t AllInOne_get_f47_impl(AllInOneType *this) {
-  mol2_cursor_t ret;
-  mol2_cursor_t re2 = mol2_table_slice_by_index(&this->cur, 47);
-  ret = convert_to_rawbytes(&re2);
+StructPVecType AllInOne_get_f47_impl(AllInOneType *this) {
+  StructPVecType ret;
+  mol2_cursor_t cur = mol2_table_slice_by_index(&this->cur, 47);
+  ret.cur = cur;
+  ret.t = GetStructPVecVTable();
   return ret;
 }
 BytesVecType AllInOne_get_f48_impl(AllInOneType *this) {
