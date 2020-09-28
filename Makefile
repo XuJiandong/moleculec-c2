@@ -26,6 +26,9 @@ mol/blockchain.json: mol/blockchain.mol
 tests/blockchain/blockchain-api.h: mol/blockchain.mol
 	moleculec --language c --schema-file mol/blockchain.mol > tests/blockchain/blockchain-api.h
 
+fmt:
+	clang-format -i -style=Google $(wildcard include/*.h)
+	git diff --exit-code $(wildcard include/*.h)
 
 clean:
 	rm -f tests/sample/sample-api2.h

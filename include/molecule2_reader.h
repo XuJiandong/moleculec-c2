@@ -7,6 +7,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #define MOLECULE2_API_VERSION 5000
 #define MOLECULEC2_VERSION_MIN 5000
@@ -28,7 +29,11 @@ extern "C" {
 //
 // referenced API or macros
 //
-#define ASSERT assert
+#define ASSERT(s) ((void)0)
+
+typedef uint32_t mol2_num_t;  // Item Id
+typedef uint8_t mol2_errno;   // Error Number
+#define mol2_NUM_T_SIZE 4
 
 // predefined type
 // If the types defined in schema is fundamental type:
@@ -54,6 +59,19 @@ typedef int16_t Int16;    // [byte; 2]
 typedef uint8_t Uint8;    // [byte; 1]
 typedef int8_t Int8;      // [byte; 1]
 
+/* Error Numbers */
+
+#define mol2_OK 0x00
+#define mol2_ERR 0xff
+
+#define mol2_ERR_TOTAL_SIZE 0x01
+#define mol2_ERR_HEADER 0x02
+#define mol2_ERR_OFFSET 0x03
+#define mol2_ERR_UNKNOWN_ITEM 0x04
+#define mol2_ERR_INDEX_OUT_OF_BOUNDS 0x05
+#define mol2_ERR_FIELD_COUNT 0x06
+#define mol2_ERR_DATA 0x07
+
 // converting function
 // format: convert_to_${Type}
 #define SWAP(a, b, t) \
@@ -69,17 +87,7 @@ typedef int8_t Int8;      // [byte; 1]
    }){.i = 1}         \
        .c)
 
-#define MIN(a, b) ((a > b) ? (b) : (a))
-
-void change_endian(uint8_t *ptr, int size) {
-  if (is_le2()) return;
-  ASSERT(size % 2 == 0);
-  uint8_t t = 0;
-  for (int i = 0; i < size / 2; i++) {
-    SWAP(ptr[i], ptr[size - 1 - i], t);
-  }
-}
-
+void change_endian(uint8_t *ptr, int size);
 /**
  * read from a data source, with offset, up to "len" bytes into ptr.
  * the memory size of "ptr" is "len".
@@ -111,11 +119,7 @@ typedef struct mol2_cursor_t {
 
 // a sample source over memory
 uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
-                            uint32_t offset) {
-  uint8_t *start_mem = (uint8_t *)arg;
-  memcpy(ptr, start_mem + offset, len);
-  return len;
-}
+                            uint32_t offset);
 
 /**
  * mol2_read_at reads up to MIN(cur->size, buff_len) bytes from data source
@@ -123,24 +127,7 @@ uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
  * MIN(cur->size, buff_len)).
  */
 uint32_t mol2_read_at(const mol2_cursor_t *cur, uint8_t *buff,
-                      uint32_t buff_len) {
-  uint32_t read_len = MIN(cur->size, buff_len);
-  return cur->read(cur->arg, buff, read_len, cur->offset);
-}
-
-/*
- * Definitions of types and simple utilities.
- */
-
-/* Core types */
-
-typedef uint32_t mol2_num_t;  // Item Id
-
-typedef uint8_t mol2_errno;  // Error Number
-
-#define Mol2Num UINT32_C
-
-#define mol2_NUM_T_SIZE 4
+                      uint32_t buff_len);
 
 // Bytes segment.
 typedef struct {
@@ -160,51 +147,52 @@ typedef struct {
   mol2_cursor_t cur;  // Cursor
 } mol2_cursor_res_t;
 
-/* Error Numbers */
+mol2_num_t mol2_unpack_number(const mol2_cursor_t *cursor);
 
-#define mol2_OK 0x00
-#define mol2_ERR 0xff
+mol2_errno mol2_verify_fixed_size(const mol2_cursor_t *input,
+                                  mol2_num_t total_size);
 
-#define mol2_ERR_TOTAL_SIZE 0x01
-#define mol2_ERR_HEADER 0x02
-#define mol2_ERR_OFFSET 0x03
-#define mol2_ERR_UNKNOWN_ITEM 0x04
-#define mol2_ERR_INDEX_OUT_OF_BOUNDS 0x05
-#define mol2_ERR_FIELD_COUNT 0x06
-#define mol2_ERR_DATA 0x07
+mol2_errno mol2_fixvec_verify(const mol2_cursor_t *input, mol2_num_t item_size);
 
-/* Utilities. */
+bool mol2_option_is_none(const mol2_cursor_t *input);
+mol2_union_t mol2_union_unpack(const mol2_cursor_t *input);
+mol2_num_t mol2_fixvec_length(const mol2_cursor_t *input);
+mol2_num_t mol2_dynvec_length(const mol2_cursor_t *input);
+mol2_num_t mol2_table_actual_field_count(const mol2_cursor_t *input);
+bool mol2_table_has_extra_fields(const mol2_cursor_t *input,
+                                 mol2_num_t field_count);
+mol2_cursor_t mol2_slice_by_offset(const mol2_cursor_t *input,
+                                   mol2_num_t offset, mol2_num_t size);
 
-mol2_num_t mol2_unpack_number(const mol2_cursor_t *cursor) {
-  uint8_t src[4];
-  uint32_t len = mol2_read_at(cursor, src, 4);
-  ASSERT(len == 4);
-  if (is_le2()) {
-    return *(const uint32_t *)src;
-  } else {
-    uint32_t output = 0;
-    uint8_t *dst = (uint8_t *)&output;
-    dst[3] = src[0];
-    dst[2] = src[1];
-    dst[1] = src[2];
-    dst[0] = src[3];
-    return output;
-  }
-}
+mol2_cursor_res_t mol2_fixvec_slice_by_index(const mol2_cursor_t *input,
+                                             mol2_num_t item_size,
+                                             mol2_num_t item_index);
 
-/*
- * Core functions.
- */
+mol2_cursor_res_t mol2_dynvec_slice_by_index(const mol2_cursor_t *input,
+                                             mol2_num_t item_index);
 
-/* Verify Functions. */
+mol2_cursor_t mol2_table_slice_by_index(const mol2_cursor_t *input,
+                                        mol2_num_t field_index);
 
-// Verify Array / Struct.
+mol2_cursor_t mol2_fixvec_slice_raw_bytes(const mol2_cursor_t *input);
+Uint64 convert_to_Uint64(mol2_cursor_t *cur);
+Int64 convert_to_Int64(mol2_cursor_t *cur);
+Uint32 convert_to_Uint32(mol2_cursor_t *cur);
+Int32 convert_to_Int32(mol2_cursor_t *cur);
+Uint16 convert_to_Uint16(mol2_cursor_t *cur);
+Int16 convert_to_Int16(mol2_cursor_t *cur);
+Uint8 convert_to_Uint8(mol2_cursor_t *cur);
+Int8 convert_to_Int8(mol2_cursor_t *cur);
+mol2_cursor_t convert_to_array(mol2_cursor_t *cur);
+mol2_cursor_t convert_to_rawbytes(mol2_cursor_t *cur);
+
+#ifndef MOLECULEC_C2_DECLARATION_ONLY
+
 mol2_errno mol2_verify_fixed_size(const mol2_cursor_t *input,
                                   mol2_num_t total_size) {
   return input->size == total_size ? mol2_OK : mol2_ERR_TOTAL_SIZE;
 }
 
-// Verify FixVec.
 mol2_errno mol2_fixvec_verify(const mol2_cursor_t *input,
                               mol2_num_t item_size) {
   if (input->size < mol2_NUM_T_SIZE) {
@@ -218,22 +206,10 @@ mol2_errno mol2_fixvec_verify(const mol2_cursor_t *input,
   return input->size == total_size ? mol2_OK : mol2_ERR_TOTAL_SIZE;
 }
 
-/* Getters.
- *
- * ### Notice
- *
- * The input of getters should be checked.
- *
- * These getters will raise segmentation fault if the input is illegal or
- * return an incorrect result.
- */
-
-// Check if an Option is None.
 bool mol2_option_is_none(const mol2_cursor_t *input) {
   return input->size == 0;
 }
 
-// Get the inner of a Union.
 mol2_union_t mol2_union_unpack(const mol2_cursor_t *input) {
   mol2_union_t ret;
   ret.item_id = mol2_unpack_number(input);
@@ -243,12 +219,10 @@ mol2_union_t mol2_union_unpack(const mol2_cursor_t *input) {
   return ret;
 }
 
-// Get the length of a FixVec.
 mol2_num_t mol2_fixvec_length(const mol2_cursor_t *input) {
   return mol2_unpack_number(input);
 }
 
-// Get the length of a DynVec.
 mol2_num_t mol2_dynvec_length(const mol2_cursor_t *input) {
   if (input->size == mol2_NUM_T_SIZE) {
     return 0;
@@ -259,18 +233,15 @@ mol2_num_t mol2_dynvec_length(const mol2_cursor_t *input) {
   }
 }
 
-// Get the actual field count of a Table.
 mol2_num_t mol2_table_actual_field_count(const mol2_cursor_t *input) {
   return mol2_dynvec_length(input);
 }
 
-// If a Table has extra fields.
 bool mol2_table_has_extra_fields(const mol2_cursor_t *input,
                                  mol2_num_t field_count) {
   return mol2_table_actual_field_count(input) > field_count;
 }
 
-// Slice a segment for Array / Struct by offset.
 mol2_cursor_t mol2_slice_by_offset(const mol2_cursor_t *input,
                                    mol2_num_t offset, mol2_num_t size) {
   mol2_cursor_t cur = *input;
@@ -280,7 +251,6 @@ mol2_cursor_t mol2_slice_by_offset(const mol2_cursor_t *input,
   return cur;
 }
 
-// Slice a segment for FixVec by index.
 mol2_cursor_res_t mol2_fixvec_slice_by_index(const mol2_cursor_t *input,
                                              mol2_num_t item_size,
                                              mol2_num_t item_index) {
@@ -297,7 +267,6 @@ mol2_cursor_res_t mol2_fixvec_slice_by_index(const mol2_cursor_t *input,
   return res;
 }
 
-// Slice a segment for DynVec by index.
 mol2_cursor_res_t mol2_dynvec_slice_by_index(const mol2_cursor_t *input,
                                              mol2_num_t item_index) {
   mol2_cursor_res_t res;
@@ -331,7 +300,6 @@ mol2_cursor_res_t mol2_dynvec_slice_by_index(const mol2_cursor_t *input,
   return res;
 }
 
-// Slice a segment for Table by index.
 mol2_cursor_t mol2_table_slice_by_index(const mol2_cursor_t *input,
                                         mol2_num_t field_index) {
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(input, field_index);
@@ -339,7 +307,6 @@ mol2_cursor_t mol2_table_slice_by_index(const mol2_cursor_t *input,
   return res.cur;
 }
 
-// Slice the raw bytes from a `vector <byte>` (FixVec, with a header).
 mol2_cursor_t mol2_fixvec_slice_raw_bytes(const mol2_cursor_t *input) {
   mol2_cursor_t cur = *input;
   cur.offset = input->offset + mol2_NUM_T_SIZE;
@@ -347,7 +314,6 @@ mol2_cursor_t mol2_fixvec_slice_raw_bytes(const mol2_cursor_t *input) {
   return cur;
 }
 
-// predefined type implementation
 Uint64 convert_to_Uint64(mol2_cursor_t *cur) {
   uint64_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
@@ -412,13 +378,52 @@ Int8 convert_to_Int8(mol2_cursor_t *cur) {
   return ret;
 }
 
-mol2_cursor_t convert_to_array(mol2_cursor_t *cur) {
-  return *cur;
-}
+mol2_cursor_t convert_to_array(mol2_cursor_t *cur) { return *cur; }
 
 mol2_cursor_t convert_to_rawbytes(mol2_cursor_t *cur) {
   return mol2_fixvec_slice_raw_bytes(cur);
 }
+
+void change_endian(uint8_t *ptr, int size) {
+  if (is_le2()) return;
+  ASSERT(size % 2 == 0);
+  uint8_t t = 0;
+  for (int i = 0; i < size / 2; i++) {
+    SWAP(ptr[i], ptr[size - 1 - i], t);
+  }
+}
+
+uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
+                            uint32_t offset) {
+  uint8_t *start_mem = (uint8_t *)arg;
+  memcpy(ptr, start_mem + offset, len);
+  return len;
+}
+
+uint32_t mol2_read_at(const mol2_cursor_t *cur, uint8_t *buff,
+                      uint32_t buff_len) {
+  uint32_t read_len = ((cur->size > buff_len) ? buff_len : cur->size);
+  return cur->read(cur->arg, buff, read_len, cur->offset);
+}
+
+mol2_num_t mol2_unpack_number(const mol2_cursor_t *cursor) {
+  uint8_t src[4];
+  uint32_t len = mol2_read_at(cursor, src, 4);
+  ASSERT(len == 4);
+  if (is_le2()) {
+    return *(const uint32_t *)src;
+  } else {
+    uint32_t output = 0;
+    uint8_t *dst = (uint8_t *)&output;
+    dst[3] = src[0];
+    dst[2] = src[1];
+    dst[1] = src[2];
+    dst[0] = src[3];
+    return output;
+  }
+}
+
+#endif  // MOLECULEC_C2_DECLARATION_ONLY
 
 /*
  * Undef macros which are internal use only.
