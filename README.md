@@ -1,17 +1,27 @@
+![moleculec-c2](https://github.com/XuJiandong/moleculec-c2/workflows/moleculec-c2/badge.svg)
+
 # moleculec-c2
 Improved C plugin for the molecule serialization system.
 
 ### How to use
-First, install "moleculec" by "cargo install moleculec".
-Then, compile binary (moleculec-c2) by "cargo build --release", and put the binary in PATH.
+- Install "moleculec"
 ```bash
 $cargo install moleculec
+```
+- Compile Rust code to binary
+```bash
 $cargo build --release
+```
+- Generate the header file by moleculec-c2 and moleculec
+```bash
 $moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
 $target/release/moleculec-c2 --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
 ```
-Note: "clang-format -style=Google" is not needed if you don't care about coding style.
 
+- Include the generated file (in example, it's blockchain-api2.h) and include/molecule2_reader.h to your source file
+
+The json file (in example, it's blockchain.json) is intermedia file.  
+"clang-format -style=Google" is not needed if you don't care about coding style.
 _________________
 
 

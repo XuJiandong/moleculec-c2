@@ -107,7 +107,7 @@ mol_seg_t build_OutPoint() {
   mol_seg_res_t res;
   MolBuilder_OutPoint_init(&b);
 
-  byte tx_hash[32] = {0};
+  byte tx_hash[32] = {0x12, 0x34, 0x56, 0x78};
   MolBuilder_OutPoint_set_tx_hash(&b, tx_hash);
   uint32_t index = 0x12;
   MolBuilder_OutPoint_set_index(&b, FROM_INT(index));
@@ -160,7 +160,7 @@ mol_seg_t build_CellDep() {
   MolBuilder_CellDep_init(&b);
   mol_seg_t out_point = build_OutPoint();
   MolBuilder_CellDep_set_out_point(&b, out_point.ptr);
-  MolBuilder_CellDep_set_dep_type(&b, 0);
+  MolBuilder_CellDep_set_dep_type(&b, 0x12);
   res = MolBuilder_CellDep_build(b);
   assert(res.errno == 0);
   assert(MolReader_CellDep_verify(&res.seg, false) == 0);
