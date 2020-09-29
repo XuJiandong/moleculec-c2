@@ -62,8 +62,38 @@ int main(int argc, const char* argv[]) {
   {
     StructIVecType f = all.t->f45(&all);
     assert_eq(f.t->len(&f), 0);
+    StructJVecType j = all.t->f46(&all);
+    assert_eq(j.t->len(&j), 0);
+    StructPVecType p = all.t->f47(&all);
+    assert_eq(p.t->len(&p), 0);
+    BytesVecType b = all.t->f48(&all);
+    assert_eq(b.t->len(&b), 0);
+    WordsVecType w = all.t->f49(&all);
+    assert_eq(w.t->len(&w), 0);
   }
+  {
+    Table6Type t = all.t->f56(&all);
+    Table5Type s = t.t->f6(&t);
+    StructAType a = s.t->f3(&s);
+    assert_eq(a.t->f1(&a), 0);
+  }
+  {
+    ByteOptType b = all.t->f57(&all);
+    assert_eq(b.t->is_none(&b), true);
+    assert_eq(b.t->is_some(&b), false);
+  }
+  {
+    ByteOptVecType b = all.t->f68(&all);
+    assert_eq(b.t->len(&b), 0);
 
+    WordsOptVecType w = all.t->f70(&all);
+    assert_eq(w.t->len(&w), 0);
+  }
+  {
+    TableAType t = all.t->f73(&all);
+    Word2Type w = t.t->f1(&t);
+    assert_eq(w.t->len(&w), 2);
+  }
 
   printf("\n------- types passed---------\n\n");
   return 0;

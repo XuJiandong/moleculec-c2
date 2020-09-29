@@ -106,3 +106,24 @@ As the name "cursor" suggests, it's only an cursor. We can access memory on dema
     mol2_read_at(&witness_cur, witness, witness_cur.size);
     assert(witness_cur.size == 3 && witness[0] == 0x12 && witness[1] == 0x34);
 ```
+
+_________________
+
+### Split declaration and definition
+When the header file is generated, it can only be included in one single source file.
+If you choose multiple source files, it's better to split declaration and definition.
+Follow the following steps:
+1. Define macro "MOLECULEC_C2_DECLARATION_ONLY" and include the header files
+```C
+#define MOLECULEC_C2_DECLARATION_ONLY
+#include "sample-api2.h"
+```
+See [here](https://github.com/XuJiandong/moleculec-c2/blob/d00b3cfc9ceb9108507f4aa90220cfc42f3bf20f/tests/sample/decl-only-sample.c#L12-L13).
+It can be repeated for every source files if needed.
+
+2. Include header file fully in another source file (.c)
+```C
+#include "sample-api2.h"
+```
+See [here](https://github.com/XuJiandong/moleculec-c2/blob/d00b3cfc9ceb9108507f4aa90220cfc42f3bf20f/tests/sample/decl-only-impl.c#L5).
+It can only be done once. 

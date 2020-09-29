@@ -16,6 +16,8 @@
 ///   according to their type category, e.g. uint32_t, mol2_cursor_t, XXXType
 /// - name, used for class name only
 /// - class type name, name with "Type" suffix, e.g. SampleTableType
+/// - common array, the set of Array, FixVec and DynVec, they share method like "len", "get"
+/// - common table, the set of Table, Struct, they share same method like ".t->XXX"
 
 use crate::utils::{Output, generate};
 use core::mem::size_of;
@@ -245,7 +247,7 @@ impl Generator for ast::Array {
 
 impl Generator for ast::Struct {
     fn generate(&self, output: &mut Output) -> Result {
-        generate_common(self, output, self.name(), self.fields(), Some(self.field_sizes()))
+        generate_common_table(self, output, self.name(), self.fields(), Some(self.field_sizes()))
     }
 }
 
@@ -359,7 +361,12 @@ fn generate_common_array(gen: &dyn Generator, output: &mut Output,
                   return mol2_dynvec_length(&this->cur);
                 }}"#, name);
     }
+    generate_common_array_impl(output, name, c_type_name, ftc, array, fixvec);
+    Ok(())
+}
 
+fn generate_common_array_impl(output: &mut Output, name: &str, c_type_name: &str,
+                              ftc: TypeCategory, array: Option<&Array>, fixvec: Option<&FixVec>) {
     let slice_by = if let Some(fv) = fixvec {
         format!("mol2_fixvec_slice_by_index(&this->cur, {}, index)", fv.item_size())
     } else if let Some(arr) = array {
@@ -385,7 +392,7 @@ fn generate_common_array(gen: &dyn Generator, output: &mut Output,
             return ret;
             }}"#, name, c_type_name, raw_name(&c_type_name), slice_by);
         },
-        TypeCategory::Primitive|TypeCategory::Array => {
+        TypeCategory::Primitive | TypeCategory::Array => {
             format_imp!(output, r#"
             {1} {0}_get_impl({0}Type *this, uint32_t index, bool *existing) {{
             {1} ret = {{0}};
@@ -416,7 +423,6 @@ fn generate_common_array(gen: &dyn Generator, output: &mut Output,
             }}"#, name, slice_by);
         }
     }
-    Ok(())
 }
 
 
@@ -440,8 +446,8 @@ fn prefix_struct(field_type: &str) -> String {
 }
 
 // Table/Struct
-fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
-                   fields: &[FieldDecl], field_sizes: Option<&[usize]>) -> Result {
+fn generate_common_table(gen: &dyn Generator, output: &mut Output, name: &str,
+                         fields: &[FieldDecl], field_sizes: Option<&[usize]>) -> Result {
     gen.gen_decl(output)?;
 
     for field in fields {
@@ -477,14 +483,14 @@ fn generate_common(gen: &dyn Generator, output: &mut Output, name: &str,
     // entries of virtual tables
     let mut index : usize = 0;
     for field in fields {
-        generate_impl(output, name, field, index, field_sizes);
+        generate_common_table_impl(output, name, field, index, field_sizes);
         index += 1;
     }
     Ok(())
 }
 
-fn generate_impl(output: &mut Output, name: &str, field: &FieldDecl,
-                 index: usize, field_sizes: Option<&[usize]>) {
+fn generate_common_table_impl(output: &mut Output, name: &str, field: &FieldDecl,
+                              index: usize, field_sizes: Option<&[usize]>) {
     let field_name = field.name();
     let (field_type, ftc) = get_type_category(field.typ(), field.typ().name());
     let slice_by = generate_slice_by(index, &field_sizes);
@@ -522,7 +528,7 @@ fn generate_impl(output: &mut Output, name: &str, field: &FieldDecl,
 
 impl Generator for ast::Table {
     fn generate(&self, output: &mut Output) -> Result {
-        generate_common(self, output, self.name(), self.fields(), None)
+        generate_common_table(self, output, self.name(), self.fields(), None)
     }
 }
 

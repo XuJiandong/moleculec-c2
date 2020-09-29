@@ -16,6 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: jidicula/clang-format-action@master
     - name: install
       run: cargo install moleculec --vers 0.6.1
     - name: install2

@@ -78,10 +78,10 @@ extern "C" {{
         res.push_str("\n// ----definition-----------------\n");
         res.push_str(&self.def);
 
-        res.push_str("#ifndef MOLECULEC_C2_DECLARATION_ONLY\n");
+        res.push_str("\n#ifndef MOLECULEC_C2_DECLARATION_ONLY\n");
         res.push_str("\n// ----implementation-------------\n");
         res.push_str(&self.imp);
-        res.push_str("#endif // MOLECULEC_C2_DECLARATION_ONLY\n");
+        res.push_str("\n#endif // MOLECULEC_C2_DECLARATION_ONLY\n");
 
         let suffix = format!(r###"
 #ifdef __cplusplus
