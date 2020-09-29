@@ -238,14 +238,8 @@ impl Generator for ast::Union {
 
 impl Generator for ast::Array {
     fn generate(&self, output: &mut Output) -> Result {
-        let typ = get_array_item_type(self);
-        if let Some(c_type_name) = typ {
-            generate_common_array(self, output, self.name(), c_type_name.as_str(), Some(self), None)?;
-            Ok(())
-        } else {
-            // do nothing, normally array, it's type should be mol2_cursor_t
-            Ok(())
-        }
+        let (c_type_name, ftc) = get_type_category(self.item().typ(), self.item().typ().name());
+        generate_common_array(self, output, self.name(), c_type_name.as_str(), ftc, Some(self), None, None)
     }
 }
 
@@ -258,14 +252,8 @@ impl Generator for ast::Struct {
 // in FixVec, all item size is same and known already, the count is unknown.
 impl Generator for ast::FixVec {
     fn generate(&self, output: &mut Output) -> Result {
-        let typ = get_fixvec_item_type(self);
-        if let Some(c_type_name) = typ {
-            generate_common_array(self, output, self.name(), c_type_name.as_str(), None, Some(self))?;
-            Ok(())
-        } else {
-            // do nothing, normally array, it's type should be mol2_cursor_t
-            Ok(())
-        }
+        let (c_type_name, ftc) = get_type_category(self.item().typ(), self.item().typ().name());
+        generate_common_array(self, output, self.name(), c_type_name.as_str(), ftc, None, Some(self), None)
     }
 }
 
@@ -287,41 +275,47 @@ fn get_dynvec_item_type(dynvec: &ast::DynVec) -> String {
 // 1. Array
 // 2. Byte
 //
-fn get_array_item_type(array: &ast::Array) -> Option<String> {
+fn get_array_item_type(array: &ast::Array) -> (Option<String>, Option<TypeCategory>) {
     let item_type = array.item().typ();
     if let TopDecl::Primitive(a) = item_type.as_ref() {
-        None
+        (None, None)
     } else {
         if let TopDecl::Array(aa) = item_type.as_ref() {
             if let TopDecl::Primitive(aaa) = aa.item().typ().as_ref() {
-                return Some(String::from("mol2_cursor_t"));
+                let (c_type_name, ftc) = get_type_category(item_type, item_type.name());
+                return (Some(c_type_name), Some(ftc))
             }
         }
-        Some(gen_class_name(item_type.name()))
+        (Some(gen_class_name(item_type.name())), Some(TypeCategory::Type))
     }
 }
 
-fn get_fixvec_item_type(fixvec: &ast::FixVec) -> Option<String> {
+fn get_fixvec_item_type(fixvec: &ast::FixVec) -> (Option<String>, Option<TypeCategory>) {
     let item_type = fixvec.item().typ();
     if let TopDecl::Primitive(a) = item_type.as_ref() {
-        None
+        (None, None)
     } else {
         if let TopDecl::Array(aa) = item_type.as_ref() {
             if let TopDecl::Primitive(aaa) = aa.item().typ().as_ref() {
-                return Some(String::from("mol2_cursor_t"));
+                let (c_type_name, ftc) = get_type_category(item_type, item_type.name());
+                return (Some(c_type_name), Some(ftc));
             }
         }
-        Some(gen_class_name(item_type.name()))
+        (Some(gen_class_name(item_type.name())), Some(TypeCategory::Type))
     }
 }
 
 
 // Process:
-// 1. Arrray
+// 1. Array
 // 2. FixVec
 // 3. DynVec
+
+// c_type_name, ftc are attributes of item, not container(array, fixvec, dynvec)
+// same logic as generate_impl
 fn generate_common_array(gen: &dyn Generator, output: &mut Output,
-                         name: &str, c_type_name: &str, array: Option<&ast::Array>, fixvec: Option<&ast::FixVec>) -> Result {
+                         name: &str, c_type_name: &str, ftc: TypeCategory, array: Option<&ast::Array>,
+                         fixvec: Option<&ast::FixVec>, dynvec: Option<&ast::DynVec>) -> Result {
     gen.gen_decl(output)?;
 
     format_decl!(output, "uint32_t {0}_len_impl(struct {0}Type *);", name);
@@ -366,58 +360,21 @@ fn generate_common_array(gen: &dyn Generator, output: &mut Output,
                 }}"#, name);
     }
 
-    if let Some(arr) = array {
-        let item_size = arr.item_size();
-        if c_type_name == "mol2_cursor_t" {
-            format_imp!(output, r#"
-            mol2_cursor_t {0}_get_impl({0}Type *this, uint32_t index, bool *existing) {{
-            *existing = true;
-            return mol2_slice_by_offset(&this->cur, {1}*index, {1});
-            }}"#, name, item_size);
-        } else {
-            format_imp!(output, r#"
-            {1} {0}_get_impl({0}Type *this,
-                                    uint32_t index, bool *existing) {{
-            {1} ret = {{0}};
-            ret.cur = mol2_slice_by_offset(&this->cur, {3}*index, {3});
-            ret.t = Get{2}VTable();
-            *existing = true;
-            return ret;
-            }}"#, name, c_type_name, raw_name(&c_type_name), item_size);
-        }
+    let slice_by = if let Some(fv) = fixvec {
+        format!("mol2_fixvec_slice_by_index(&this->cur, {}, index)", fv.item_size())
+    } else if let Some(arr) = array {
+        format!("mol2_slice_by_offset2(&this->cur, {0}*index, {0})", arr.item_size())
     } else {
-        let slice_by = if let Some(fv) = fixvec {
-            format!("mol2_fixvec_slice_by_index(&this->cur, {}, index)", fv.item_size())
-        } else {
-            format!("mol2_dynvec_slice_by_index(&this->cur, index)")
-        };
-        if c_type_name == "mol2_cursor_t" {
-            let convert_by = if let Some(fv) = fixvec {
-                format!("convert_to_array")
-            } else {
-                format!("convert_to_rawbytes")
-            };
-            format_imp!(output, r#"
-            mol2_cursor_t {0}_get_impl({0}Type *this,
-                                    uint32_t index, bool *existing) {{
-            mol2_cursor_t ret = {{0}};
-            mol2_cursor_res_t res = {1};
-            if (res.errno != 0) {{
-                *existing = false;
-                return ret;
-            }} else {{
-                *existing = true;
-            }}
-            ret = {2}(&res.cur);
-            return ret;
-            }}"#, name, slice_by, convert_by);
-        } else {
+        format!("mol2_dynvec_slice_by_index(&this->cur, index)")
+    };
+    match ftc {
+        TypeCategory::Type => {
             format_imp!(output, r#"
             {1} {0}_get_impl({0}Type *this,
                                     uint32_t index, bool *existing) {{
             {1} ret = {{0}};
             mol2_cursor_res_t res = {3};
-            if (res.errno != 0) {{
+            if (res.errno != mol2_OK) {{
                 *existing = false;
                 return ret;
             }} else {{
@@ -427,6 +384,36 @@ fn generate_common_array(gen: &dyn Generator, output: &mut Output,
             ret.t = Get{2}VTable();
             return ret;
             }}"#, name, c_type_name, raw_name(&c_type_name), slice_by);
+        },
+        TypeCategory::Primitive|TypeCategory::Array => {
+            format_imp!(output, r#"
+            {1} {0}_get_impl({0}Type *this, uint32_t index, bool *existing) {{
+            {1} ret = {{0}};
+            mol2_cursor_res_t res = {3};
+            if (res.errno != mol2_OK) {{
+                *existing = false;
+                return ret;
+            }} else {{
+                *existing = true;
+            }}
+            ret = {2}(&res.cur);
+            return ret;
+            }}"#, name, c_type_name, get_convert_func(&c_type_name, &ftc), slice_by);
+        },
+        TypeCategory::FixVec => {
+            format_imp!(output, r#"
+            mol2_cursor_t {0}_get_impl({0}Type *this,
+                                    uint32_t index, bool *existing) {{
+            mol2_cursor_t ret = {{0}};
+            mol2_cursor_res_t res = {1};
+            if (res.errno != mol2_OK) {{
+                *existing = false;
+                return ret;
+            }} else {{
+                *existing = true;
+            }}
+            return convert_to_rawbytes(&res.cur);
+            }}"#, name, slice_by);
         }
     }
     Ok(())
@@ -435,8 +422,8 @@ fn generate_common_array(gen: &dyn Generator, output: &mut Output,
 
 impl Generator for ast::DynVec {
     fn generate(&self, output: &mut Output) -> Result {
-        let c_type_name = get_dynvec_item_type(self);
-        generate_common_array(self, output, self.name(), c_type_name.as_str(), None, None)
+        let (c_type_name, ftc) = get_type_category(self.item().typ(), self.item().typ().name());
+        generate_common_array(self, output, self.name(), c_type_name.as_str(), ftc, None, None, Some(self))
     }
 }
 

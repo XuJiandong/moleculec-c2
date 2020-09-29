@@ -38,13 +38,38 @@ mol_seg_t build_SampleDynVector() {
   return res.seg;
 }
 
+mol_seg_t build_Uint64() {
+  mol_builder_t b;
+  MolBuilder_Uint64_init(&b);
+  MolBuilder_Uint64_set_nth0(&b, 0xD);
+  mol_seg_res_t res = MolBuilder_Uint64_build(b);
+  assert(res.errno == 0);
+  return res.seg;
+}
+
+mol_seg_t build_SampleUint64Vector() {
+  mol_builder_t b;
+
+  MolBuilder_SampleUint64Vector_init(&b);
+
+  mol_seg_t v = build_Uint64();
+  MolBuilder_SampleUint64Vector_push(&b, v.ptr);
+
+  mol_seg_res_t res = MolBuilder_SampleUint64Vector_build(b);
+  assert(res.errno == 0);
+  assert(MolReader_SampleUint64Vector_verify(&res.seg, false) == 0);
+  return res.seg;
+}
+
 mol_seg_t build_SampleTable() {
   mol_builder_t b;
   MolBuilder_SampleTable_init(&b);
   mol_seg_t s1 = build_SampleDynVector();
   mol_seg_t s2 = build_SampleByte2();
+  mol_seg_t s3 = build_SampleUint64Vector();
   MolBuilder_SampleTable_set_byte_2d_vector(&b, s1.ptr, s1.size);
   MolBuilder_SampleTable_set_byte2(&b, s2.ptr, s2.size);
+  MolBuilder_SampleTable_set_u64_vector(&b, s3.ptr, s3.size);
   mol_seg_res_t res = MolBuilder_SampleTable_build(b);
 
   assert(res.errno == 0);

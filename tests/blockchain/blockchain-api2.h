@@ -16,6 +16,42 @@ extern "C" {
 #endif /* __cplusplus */
 
 // ----forward declaration--------
+struct Uint32Type;
+struct Uint32VTable;
+struct Uint32VTable *GetUint32VTable(void);
+struct Uint32Type make_Uint32(mol2_cursor_t *cur);
+uint32_t Uint32_len_impl(struct Uint32Type *);
+uint8_t Uint32_get_impl(struct Uint32Type *, uint32_t, bool *);
+struct Uint64Type;
+struct Uint64VTable;
+struct Uint64VTable *GetUint64VTable(void);
+struct Uint64Type make_Uint64(mol2_cursor_t *cur);
+uint32_t Uint64_len_impl(struct Uint64Type *);
+uint8_t Uint64_get_impl(struct Uint64Type *, uint32_t, bool *);
+struct Uint128Type;
+struct Uint128VTable;
+struct Uint128VTable *GetUint128VTable(void);
+struct Uint128Type make_Uint128(mol2_cursor_t *cur);
+uint32_t Uint128_len_impl(struct Uint128Type *);
+uint8_t Uint128_get_impl(struct Uint128Type *, uint32_t, bool *);
+struct Byte32Type;
+struct Byte32VTable;
+struct Byte32VTable *GetByte32VTable(void);
+struct Byte32Type make_Byte32(mol2_cursor_t *cur);
+uint32_t Byte32_len_impl(struct Byte32Type *);
+uint8_t Byte32_get_impl(struct Byte32Type *, uint32_t, bool *);
+struct Uint256Type;
+struct Uint256VTable;
+struct Uint256VTable *GetUint256VTable(void);
+struct Uint256Type make_Uint256(mol2_cursor_t *cur);
+uint32_t Uint256_len_impl(struct Uint256Type *);
+uint8_t Uint256_get_impl(struct Uint256Type *, uint32_t, bool *);
+struct BytesType;
+struct BytesVTable;
+struct BytesVTable *GetBytesVTable(void);
+struct BytesType make_Bytes(mol2_cursor_t *cur);
+uint32_t Bytes_len_impl(struct BytesType *);
+uint8_t Bytes_get_impl(struct BytesType *, uint32_t, bool *);
 struct BytesOptType;
 struct BytesOptVTable;
 struct BytesOptVTable *GetBytesOptVTable(void);
@@ -42,6 +78,13 @@ struct ScriptOptType make_ScriptOpt(mol2_cursor_t *cur);
 bool ScriptOpt_is_none_impl(struct ScriptOptType *);
 bool ScriptOpt_is_some_impl(struct ScriptOptType *);
 struct ScriptType ScriptOpt_unwrap_impl(struct ScriptOptType *);
+struct ProposalShortIdType;
+struct ProposalShortIdVTable;
+struct ProposalShortIdVTable *GetProposalShortIdVTable(void);
+struct ProposalShortIdType make_ProposalShortId(mol2_cursor_t *cur);
+uint32_t ProposalShortId_len_impl(struct ProposalShortIdType *);
+uint8_t ProposalShortId_get_impl(struct ProposalShortIdType *, uint32_t,
+                                 bool *);
 struct UncleBlockVecType;
 struct UncleBlockVecVTable;
 struct UncleBlockVecVTable *GetUncleBlockVecVTable(void);
@@ -187,6 +230,60 @@ struct BytesOptType WitnessArgs_get_input_type_impl(struct WitnessArgsType *);
 struct BytesOptType WitnessArgs_get_output_type_impl(struct WitnessArgsType *);
 
 // ----definition-----------------
+typedef struct Uint32VTable {
+  uint32_t (*len)(struct Uint32Type *);
+  uint8_t (*get)(struct Uint32Type *, uint32_t, bool *);
+} Uint32VTable;
+typedef struct Uint32Type {
+  mol2_cursor_t cur;
+  Uint32VTable *t;
+} Uint32Type;
+
+typedef struct Uint64VTable {
+  uint32_t (*len)(struct Uint64Type *);
+  uint8_t (*get)(struct Uint64Type *, uint32_t, bool *);
+} Uint64VTable;
+typedef struct Uint64Type {
+  mol2_cursor_t cur;
+  Uint64VTable *t;
+} Uint64Type;
+
+typedef struct Uint128VTable {
+  uint32_t (*len)(struct Uint128Type *);
+  uint8_t (*get)(struct Uint128Type *, uint32_t, bool *);
+} Uint128VTable;
+typedef struct Uint128Type {
+  mol2_cursor_t cur;
+  Uint128VTable *t;
+} Uint128Type;
+
+typedef struct Byte32VTable {
+  uint32_t (*len)(struct Byte32Type *);
+  uint8_t (*get)(struct Byte32Type *, uint32_t, bool *);
+} Byte32VTable;
+typedef struct Byte32Type {
+  mol2_cursor_t cur;
+  Byte32VTable *t;
+} Byte32Type;
+
+typedef struct Uint256VTable {
+  uint32_t (*len)(struct Uint256Type *);
+  uint8_t (*get)(struct Uint256Type *, uint32_t, bool *);
+} Uint256VTable;
+typedef struct Uint256Type {
+  mol2_cursor_t cur;
+  Uint256VTable *t;
+} Uint256Type;
+
+typedef struct BytesVTable {
+  uint32_t (*len)(struct BytesType *);
+  uint8_t (*get)(struct BytesType *, uint32_t, bool *);
+} BytesVTable;
+typedef struct BytesType {
+  mol2_cursor_t cur;
+  BytesVTable *t;
+} BytesType;
+
 typedef struct BytesOptVTable {
   bool (*is_none)(struct BytesOptType *);
   bool (*is_some)(struct BytesOptType *);
@@ -224,6 +321,15 @@ typedef struct ScriptOptType {
   mol2_cursor_t cur;
   ScriptOptVTable *t;
 } ScriptOptType;
+
+typedef struct ProposalShortIdVTable {
+  uint32_t (*len)(struct ProposalShortIdType *);
+  uint8_t (*get)(struct ProposalShortIdType *, uint32_t, bool *);
+} ProposalShortIdVTable;
+typedef struct ProposalShortIdType {
+  mol2_cursor_t cur;
+  ProposalShortIdVTable *t;
+} ProposalShortIdType;
 
 typedef struct UncleBlockVecVTable {
   uint32_t (*len)(struct UncleBlockVecType *);
@@ -416,6 +522,170 @@ typedef struct WitnessArgsType {
 #ifndef MOLECULEC_C2_DECLARATION_ONLY
 
 // ----implementation-------------
+struct Uint32Type make_Uint32(mol2_cursor_t *cur) {
+  Uint32Type ret;
+  ret.cur = *cur;
+  ret.t = GetUint32VTable();
+  return ret;
+}
+struct Uint32VTable *GetUint32VTable(void) {
+  static Uint32VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Uint32_len_impl;
+  s_vtable.get = Uint32_get_impl;
+  return &s_vtable;
+}
+uint32_t Uint32_len_impl(Uint32Type *this) { return 4; }
+uint8_t Uint32_get_impl(Uint32Type *this, uint32_t index, bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_slice_by_offset2(&this->cur, 1 * index, 1);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
+struct Uint64Type make_Uint64(mol2_cursor_t *cur) {
+  Uint64Type ret;
+  ret.cur = *cur;
+  ret.t = GetUint64VTable();
+  return ret;
+}
+struct Uint64VTable *GetUint64VTable(void) {
+  static Uint64VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Uint64_len_impl;
+  s_vtable.get = Uint64_get_impl;
+  return &s_vtable;
+}
+uint32_t Uint64_len_impl(Uint64Type *this) { return 8; }
+uint8_t Uint64_get_impl(Uint64Type *this, uint32_t index, bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_slice_by_offset2(&this->cur, 1 * index, 1);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
+struct Uint128Type make_Uint128(mol2_cursor_t *cur) {
+  Uint128Type ret;
+  ret.cur = *cur;
+  ret.t = GetUint128VTable();
+  return ret;
+}
+struct Uint128VTable *GetUint128VTable(void) {
+  static Uint128VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Uint128_len_impl;
+  s_vtable.get = Uint128_get_impl;
+  return &s_vtable;
+}
+uint32_t Uint128_len_impl(Uint128Type *this) { return 16; }
+uint8_t Uint128_get_impl(Uint128Type *this, uint32_t index, bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_slice_by_offset2(&this->cur, 1 * index, 1);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
+struct Byte32Type make_Byte32(mol2_cursor_t *cur) {
+  Byte32Type ret;
+  ret.cur = *cur;
+  ret.t = GetByte32VTable();
+  return ret;
+}
+struct Byte32VTable *GetByte32VTable(void) {
+  static Byte32VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Byte32_len_impl;
+  s_vtable.get = Byte32_get_impl;
+  return &s_vtable;
+}
+uint32_t Byte32_len_impl(Byte32Type *this) { return 32; }
+uint8_t Byte32_get_impl(Byte32Type *this, uint32_t index, bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_slice_by_offset2(&this->cur, 1 * index, 1);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
+struct Uint256Type make_Uint256(mol2_cursor_t *cur) {
+  Uint256Type ret;
+  ret.cur = *cur;
+  ret.t = GetUint256VTable();
+  return ret;
+}
+struct Uint256VTable *GetUint256VTable(void) {
+  static Uint256VTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Uint256_len_impl;
+  s_vtable.get = Uint256_get_impl;
+  return &s_vtable;
+}
+uint32_t Uint256_len_impl(Uint256Type *this) { return 32; }
+uint8_t Uint256_get_impl(Uint256Type *this, uint32_t index, bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_slice_by_offset2(&this->cur, 1 * index, 1);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
+struct BytesType make_Bytes(mol2_cursor_t *cur) {
+  BytesType ret;
+  ret.cur = *cur;
+  ret.t = GetBytesVTable();
+  return ret;
+}
+struct BytesVTable *GetBytesVTable(void) {
+  static BytesVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = Bytes_len_impl;
+  s_vtable.get = Bytes_get_impl;
+  return &s_vtable;
+}
+uint32_t Bytes_len_impl(BytesType *this) {
+  return mol2_fixvec_length(&this->cur);
+}
+uint8_t Bytes_get_impl(BytesType *this, uint32_t index, bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 1, index);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
 struct BytesOptType make_BytesOpt(mol2_cursor_t *cur) {
   BytesOptType ret;
   ret.cur = *cur;
@@ -463,14 +733,13 @@ mol2_cursor_t BytesVec_get_impl(BytesVecType *this, uint32_t index,
                                 bool *existing) {
   mol2_cursor_t ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
     *existing = true;
   }
-  ret = convert_to_rawbytes(&res.cur);
-  return ret;
+  return convert_to_rawbytes(&res.cur);
 }
 struct Byte32VecType make_Byte32Vec(mol2_cursor_t *cur) {
   Byte32VecType ret;
@@ -493,7 +762,7 @@ mol2_cursor_t Byte32Vec_get_impl(Byte32VecType *this, uint32_t index,
                                  bool *existing) {
   mol2_cursor_t ret = {0};
   mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 32, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
@@ -530,6 +799,34 @@ ScriptType ScriptOpt_unwrap_impl(ScriptOptType *this) {
   ret.t = GetScriptVTable();
   return ret;
 }
+struct ProposalShortIdType make_ProposalShortId(mol2_cursor_t *cur) {
+  ProposalShortIdType ret;
+  ret.cur = *cur;
+  ret.t = GetProposalShortIdVTable();
+  return ret;
+}
+struct ProposalShortIdVTable *GetProposalShortIdVTable(void) {
+  static ProposalShortIdVTable s_vtable;
+  static int inited = 0;
+  if (inited) return &s_vtable;
+  s_vtable.len = ProposalShortId_len_impl;
+  s_vtable.get = ProposalShortId_get_impl;
+  return &s_vtable;
+}
+uint32_t ProposalShortId_len_impl(ProposalShortIdType *this) { return 10; }
+uint8_t ProposalShortId_get_impl(ProposalShortIdType *this, uint32_t index,
+                                 bool *existing) {
+  uint8_t ret = {0};
+  mol2_cursor_res_t res = mol2_slice_by_offset2(&this->cur, 1 * index, 1);
+  if (res.errno != mol2_OK) {
+    *existing = false;
+    return ret;
+  } else {
+    *existing = true;
+  }
+  ret = convert_to_Uint8(&res.cur);
+  return ret;
+}
 struct UncleBlockVecType make_UncleBlockVec(mol2_cursor_t *cur) {
   UncleBlockVecType ret;
   ret.cur = *cur;
@@ -551,7 +848,7 @@ UncleBlockType UncleBlockVec_get_impl(UncleBlockVecType *this, uint32_t index,
                                       bool *existing) {
   UncleBlockType ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
@@ -582,7 +879,7 @@ TransactionType TransactionVec_get_impl(TransactionVecType *this,
                                         uint32_t index, bool *existing) {
   TransactionType ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
@@ -613,7 +910,7 @@ mol2_cursor_t ProposalShortIdVec_get_impl(ProposalShortIdVecType *this,
                                           uint32_t index, bool *existing) {
   mol2_cursor_t ret = {0};
   mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 10, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
@@ -643,7 +940,7 @@ CellDepType CellDepVec_get_impl(CellDepVecType *this, uint32_t index,
                                 bool *existing) {
   CellDepType ret = {0};
   mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 37, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
@@ -674,7 +971,7 @@ CellInputType CellInputVec_get_impl(CellInputVecType *this, uint32_t index,
                                     bool *existing) {
   CellInputType ret = {0};
   mol2_cursor_res_t res = mol2_fixvec_slice_by_index(&this->cur, 44, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {
@@ -705,7 +1002,7 @@ CellOutputType CellOutputVec_get_impl(CellOutputVecType *this, uint32_t index,
                                       bool *existing) {
   CellOutputType ret = {0};
   mol2_cursor_res_t res = mol2_dynvec_slice_by_index(&this->cur, index);
-  if (res.errno != 0) {
+  if (res.errno != mol2_OK) {
     *existing = false;
     return ret;
   } else {

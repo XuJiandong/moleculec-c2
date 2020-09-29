@@ -72,6 +72,10 @@ int main(int argc, const char* argv[]) {
   assert(buff[0] == 0xBE);
   assert(buff[1] == 0xEF);
 
+  SampleUint64VectorType u64_vector = t.t->u64_vector(&t);
+  uint64_t u = u64_vector.t->get(&u64_vector, 0, &existing);
+  assert(u == 0xD);
+
   verify_sample_option_table(&sample_table2);
   verify_sample_union();
 

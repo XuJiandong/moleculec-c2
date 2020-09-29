@@ -67,6 +67,11 @@
       "item": "SampleFixedVector"
     },
     {
+      "type": "fixvec",
+      "name": "SampleUint64Vector",
+      "item": "Uint64"
+    },
+    {
       "type": "struct",
       "name": "SampleStruct",
       "fields": [
@@ -91,6 +96,10 @@
         {
           "name": "byte2",
           "type": "SampleByte2"
+        },
+        {
+          "name": "u64_vector",
+          "type": "SampleUint64Vector"
         }
       ]
     },

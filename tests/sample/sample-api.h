@@ -70,14 +70,18 @@ extern "C" {
 MOLECULE_API_DECORATOR  mol_errno       MolReader_SampleDynVector_verify                (const mol_seg_t*, bool);
 #define                                 MolReader_SampleDynVector_length(s)             mol_dynvec_length(s)
 #define                                 MolReader_SampleDynVector_get(s, i)             mol_dynvec_slice_by_index(s, i)
+#define                                 MolReader_SampleUint64Vector_verify(s, c)       mol_fixvec_verify(s, 8)
+#define                                 MolReader_SampleUint64Vector_length(s)          mol_fixvec_length(s)
+#define                                 MolReader_SampleUint64Vector_get(s, i)          mol_fixvec_slice_by_index(s, 8, i)
 #define                                 MolReader_SampleStruct_verify(s, c)             mol_verify_fixed_size(s, 6)
 #define                                 MolReader_SampleStruct_get_u32(s)               mol_slice_by_offset(s, 0, 4)
 #define                                 MolReader_SampleStruct_get_byte2(s)             mol_slice_by_offset(s, 4, 2)
 MOLECULE_API_DECORATOR  mol_errno       MolReader_SampleTable_verify                    (const mol_seg_t*, bool);
 #define                                 MolReader_SampleTable_actual_field_count(s)     mol_table_actual_field_count(s)
-#define                                 MolReader_SampleTable_has_extra_fields(s)       mol_table_has_extra_fields(s, 2)
+#define                                 MolReader_SampleTable_has_extra_fields(s)       mol_table_has_extra_fields(s, 3)
 #define                                 MolReader_SampleTable_get_byte_2d_vector(s)     mol_table_slice_by_index(s, 0)
 #define                                 MolReader_SampleTable_get_byte2(s)              mol_table_slice_by_index(s, 1)
+#define                                 MolReader_SampleTable_get_u64_vector(s)         mol_table_slice_by_index(s, 2)
 MOLECULE_API_DECORATOR  mol_errno       MolReader_SampleUnion_verify                    (const mol_seg_t*, bool);
 #define                                 MolReader_SampleUnion_unpack(s)                 mol_union_unpack(s)
 MOLECULE_API_DECORATOR  mol_errno       MolReader_SampleOptionTable_verify              (const mol_seg_t*, bool);
@@ -154,14 +158,19 @@ MOLECULE_API_DECORATOR  mol_errno       MolReader_SampleOptionTable_verify      
 #define                                 MolBuilder_SampleDynVector_push(b, p, l)        mol_dynvec_builder_push(b, p, l)
 #define                                 MolBuilder_SampleDynVector_build(b)             mol_dynvec_builder_finalize(b)
 #define                                 MolBuilder_SampleDynVector_clear(b)             mol_builder_discard(b)
+#define                                 MolBuilder_SampleUint64Vector_init(b)           mol_fixvec_builder_initialize(b, 128)
+#define                                 MolBuilder_SampleUint64Vector_push(b, p)        mol_fixvec_builder_push(b, p, 8)
+#define                                 MolBuilder_SampleUint64Vector_build(b)          mol_fixvec_builder_finalize(b)
+#define                                 MolBuilder_SampleUint64Vector_clear(b)          mol_builder_discard(b)
 #define                                 MolBuilder_SampleStruct_init(b)                 mol_builder_initialize_fixed_size(b, 6)
 #define                                 MolBuilder_SampleStruct_set_u32(b, p)           mol_builder_set_by_offset(b, 0, p, 4)
 #define                                 MolBuilder_SampleStruct_set_byte2(b, p)         mol_builder_set_by_offset(b, 4, p, 2)
 #define                                 MolBuilder_SampleStruct_build(b)                mol_builder_finalize_simple(b)
 #define                                 MolBuilder_SampleStruct_clear(b)                mol_builder_discard(b)
-#define                                 MolBuilder_SampleTable_init(b)                  mol_table_builder_initialize(b, 128, 2)
+#define                                 MolBuilder_SampleTable_init(b)                  mol_table_builder_initialize(b, 128, 3)
 #define                                 MolBuilder_SampleTable_set_byte_2d_vector(b, p, l) mol_table_builder_add(b, 0, p, l)
 #define                                 MolBuilder_SampleTable_set_byte2(b, p, l)       mol_table_builder_add(b, 1, p, l)
+#define                                 MolBuilder_SampleTable_set_u64_vector(b, p, l)  mol_table_builder_add(b, 2, p, l)
 MOLECULE_API_DECORATOR  mol_seg_res_t   MolBuilder_SampleTable_build                    (mol_builder_t);
 #define                                 MolBuilder_SampleTable_clear(b)                 mol_builder_discard(b)
 #define                                 MolBuilder_SampleUnion_init(b)                  mol_union_builder_initialize(b, 16, 0, &MolDefault_SampleStruct, 6)
@@ -195,12 +204,14 @@ MOLECULE_API_DECORATOR const uint8_t MolDefault_Int64[8]         =  {
 };
 MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleFixedVector[4] =  {____, ____, ____, ____};
 MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleDynVector[4] =  {0x04, ____, ____, ____};
+MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleUint64Vector[4] =  {____, ____, ____, ____};
 MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleStruct[6]  =  {
     ____, ____, ____, ____, ____, ____,
 };
-MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleTable[18]  =  {
-    0x12, ____, ____, ____, 0x0c, ____, ____, ____, 0x10, ____, ____, ____,
-    0x04, ____, ____, ____, ____, ____,
+MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleTable[26]  =  {
+    0x1a, ____, ____, ____, 0x10, ____, ____, ____, 0x14, ____, ____, ____,
+    0x16, ____, ____, ____, 0x04, ____, ____, ____, ____, ____, ____, ____,
+    ____, ____,
 };
 MOLECULE_API_DECORATOR const uint8_t MolDefault_SampleUnion[10]  =  {
     ____, ____, ____, ____, ____, ____, ____, ____, ____, ____,
@@ -279,9 +290,9 @@ MOLECULE_API_DECORATOR mol_errno MolReader_SampleTable_verify (const mol_seg_t *
         return MOL_ERR_OFFSET;
     }
     mol_num_t field_count = offset / 4 - 1;
-    if (field_count < 2) {
+    if (field_count < 3) {
         return MOL_ERR_FIELD_COUNT;
-    } else if (!compatible && field_count > 2) {
+    } else if (!compatible && field_count > 3) {
         return MOL_ERR_FIELD_COUNT;
     }
     if (input->size < MOL_NUM_T_SIZE*(field_count+1)){
@@ -311,6 +322,12 @@ MOLECULE_API_DECORATOR mol_errno MolReader_SampleTable_verify (const mol_seg_t *
         inner.ptr = input->ptr + offsets[1];
         inner.size = offsets[2] - offsets[1];
         errno = MolReader_SampleByte2_verify(&inner, compatible);
+        if (errno != MOL_OK) {
+            return MOL_ERR_DATA;
+        }
+        inner.ptr = input->ptr + offsets[2];
+        inner.size = offsets[3] - offsets[2];
+        errno = MolReader_SampleUint64Vector_verify(&inner, compatible);
         if (errno != MOL_OK) {
             return MOL_ERR_DATA;
         }
@@ -348,13 +365,15 @@ MOLECULE_API_DECORATOR mol_errno MolReader_SampleOptionTable_verify (const mol_s
 MOLECULE_API_DECORATOR mol_seg_res_t MolBuilder_SampleTable_build (mol_builder_t builder) {
     mol_seg_res_t res;
     res.errno = MOL_OK;
-    mol_num_t offset = 12;
+    mol_num_t offset = 16;
     mol_num_t len;
     res.seg.size = offset;
     len = builder.number_ptr[1];
     res.seg.size += len == 0 ? 4 : len;
     len = builder.number_ptr[3];
     res.seg.size += len == 0 ? 2 : len;
+    len = builder.number_ptr[5];
+    res.seg.size += len == 0 ? 4 : len;
     res.seg.ptr = (uint8_t*)malloc(res.seg.size);
     uint8_t *dst = res.seg.ptr;
     mol_pack_number(dst, &res.seg.size);
@@ -367,6 +386,10 @@ MOLECULE_API_DECORATOR mol_seg_res_t MolBuilder_SampleTable_build (mol_builder_t
     dst += MOL_NUM_T_SIZE;
     len = builder.number_ptr[3];
     offset += len == 0 ? 2 : len;
+    mol_pack_number(dst, &offset);
+    dst += MOL_NUM_T_SIZE;
+    len = builder.number_ptr[5];
+    offset += len == 0 ? 4 : len;
     uint8_t *src = builder.data_ptr;
     len = builder.number_ptr[1];
     if (len == 0) {
@@ -383,6 +406,15 @@ MOLECULE_API_DECORATOR mol_seg_res_t MolBuilder_SampleTable_build (mol_builder_t
         memcpy(dst, &MolDefault_SampleByte2, len);
     } else {
         mol_num_t of = builder.number_ptr[2];
+        memcpy(dst, src+of, len);
+    }
+    dst += len;
+    len = builder.number_ptr[5];
+    if (len == 0) {
+        len = 4;
+        memcpy(dst, &MolDefault_SampleUint64Vector, len);
+    } else {
+        mol_num_t of = builder.number_ptr[4];
         memcpy(dst, src+of, len);
     }
     dst += len;

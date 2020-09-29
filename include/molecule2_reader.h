@@ -251,6 +251,20 @@ mol2_cursor_t mol2_slice_by_offset(const mol2_cursor_t *input,
   return cur;
 }
 
+mol2_cursor_res_t mol2_slice_by_offset2(const mol2_cursor_t *input,
+                                   mol2_num_t offset, mol2_num_t size) {
+  mol2_cursor_t cur = *input;
+
+  cur.offset = input->offset + offset;
+  cur.size = size;
+
+  mol2_cursor_res_t res;
+  res.errno = mol2_OK;
+  res.cur = cur;
+  return res;
+}
+
+
 mol2_cursor_res_t mol2_fixvec_slice_by_index(const mol2_cursor_t *input,
                                              mol2_num_t item_size,
                                              mol2_num_t item_index) {
