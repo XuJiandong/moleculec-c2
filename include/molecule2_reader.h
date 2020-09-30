@@ -29,7 +29,16 @@ extern "C" {
 //
 // referenced API or macros
 //
+#ifndef ASSERT
 #define ASSERT(s) ((void)0)
+#endif
+
+#ifndef MIN
+#define MIN(a, b) ((a > b) ? (b) : (a))
+#endif
+#ifndef MAX
+#define MAX(a, b) ((a > b) ? (a) : (b))
+#endif
 
 typedef uint32_t mol2_num_t;  // Item Id
 typedef uint8_t mol2_errno;   // Error Number
@@ -91,41 +100,58 @@ void change_endian(uint8_t *ptr, int size);
 /**
  * read from a data source, with offset, up to "len" bytes into ptr.
  * the memory size of "ptr" is "len".
- * The "arg" will be passed into "read" function as the first argument.
+ *
+ * Return the length actually written. It may be smaller than "len".
+ *
+ * The "args" will be passed into "read" function as the first argument.
  */
-typedef uint32_t (*mol2_source_t)(void *arg, uint8_t *ptr, uint32_t len,
+typedef uint32_t (*mol2_source_t)(uintptr_t arg[], uint8_t *ptr, uint32_t len,
                                   uint32_t offset);
+
+#define MAX_CACHE_SIZE 2048
+
+// data source with cache support
+typedef struct mol2_data_source_t {
+  // function "read" might have more arguments
+  uintptr_t args[4];
+  mol2_source_t read;
+  // start point of the cache
+  // if [offset, size) is in [start_point, start_point+cache_size), it returns
+  // memory in cache directly otherwise, it will try to load first (like cache
+  // miss)
+  uint32_t start_point;
+  uint32_t cache_size;
+  // it's normally same as MAX_CACHE_SIZE.
+  // modify it for testing purpose
+  uint32_t max_cache_size;
+  uint8_t cache[MAX_CACHE_SIZE];
+} mol2_data_source_t;
 
 /**
  * --------------- MUST READ ----------------------
  * This is the most important data struct in this file, MUST READ!
- * The "read" together with "arg" are the data source.
- * The data source is a function with declaration of "mol2_source_t".
- * You can get an idea how to implement your own one from function
- * "mol2_source_memory".
+ * The data_source is to fetch data from external, like memory, disk, or some
+ * others. It is with cache support. You can get an idea how to implement one
+ * from functions: "mol2_source_memory" and "mol2_make_cursor_from_memory".
  *
  * The offset and size, is an "view"/"slice" of the data source.
  *
- * When a new cursor is generated according to an old one,
- * the "read" and "arg" MUST be copied. The offset and size can be different.
+ * When a new cursor is generated from an old one,
+ * the "data_source" must be copied. The offset and size can be different.
  * Currently, there is no way to convert one data source to another.
+ *
  */
 typedef struct mol2_cursor_t {
-  uint32_t offset;     // offset of slice
-  uint32_t size;       // size of slice
-  mol2_source_t read;  // data source
-  void *arg;           // data source
+  uint32_t offset;  // offset of slice
+  uint32_t size;    // size of slice
+  mol2_data_source_t *data_source;
 } mol2_cursor_t;
 
 // a sample source over memory
-uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
+uint32_t mol2_source_memory(uintptr_t args[], uint8_t *ptr, uint32_t len,
                             uint32_t offset);
+mol2_cursor_t mol2_make_cursor_from_memory(const void *memory, uint32_t size);
 
-/**
- * mol2_read_at reads up to MIN(cur->size, buff_len) bytes from data source
- * "cur" into buff. It returns the number (n) of bytes read (0 <= n <=
- * MIN(cur->size, buff_len)).
- */
 uint32_t mol2_read_at(const mol2_cursor_t *cur, uint8_t *buff,
                       uint32_t buff_len);
 
@@ -252,7 +278,7 @@ mol2_cursor_t mol2_slice_by_offset(const mol2_cursor_t *input,
 }
 
 mol2_cursor_res_t mol2_slice_by_offset2(const mol2_cursor_t *input,
-                                   mol2_num_t offset, mol2_num_t size) {
+                                        mol2_num_t offset, mol2_num_t size) {
   mol2_cursor_t cur = *input;
 
   cur.offset = input->offset + offset;
@@ -263,7 +289,6 @@ mol2_cursor_res_t mol2_slice_by_offset2(const mol2_cursor_t *input,
   res.cur = cur;
   return res;
 }
-
 
 mol2_cursor_res_t mol2_fixvec_slice_by_index(const mol2_cursor_t *input,
                                              mol2_num_t item_size,
@@ -407,17 +432,78 @@ void change_endian(uint8_t *ptr, int size) {
   }
 }
 
-uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
+// this is a sample implementation over memory
+uint32_t mol2_source_memory(uintptr_t args[], uint8_t *ptr, uint32_t len,
                             uint32_t offset) {
-  uint8_t *start_mem = (uint8_t *)arg;
-  memcpy(ptr, start_mem + offset, len);
-  return len;
+  uint32_t mem_len = (uint32_t)args[1];
+  ASSERT(offset < mem_len);
+  uint32_t remaining_len = mem_len - offset;
+
+  uint32_t min_len = MIN(remaining_len, len);
+  uint8_t *start_mem = (uint8_t *)args[0];
+  ASSERT((offset + min_len) <= mem_len);
+  memcpy(ptr, start_mem + offset, min_len);
+  return min_len;
 }
 
+// this is a sample implementation over memory
+mol2_cursor_t mol2_make_cursor_from_memory(const void *memory, uint32_t size) {
+  mol2_cursor_t cur;
+  cur.offset = 0;
+  cur.size = size;
+  // init data source
+  static mol2_data_source_t s_data_source = {0};
+
+  s_data_source.read = mol2_source_memory;
+  s_data_source.args[0] = (uintptr_t)memory;
+  s_data_source.args[1] = (uintptr_t)size;
+
+  s_data_source.cache_size = 0;
+  s_data_source.start_point = 0;
+  s_data_source.max_cache_size = MAX_CACHE_SIZE;
+  cur.data_source = &s_data_source;
+  return cur;
+}
+
+/**
+ * mol2_read_at reads MIN(cur->size, buff_len) bytes from data source
+ * "cur" into buff. It returns that number.
+ *
+ * If the return number is smaller than MIN(cur->size, buff_len), the data
+ * source might encounter problem. There are some reasons:
+ * 1. The data in data source is not consistent with molecule file (too
+ * small).
+ * 2. I/O error. It's impossible for memory data source or Syscall
+ *
+ * If a cache miss is triggered: use "read" to load from data source to the
+ * the cache. Then use copy from cache to "buff".
+ **/
 uint32_t mol2_read_at(const mol2_cursor_t *cur, uint8_t *buff,
                       uint32_t buff_len) {
-  uint32_t read_len = ((cur->size > buff_len) ? buff_len : cur->size);
-  return cur->read(cur->arg, buff, read_len, cur->offset);
+  uint32_t read_len = MIN(cur->size, buff_len);
+
+  mol2_data_source_t *ds = cur->data_source;
+  // beyond cache size, "read" it directly.
+  if (read_len > ds->max_cache_size) {
+    return ds->read(ds->args, buff, read_len, cur->offset);
+  }
+
+  // cache miss
+  if (cur->offset < ds->start_point ||
+      ((cur->offset + read_len) > ds->start_point + ds->cache_size)) {
+    uint32_t size =
+        ds->read(ds->args, ds->cache, ds->max_cache_size, cur->offset);
+    ASSERT(size >= read_len);
+    // update cache setting
+    ds->cache_size = size;
+    ds->start_point = cur->offset;
+  }
+  // cache hit
+  ASSERT(cur->offset >= ds->start_point);
+  uint8_t *read_point = ds->cache + cur->offset - ds->start_point;
+  ASSERT((read_point + read_len) <= (ds->cache + ds->cache_size));
+  memcpy(buff, read_point, read_len);
+  return read_len;
 }
 
 mol2_num_t mol2_unpack_number(const mol2_cursor_t *cursor) {

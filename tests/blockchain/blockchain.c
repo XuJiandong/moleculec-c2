@@ -1,4 +1,5 @@
 #undef NDEBUG
+#define ASSERT assert
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -11,6 +12,7 @@
 #include "blockchain-api2.h"
 #define assert_eq(a, b) assert((a) == (b))
 
+mol2_cursor_t getCursor(mol_seg_t *block);
 void assert_cursor(mol2_cursor_t* cur, uint8_t v0, uint8_t v1) {
   uint8_t temp_buff[255];
   size_t temp_len = 255;
@@ -91,21 +93,26 @@ void read_with_new_api(mol2_cursor_t data) {
     mol2_cursor_t args = type_script.t->args(&type_script);
     assert_cursor(&args, 0x12, 0x34);
   }
-  printf("done");
+}
+
+void stress_test_cache(void* ptr, uint32_t size) {
+  for (uint32_t i = 4; i <= 2048; i += 4) {
+    mol2_cursor_t cur = mol2_make_cursor_from_memory(ptr, size);
+    // change max_cache_size, to trigger cache miss
+    cur.data_source->max_cache_size = i;
+    read_with_new_api(cur);
+  }
+
+  printf("------- stress test passed---------\n");
 }
 
 int main(int argc, const char *argv[]) {
   mol_seg_t block = build_Block();
   read_Block(block);
-
-  mol2_cursor_t block2;
-  block2.offset = 0;
-  block2.size = block.size;
-  block2.read = mol2_source_memory;
-  block2.arg = block.ptr;
+  mol2_cursor_t block2 = mol2_make_cursor_from_memory(block.ptr, block.size);
   read_with_new_api(block2);
 
+  stress_test_cache(block.ptr, block.size);
   printf("\n------- blockchain passed---------\n\n");
-
   return 0;
 }
