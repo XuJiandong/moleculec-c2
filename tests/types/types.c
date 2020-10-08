@@ -24,11 +24,7 @@ int main(int argc, const char* argv[]) {
   int size = 0;
   uint8_t* buff = build_all(&size);
 
-  mol2_cursor_t table;
-  table.offset = 0;
-  table.size = size;
-  table.read = mol2_source_memory;
-  table.arg = buff;
+  mol2_cursor_t table = mol2_make_cursor_from_memory(buff, size);
 
   AllInOneType all = make_AllInOne(&table);
   assert_eq(all.t->f0(&all), 0);

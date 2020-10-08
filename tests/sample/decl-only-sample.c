@@ -29,11 +29,7 @@ void verify_sample_option_table(mol2_cursor_t* sample_table2) {
 void verify_sample_union(void) {
   mol_seg_t sample = build_SampleUnion();
   // build new data from scratch
-  mol2_cursor_t sample_union;
-  sample_union.offset = 0;
-  sample_union.size = sample_union.size;
-  sample_union.read = mol2_source_memory;
-  sample_union.arg = sample.ptr;
+  mol2_cursor_t sample_union = mol2_make_cursor_from_memory(sample.ptr, sample.size);
 
   SampleUnionType u = make_SampleUnion(&sample_union);
   assert(u.t->item_id(&u) == 0);
@@ -52,11 +48,7 @@ void verify_sample_union(void) {
 int main(int argc, const char* argv[]) {
   mol_seg_t sample_table = build_SampleTable();
 
-  mol2_cursor_t sample_table2;
-  sample_table2.offset = 0;
-  sample_table2.size = sample_table.size;
-  sample_table2.read = mol2_source_memory;
-  sample_table2.arg = sample_table.ptr;
+  mol2_cursor_t sample_table2 = mol2_make_cursor_from_memory(sample_table.ptr, sample_table.size);
 
   SampleTableType t = make_SampleTable(&sample_table2);
   mol2_cursor_t b2 = t.t->byte2(&t);
