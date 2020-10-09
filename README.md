@@ -88,22 +88,25 @@ For a lot of scenarios which only need some part of data, we can have a load-on-
 This load-on-demand mechanic is introduced by the following data structure:
 ```C
 typedef struct mol2_cursor_t {
-  uint32_t offset;     // offset of slice
-  uint32_t size;       // size of slice
-  mol2_source_t read;  // data source
-  void *arg;           // data source
+  uint32_t offset;  // offset of slice
+  uint32_t size;    // size of slice
+  mol2_data_source_t *data_source;
 } mol2_cursor_t;
 ```
-The "read" together with "arg" are the data source. The "offset" together with "size", is an "view"/"slice" of the data source. Here the relationship between "read" and the "arg" is the same as "fopen" and "FILE*" in standard C library.
 
 We have a very simple implementation of "read" field over memory: 
 ```C
-// a sample source over memory
-uint32_t mol2_source_memory(void *arg, uint8_t *ptr, uint32_t len,
+uint32_t mol2_source_memory(uintptr_t args[], uint8_t *ptr, uint32_t len,
                             uint32_t offset) {
-  uint8_t *start_mem = (uint8_t *)arg;
-  memcpy(ptr, start_mem + offset, len);
-  return len;
+  uint32_t mem_len = (uint32_t)args[1];
+  ASSERT(offset < mem_len);
+  uint32_t remaining_len = mem_len - offset;
+
+  uint32_t min_len = MIN(remaining_len, len);
+  uint8_t *start_mem = (uint8_t *)args[0];
+  ASSERT((offset + min_len) <= mem_len);
+  memcpy(ptr, start_mem + offset, min_len);
+  return min_len;
 }
 ```
 We can also make another one based on syscall.
@@ -116,6 +119,11 @@ As the name "cursor" suggests, it's only an cursor. We can access memory on dema
     mol2_read_at(&witness_cur, witness, witness_cur.size);
     assert(witness_cur.size == 3 && witness[0] == 0x12 && witness[1] == 0x34);
 ```
+
+### Cache support
+When the data is read from data source via syscall, the costs on every syscall is expensive.
+It would be great if it can read more data for future use for each syscall: now it supports cache for every reading.
+See ```mol2_read_at``` for more information.
 
 _________________
 
@@ -137,3 +145,9 @@ It can be repeated for every source files if needed.
 ```
 See [here](https://github.com/XuJiandong/moleculec-c2/blob/d00b3cfc9ceb9108507f4aa90220cfc42f3bf20f/tests/sample/decl-only-impl.c#L5).
 It can only be done once. 
+
+### For CKB developer
+There is a already generated file [blockchain-api2.h](https://github.com/XuJiandong/moleculec-c2/blob/master/tests/blockchain/blockchain-api2.h), together with 
+[molecule2_reader.h](https://github.com/XuJiandong/moleculec-c2/blob/master/include/molecule2_reader.h): they can be included in source file directly.
+
+The original mol file is [here](https://github.com/nervosnetwork/ckb/blob/master/util/types/schemas/blockchain.mol).
