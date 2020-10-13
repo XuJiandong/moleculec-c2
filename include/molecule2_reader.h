@@ -536,6 +536,4 @@ mol2_num_t mol2_unpack_number(const mol2_cursor_t *cursor) {
 #endif /* __cplusplus */
 
 #endif /* MOLECULE2_READER_H */
-// -----------------------------------------------------
-// start of sample API
-// -----------------------------------------------------
+
