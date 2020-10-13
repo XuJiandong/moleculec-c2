@@ -47,6 +47,8 @@ ci:
 	cargo install moleculec --vers ${MOLC_VERSION}
 	make clean
 	make all
+	make fmt
+
 
 clean:
 	rm -f tests/sample/sample-api2.h
