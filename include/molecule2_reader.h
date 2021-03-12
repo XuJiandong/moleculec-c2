@@ -11,11 +11,15 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef mol2_printf
+#define mol2_printf printf
+#endif
+
 #ifndef MOL2_PANIC
-#define MOL2_PANIC(err)                              \
-  do {                                               \
-    printf("Error at %s: %d\n", __FILE__, __LINE__); \
-    exit(err);                                       \
+#define MOL2_PANIC(err)                                   \
+  do {                                                    \
+    mol2_printf("Error at %s: %d\n", __FILE__, __LINE__); \
+    exit(err);                                            \
   } while (0)
 //#define MOL2_PANIC(err) do {printf("Error at %s: %d, %d\n", __FILE__,
 //__LINE__, err); } while(0)
@@ -281,8 +285,8 @@ void mol2_validate(const mol2_cursor_t *cur) {
     MOL2_PANIC(mol2_ERR_OVERFLOW);
   }
   if (res > cur->data_source->total_size) {
-    printf("total_size(%d) > offset(%d) + size(%d)\n",
-           cur->data_source->total_size, cur->offset, cur->size);
+    mol2_printf("total_size(%d) > offset(%d) + size(%d)\n",
+                cur->data_source->total_size, cur->offset, cur->size);
     MOL2_PANIC(mol2_ERR_INDEX_OUT_OF_BOUNDS);
   }
 }
@@ -624,15 +628,28 @@ uint32_t mol2_read_at(const mol2_cursor_t *cur, uint8_t *buff,
         ds->read(ds->args, ds->cache, ds->max_cache_size, cur->offset);
     if (size < read_len) {
       MOL2_PANIC(mol2_ERR_DATA);
+      return 0;
     }
     // update cache setting
     ds->cache_size = size;
     ds->start_point = cur->offset;
+    if (ds->cache_size > ds->max_cache_size) {
+      MOL2_PANIC(mol2_ERR_OVERFLOW);
+      return 0;
+    }
   }
   // cache hit
-  ASSERT(cur->offset >= ds->start_point);
+  if (cur->offset < ds->start_point ||
+      (cur->offset - ds->start_point) > ds->max_cache_size) {
+    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    return 0;
+  }
   uint8_t *read_point = ds->cache + cur->offset - ds->start_point;
-  ASSERT((read_point + read_len) <= (ds->cache + ds->cache_size));
+  if ((read_point + read_len) > (ds->cache + ds->cache_size)) {
+    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    return 0;
+  }
+
   memcpy(buff, read_point, read_len);
   return read_len;
 }
