@@ -381,7 +381,7 @@ fn generate_common_array_impl(output: &mut Output, name: &str, c_type_name: &str
                                     uint32_t index, bool *existing) {{
             {1} ret = {{0}};
             mol2_cursor_res_t res = {3};
-            if (res.errno != mol2_OK) {{
+            if (res.errno != MOL2_OK) {{
                 *existing = false;
                 return ret;
             }} else {{
@@ -397,7 +397,7 @@ fn generate_common_array_impl(output: &mut Output, name: &str, c_type_name: &str
             {1} {0}_get_impl({0}Type *this, uint32_t index, bool *existing) {{
             {1} ret = {{0}};
             mol2_cursor_res_t res = {3};
-            if (res.errno != mol2_OK) {{
+            if (res.errno != MOL2_OK) {{
                 *existing = false;
                 return ret;
             }} else {{
@@ -413,7 +413,7 @@ fn generate_common_array_impl(output: &mut Output, name: &str, c_type_name: &str
                                     uint32_t index, bool *existing) {{
             mol2_cursor_t ret = {{0}};
             mol2_cursor_res_t res = {1};
-            if (res.errno != mol2_OK) {{
+            if (res.errno != MOL2_OK) {{
                 *existing = false;
                 return ret;
             }} else {{

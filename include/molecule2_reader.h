@@ -58,7 +58,7 @@ extern "C" {
 
 typedef uint32_t mol2_num_t;  // Item Id
 typedef uint8_t mol2_errno;   // Error Number
-#define mol2_NUM_T_SIZE 4
+#define MOL2_NUM_T_SIZE 4
 
 // predefined type
 // If the types defined in schema is fundamental type:
@@ -86,17 +86,17 @@ typedef int8_t Int8;      // [byte; 1]
 
 /* Error Numbers */
 
-#define mol2_OK 0x00
-#define mol2_ERR 0xff
+#define MOL2_OK 0x00
+#define MOL2_ERR 0xff
 
-#define mol2_ERR_TOTAL_SIZE 0x01
-#define mol2_ERR_HEADER 0x02
-#define mol2_ERR_OFFSET 0x03
-#define mol2_ERR_UNKNOWN_ITEM 0x04
-#define mol2_ERR_INDEX_OUT_OF_BOUNDS 0x05
-#define mol2_ERR_FIELD_COUNT 0x06
-#define mol2_ERR_DATA 0x07
-#define mol2_ERR_OVERFLOW 0x08
+#define MOL2_ERR_TOTAL_SIZE 0x01
+#define MOL2_ERR_HEADER 0x02
+#define MOL2_ERR_OFFSET 0x03
+#define MOL2_ERR_UNKNOWN_ITEM 0x04
+#define MOL2_ERR_INDEX_OUT_OF_BOUNDS 0x05
+#define MOL2_ERR_FIELD_COUNT 0x06
+#define MOL2_ERR_DATA 0x07
+#define MOL2_ERR_OVERFLOW 0x08
 
 // converting function
 // format: convert_to_${Type}
@@ -243,7 +243,7 @@ mol2_cursor_t convert_to_rawbytes(mol2_cursor_t *cur);
 void mol2_add_offset(mol2_cursor_t *cur, uint32_t offset) {
   uint32_t res;
   if (__builtin_add_overflow(cur->offset, offset, &res)) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
   }
   cur->offset = res;
 }
@@ -252,7 +252,7 @@ void mol2_add_offset(mol2_cursor_t *cur, uint32_t offset) {
 void mol2_sub_size(mol2_cursor_t *cur, uint32_t shrinked_size) {
   uint32_t res;
   if (__builtin_sub_overflow(cur->size, shrinked_size, &res)) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
   }
   cur->size = res;
 }
@@ -261,7 +261,7 @@ void mol2_sub_size(mol2_cursor_t *cur, uint32_t shrinked_size) {
 uint32_t mol2_get_item_count(mol2_cursor_t *cur) {
   uint32_t count = mol2_unpack_number(cur) / 4;
   if (count == 0) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
   }
   return count - 1;
 }
@@ -270,11 +270,11 @@ uint32_t mol2_calculate_offset(uint32_t item_size, uint32_t item_count,
                                uint32_t offset) {
   uint32_t mul_res;
   if (__builtin_mul_overflow(item_size, item_count, &mul_res)) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
   }
   uint32_t sum_res;
   if (__builtin_add_overflow(mul_res, offset, &sum_res)) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
   }
   return sum_res;
 }
@@ -282,33 +282,33 @@ uint32_t mol2_calculate_offset(uint32_t item_size, uint32_t item_count,
 void mol2_validate(const mol2_cursor_t *cur) {
   uint32_t res;
   if (__builtin_add_overflow(cur->offset, cur->size, &res)) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
   }
   if (res > cur->data_source->total_size) {
     mol2_printf("total_size(%d) > offset(%d) + size(%d)\n",
                 cur->data_source->total_size, cur->offset, cur->size);
-    MOL2_PANIC(mol2_ERR_INDEX_OUT_OF_BOUNDS);
+    MOL2_PANIC(MOL2_ERR_INDEX_OUT_OF_BOUNDS);
   }
 }
 
 mol2_errno mol2_verify_fixed_size(const mol2_cursor_t *input,
                                   mol2_num_t total_size) {
-  return input->size == total_size ? mol2_OK : mol2_ERR_TOTAL_SIZE;
+  return input->size == total_size ? MOL2_OK : MOL2_ERR_TOTAL_SIZE;
 }
 
 mol2_errno mol2_fixvec_verify(const mol2_cursor_t *input,
                               mol2_num_t item_size) {
-  if (input->size < mol2_NUM_T_SIZE) {
-    return mol2_ERR_HEADER;
+  if (input->size < MOL2_NUM_T_SIZE) {
+    return MOL2_ERR_HEADER;
   }
   mol2_num_t item_count = mol2_unpack_number(input);
   if (item_count == 0) {
-    return input->size == mol2_NUM_T_SIZE ? mol2_OK : mol2_ERR_TOTAL_SIZE;
+    return input->size == MOL2_NUM_T_SIZE ? MOL2_OK : MOL2_ERR_TOTAL_SIZE;
   }
   // mol2_num_t total_size = mol2_NUM_T_SIZE + item_size * item_count;
   mol2_num_t total_size =
-      mol2_calculate_offset(item_size, item_count, mol2_NUM_T_SIZE);
-  return input->size == total_size ? mol2_OK : mol2_ERR_TOTAL_SIZE;
+      mol2_calculate_offset(item_size, item_count, MOL2_NUM_T_SIZE);
+  return input->size == total_size ? MOL2_OK : MOL2_ERR_TOTAL_SIZE;
 }
 
 bool mol2_option_is_none(const mol2_cursor_t *input) {
@@ -321,8 +321,8 @@ mol2_union_t mol2_union_unpack(const mol2_cursor_t *input) {
   ret.cursor = *input;  // must copy
   //   ret.cursor.offset = input->offset + mol2_NUM_T_SIZE;
   //   ret.cursor.size = input->size - mol2_NUM_T_SIZE;
-  mol2_add_offset(&ret.cursor, mol2_NUM_T_SIZE);
-  mol2_sub_size(&ret.cursor, mol2_NUM_T_SIZE);
+  mol2_add_offset(&ret.cursor, MOL2_NUM_T_SIZE);
+  mol2_sub_size(&ret.cursor, MOL2_NUM_T_SIZE);
   mol2_validate(&ret.cursor);
   return ret;
 }
@@ -332,11 +332,11 @@ mol2_num_t mol2_fixvec_length(const mol2_cursor_t *input) {
 }
 
 mol2_num_t mol2_dynvec_length(const mol2_cursor_t *input) {
-  if (input->size == mol2_NUM_T_SIZE) {
+  if (input->size == MOL2_NUM_T_SIZE) {
     return 0;
   } else {
     mol2_cursor_t cur = *input;
-    mol2_add_offset(&cur, mol2_NUM_T_SIZE);
+    mol2_add_offset(&cur, MOL2_NUM_T_SIZE);
     mol2_validate(&cur);
     // return (mol2_unpack_number(&cur) / 4) - 1;
     return mol2_get_item_count(&cur);
@@ -373,7 +373,7 @@ mol2_cursor_res_t mol2_slice_by_offset2(const mol2_cursor_t *input,
   mol2_validate(&cur);
 
   mol2_cursor_res_t res;
-  res.errno = mol2_OK;
+  res.errno = MOL2_OK;
   res.cur = cur;
   return res;
 }
@@ -385,13 +385,13 @@ mol2_cursor_res_t mol2_fixvec_slice_by_index(const mol2_cursor_t *input,
   res.cur = *input;
   mol2_num_t item_count = mol2_unpack_number(input);
   if (item_index >= item_count) {
-    res.errno = mol2_ERR_INDEX_OUT_OF_BOUNDS;
+    res.errno = MOL2_ERR_INDEX_OUT_OF_BOUNDS;
   } else {
-    res.errno = mol2_OK;
+    res.errno = MOL2_OK;
     //    res.cur.offset = input->offset + mol2_NUM_T_SIZE + item_size *
     //    item_index;
     uint32_t offset =
-        mol2_calculate_offset(item_size, item_index, mol2_NUM_T_SIZE);
+        mol2_calculate_offset(item_size, item_index, MOL2_NUM_T_SIZE);
     mol2_add_offset(&res.cur, offset);
     res.cur.size = item_size;
     mol2_validate(&res.cur);
@@ -406,25 +406,25 @@ mol2_cursor_res_t mol2_dynvec_slice_by_index(const mol2_cursor_t *input,
   struct mol2_cursor_t temp = *input;
 
   mol2_num_t total_size = mol2_unpack_number(input);
-  if (total_size == mol2_NUM_T_SIZE) {
-    res.errno = mol2_ERR_INDEX_OUT_OF_BOUNDS;
+  if (total_size == MOL2_NUM_T_SIZE) {
+    res.errno = MOL2_ERR_INDEX_OUT_OF_BOUNDS;
   } else {
     // temp.offset = input->offset + mol2_NUM_T_SIZE;
-    mol2_add_offset(&temp, mol2_NUM_T_SIZE);
+    mol2_add_offset(&temp, MOL2_NUM_T_SIZE);
     // mol2_num_t item_count = (mol2_unpack_number(&temp) / 4) - 1;
     mol2_num_t item_count = mol2_get_item_count(&temp);
 
     if (item_index >= item_count) {
-      res.errno = mol2_ERR_INDEX_OUT_OF_BOUNDS;
+      res.errno = MOL2_ERR_INDEX_OUT_OF_BOUNDS;
     } else {
       temp.offset = input->offset;
       uint32_t temp_offset =
-          mol2_calculate_offset(mol2_NUM_T_SIZE, item_index + 1, 0);
+          mol2_calculate_offset(MOL2_NUM_T_SIZE, item_index + 1, 0);
       mol2_add_offset(&temp, temp_offset);
 
       mol2_num_t item_start = mol2_unpack_number(&temp);
       if (item_index + 1 == item_count) {
-        res.errno = mol2_OK;
+        res.errno = MOL2_OK;
         res.cur.offset = input->offset;
         mol2_add_offset(&res.cur, item_start);
         res.cur.size = total_size;
@@ -432,11 +432,11 @@ mol2_cursor_res_t mol2_dynvec_slice_by_index(const mol2_cursor_t *input,
       } else {
         temp.offset = input->offset;
         uint32_t calc_offset =
-            mol2_calculate_offset(mol2_NUM_T_SIZE, item_index + 2, 0);
+            mol2_calculate_offset(MOL2_NUM_T_SIZE, item_index + 2, 0);
         mol2_add_offset(&temp, calc_offset);
 
         mol2_num_t item_end = mol2_unpack_number(&temp);
-        res.errno = mol2_OK;
+        res.errno = MOL2_OK;
         res.cur.offset = input->offset;
         mol2_add_offset(&res.cur, item_start);
         res.cur.size = item_end;
@@ -444,7 +444,7 @@ mol2_cursor_res_t mol2_dynvec_slice_by_index(const mol2_cursor_t *input,
       }
     }
   }
-  if (res.errno == mol2_OK) {
+  if (res.errno == MOL2_OK) {
     mol2_validate(&res.cur);
   }
   return res;
@@ -459,7 +459,7 @@ mol2_cursor_t mol2_table_slice_by_index(const mol2_cursor_t *input,
 
 mol2_cursor_t mol2_fixvec_slice_raw_bytes(const mol2_cursor_t *input) {
   mol2_cursor_t cur = *input;
-  mol2_add_offset(&cur, mol2_NUM_T_SIZE);
+  mol2_add_offset(&cur, MOL2_NUM_T_SIZE);
   cur.size = mol2_unpack_number(input);
   mol2_validate(&cur);
   return cur;
@@ -469,7 +469,7 @@ Uint64 convert_to_Uint64(mol2_cursor_t *cur) {
   uint64_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -479,7 +479,7 @@ Int64 convert_to_Int64(mol2_cursor_t *cur) {
   int64_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -489,7 +489,7 @@ Uint32 convert_to_Uint32(mol2_cursor_t *cur) {
   uint32_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -499,7 +499,7 @@ Int32 convert_to_Int32(mol2_cursor_t *cur) {
   int32_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -509,7 +509,7 @@ Uint16 convert_to_Uint16(mol2_cursor_t *cur) {
   uint16_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -520,7 +520,7 @@ Int16 convert_to_Int16(mol2_cursor_t *cur) {
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   ASSERT(len == sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   return ret;
 }
@@ -529,7 +529,7 @@ Uint8 convert_to_Uint8(mol2_cursor_t *cur) {
   uint8_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -539,7 +539,7 @@ Int8 convert_to_Int8(mol2_cursor_t *cur) {
   int8_t ret;
   uint32_t len = mol2_read_at(cur, (uint8_t *)&ret, sizeof(ret));
   if (len != sizeof(ret)) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   change_endian((uint8_t *)&ret, sizeof(ret));
   return ret;
@@ -556,7 +556,7 @@ void change_endian(uint8_t *ptr, int size) {
   if (size == 0) return;
 
   if (size % 2 != 0) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   uint8_t t = 0;
   for (int i = 0; i < size / 2; i++) {
@@ -627,26 +627,26 @@ uint32_t mol2_read_at(const mol2_cursor_t *cur, uint8_t *buff,
     uint32_t size =
         ds->read(ds->args, ds->cache, ds->max_cache_size, cur->offset);
     if (size < read_len) {
-      MOL2_PANIC(mol2_ERR_DATA);
+      MOL2_PANIC(MOL2_ERR_DATA);
       return 0;
     }
     // update cache setting
     ds->cache_size = size;
     ds->start_point = cur->offset;
     if (ds->cache_size > ds->max_cache_size) {
-      MOL2_PANIC(mol2_ERR_OVERFLOW);
+      MOL2_PANIC(MOL2_ERR_OVERFLOW);
       return 0;
     }
   }
   // cache hit
   if (cur->offset < ds->start_point ||
       (cur->offset - ds->start_point) > ds->max_cache_size) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
     return 0;
   }
   uint8_t *read_point = ds->cache + cur->offset - ds->start_point;
   if ((read_point + read_len) > (ds->cache + ds->cache_size)) {
-    MOL2_PANIC(mol2_ERR_OVERFLOW);
+    MOL2_PANIC(MOL2_ERR_OVERFLOW);
     return 0;
   }
 
@@ -658,7 +658,7 @@ mol2_num_t mol2_unpack_number(const mol2_cursor_t *cursor) {
   uint8_t src[4];
   uint32_t len = mol2_read_at(cursor, src, 4);
   if (len != 4) {
-    MOL2_PANIC(mol2_ERR_DATA);
+    MOL2_PANIC(MOL2_ERR_DATA);
   }
   if (is_le2()) {
     return *(const uint32_t *)src;

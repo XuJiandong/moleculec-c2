@@ -18,7 +18,7 @@ use std::ffi::OsString;
 
 fn main() {
     let matches = App::new("moleculec-c2")
-        .version("0.1.0")
+        .version("0.1.1")
         .author("Xu Jiandong<xjd@cryptape>")
         .about("Improved C plugin for the molecule serialization system")
         .arg(
