@@ -14,3 +14,11 @@ Cargo.lock
 
 /target
 tests/sample/build
+moleculec_c2_coverage
+tests/fuzzer/moleculec_c2_fuzzer.dSYM
+moleculec_c2_fuzzer
+tests/fuzzer/corpus
+tests/fuzzer/coverage
+tests/fuzzer/crash-*
+tests/fuzzer/fuzz-*
+
