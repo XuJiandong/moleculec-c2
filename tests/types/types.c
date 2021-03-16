@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-
+#define MOL2_EXIT exit
 #include "types-api2.h"
 void* build_all(int* size);
 

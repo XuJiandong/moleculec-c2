@@ -38,6 +38,9 @@ tests/types/types-api2.h: mol/types.json $(RUST_SRC)
 types: mol/types.json tests/types/types-api2.h
 	make -C tests/types
 
+copy-files:
+	cp tests/blockchain/blockchain-api2.h ~/projects/ckb-production-scripts-xudt/deps/ckb-c-stdlib-simulator-only2/molecule
+	cp include/molecule2_reader.h ~/projects/ckb-production-scripts-xudt/deps/ckb-c-stdlib-simulator-only2/molecule
 
 fmt:
 	clang-format -i -style=Google $(wildcard include/*.h)

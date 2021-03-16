@@ -1,3 +1,4 @@
+
 #undef NDEBUG
 #include <assert.h>
 #include <stdint.h>
@@ -5,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define MOL2_EXIT exit
 #include "sample-api2.h"
 //#include "sample-api2.h"
 #include "sample-builder.h"

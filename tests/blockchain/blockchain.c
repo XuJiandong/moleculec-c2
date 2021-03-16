@@ -1,5 +1,7 @@
 #undef NDEBUG
 #define ASSERT assert
+#define MOL2_EXIT exit
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
