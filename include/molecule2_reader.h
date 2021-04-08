@@ -18,12 +18,11 @@ extern "C" {
 #define MOL2_EXIT exit
 #endif
 
-
 #ifndef MOL2_PANIC
 #define MOL2_PANIC(err)                                   \
   do {                                                    \
     mol2_printf("Error at %s: %d\n", __FILE__, __LINE__); \
-    MOL2_EXIT(err);                                        \
+    MOL2_EXIT(err);                                       \
   } while (0)
 //#define MOL2_PANIC(err) do {printf("Error at %s: %d, %d\n", __FILE__,
 //__LINE__, err); } while(0)
@@ -130,6 +129,7 @@ typedef uint32_t (*mol2_source_t)(uintptr_t arg[], uint8_t *ptr, uint32_t len,
                                   uint32_t offset);
 
 #define MAX_CACHE_SIZE 2048
+#define MIN_CACHE_SIZE 64
 
 // data source with cache support
 typedef struct mol2_data_source_t {
@@ -146,11 +146,18 @@ typedef struct mol2_data_source_t {
   // miss)
   uint32_t start_point;
   uint32_t cache_size;
-  // it's normally same as MAX_CACHE_SIZE.
+  // it's normally a fixed value, like MIN_CACHE_SIZE, MAX_CACHE_SIZE.
   // modify it for testing purpose
   uint32_t max_cache_size;
-  uint8_t cache[MAX_CACHE_SIZE];
+  // variable length structure, MIN_CACHE_SIZE is just a placeholder.
+  // it's true length is calculated by "MOL2_DATA_SOURCE_LEN".
+  uint8_t cache[MIN_CACHE_SIZE];
 } mol2_data_source_t;
+
+#define MOL2_DATA_SOURCE_LEN(cache_size) \
+  (sizeof(mol2_data_source_t) + (cache_size)-MIN_CACHE_SIZE)
+#define DEFAULT_DATA_SOURCE_LENGTH \
+  (sizeof(mol2_data_source_t) + MAX_CACHE_SIZE - MIN_CACHE_SIZE)
 
 /**
  * --------------- MUST READ ----------------------
@@ -341,6 +348,7 @@ mol2_num_t mol2_dynvec_length(const mol2_cursor_t *input) {
   } else {
     mol2_cursor_t cur = *input;
     mol2_add_offset(&cur, MOL2_NUM_T_SIZE);
+    mol2_sub_size(&cur, MOL2_NUM_T_SIZE);
     mol2_validate(&cur);
     // return (mol2_unpack_number(&cur) / 4) - 1;
     return mol2_get_item_count(&cur);
@@ -597,7 +605,8 @@ mol2_cursor_t mol2_make_cursor_from_memory(const void *memory, uint32_t size) {
 
   s_data_source.cache_size = 0;
   s_data_source.start_point = 0;
-  s_data_source.max_cache_size = MAX_CACHE_SIZE;
+  s_data_source.total_size = size;
+  s_data_source.max_cache_size = MIN_CACHE_SIZE;
   cur.data_source = &s_data_source;
   return cur;
 }

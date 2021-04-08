@@ -98,7 +98,7 @@ void read_with_new_api(mol2_cursor_t data) {
 }
 
 void stress_test_cache(void* ptr, uint32_t size) {
-  for (uint32_t i = 4; i <= 2048; i += 4) {
+  for (uint32_t i = 4; i <= MIN_CACHE_SIZE; i += 4) {
     mol2_cursor_t cur = mol2_make_cursor_from_memory(ptr, size);
     // change max_cache_size, to trigger cache miss
     cur.data_source->max_cache_size = i;
