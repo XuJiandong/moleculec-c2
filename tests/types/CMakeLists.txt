@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(types C)
+project(moleculec-c2-types C)
 
 set(CMAKE_C_STANDARD 11)
 
