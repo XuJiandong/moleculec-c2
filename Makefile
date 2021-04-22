@@ -1,5 +1,5 @@
 MOLC    := moleculec
-MOLC_VERSION := 0.6.1
+MOLC_VERSION := 0.7.0
 
 RUST_SRC := $(wildcard src/*.rs)
 
@@ -51,6 +51,13 @@ ci:
 	make clean
 	make all
 	make fmt
+
+install-tools:
+	if [ ! -x "$$(command -v "${MOLC}")" ] \
+			|| [ "$$(${MOLC} --version | awk '{ print $$2 }' | tr -d ' ')" != "${MOLC_VERSION}" ]; then \
+		cargo install --force --version "${MOLC_VERSION}" "${MOLC}"; \
+	fi
+
 
 
 clean:

@@ -13,7 +13,7 @@ extern "C" {
 #define MOLECULE_API_DECORATOR
 #endif /* MOLECULE_API_DECORATOR */
 
-#define MOLECULE_API_VERSION 5000
+#define MOLECULE_API_VERSION 7000
 #define MOLECULEC_VERSION_MIN 5000
 
 #if MOLECULE_API_VERSION < MOLECULE_API_VERSION_MIN
@@ -87,17 +87,20 @@ typedef struct {
 /* Utilities. */
 
 MOLECULE_API_DECORATOR mol_num_t mol_unpack_number(const uint8_t *src) {
+  uint32_t output = 0;
+  uint8_t *dst = (uint8_t *)&output;
   if (is_le()) {
-    return *(const uint32_t *)src;
+    dst[3] = src[3];
+    dst[2] = src[2];
+    dst[1] = src[1];
+    dst[0] = src[0];
   } else {
-    uint32_t output = 0;
-    uint8_t *dst = (uint8_t *)&output;
     dst[3] = src[0];
     dst[2] = src[1];
     dst[1] = src[2];
     dst[0] = src[3];
-    return output;
   }
+  return output;
 }
 
 /*

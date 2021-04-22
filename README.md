@@ -6,7 +6,7 @@ Improved C plugin for the molecule serialization system.
 ### How to use
 - Install "moleculec"
 ```bash
-$cargo install moleculec
+make install-tools
 ```
 - Compile Rust code to binary
 ```bash
