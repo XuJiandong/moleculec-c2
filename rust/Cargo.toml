@@ -1,5 +1,5 @@
 [package]
-name = "molecule-rust2"
+name = "molecule2"
 version = "0.1.0"
 authors = ["xjd <xjd@cryptape.com>"]
 edition = "2018"
