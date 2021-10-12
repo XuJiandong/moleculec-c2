@@ -186,15 +186,15 @@ impl CursorType {
         self.unpack_number()
     }
 
-    pub fn dynvec_length(&self) -> Result<usize, Error> {
+    pub fn dynvec_length(&self) -> usize {
         if self.size == NUM_T_SIZE {
-            Ok(0)
+            0
         } else {
             let mut cur2 = self.clone();
             cur2.add_offset(NUM_T_SIZE);
             cur2.sub_size(NUM_T_SIZE);
             cur2.validate();
-            Ok(cur2.get_item_count())
+            cur2.get_item_count()
         }
     }
 
@@ -207,12 +207,12 @@ impl CursorType {
         }
     }
 
-    pub fn table_actual_field_count(&self) -> Result<usize, Error> {
+    pub fn table_actual_field_count(&self) -> usize {
         self.dynvec_length()
     }
 
     pub fn table_has_extra_fields(&self, field_count: usize) -> bool {
-        let count = self.table_actual_field_count().unwrap();
+        let count = self.table_actual_field_count();
         count > field_count
     }
 
@@ -325,7 +325,7 @@ impl From<CursorType> for i64 {
     fn from(cur: CursorType) -> Self {
         let mut buf = [0u8; 8];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_i64");
         }
         i64::from_le_bytes(buf)
@@ -347,7 +347,7 @@ impl From<CursorType> for i32 {
     fn from(cur: CursorType) -> Self {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_i32");
         }
         i32::from_le_bytes(buf)
@@ -380,7 +380,7 @@ impl From<CursorType> for u8 {
     fn from(cur: CursorType) -> Self {
         let mut buf = [0u8; 1];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_u8");
         }
         u8::from_le_bytes(buf)
@@ -391,9 +391,22 @@ impl From<CursorType> for i8 {
     fn from(cur: CursorType) -> Self {
         let mut buf = [0u8; 1];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_i8");
         }
         i8::from_le_bytes(buf)
+    }
+}
+
+impl From<CursorType> for Vec<u8> {
+    fn from(cur: CursorType) -> Self {
+        let mut buf = Vec::<u8>::new();
+        buf.resize(cur.size, 0);
+
+        let size = read_at(&cur, buf.as_mut_slice()).unwrap();
+        if size != buf.len() {
+            panic!("convert to Vec<u8>");
+        }
+        buf
     }
 }
