@@ -21,6 +21,11 @@ pub enum Error {
 }
 
 pub trait Reader {
+    /**
+     * try to read `buf.len()` bytes from data source with `offset`, then fill it in `buf`.
+     * the return size can be smaller than `buf.len()` which means the remaining data length is
+     * smaller than `buf.len()`
+     */
     fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error>;
 }
 
@@ -47,35 +52,37 @@ pub struct CursorType {
 
 #[allow(dead_code)]
 pub struct UnionType {
-    item_id: usize,
-    cursor: CursorType,
+    pub item_id: usize,
+    pub cursor: CursorType,
 }
 
 // it's an example about how to build a data source from memory
 impl Reader for Vec<u8> {
     fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
-        let offset2 = offset as usize;
-        let slice = self.as_slice();
+        let mem_len = self.len();
+        assert!(offset < mem_len);
 
-        let slice2 = &slice[offset2..offset2 + buf.len()];
-        buf.copy_from_slice(slice2);
-        Ok(buf.len() as usize)
+        let remaining_len = mem_len - offset;
+        let min_len = min(remaining_len, buf.len());
+
+        assert!((offset + min_len) <= mem_len);
+        buf[0..min_len].copy_from_slice(&self.as_slice()[offset..offset + min_len]);
+        Ok(min_len)
     }
 }
 
 pub fn make_cursor_from_memory(mem: Vec<u8>) -> CursorType {
-    let cache_size = MAX_CACHE_SIZE;
     let mut cache = Vec::<u8>::new();
     let total_size = mem.len();
 
-    cache.resize(cache_size, 0);
+    cache.resize(MAX_CACHE_SIZE, 0);
     let reader = Box::new(mem);
 
     let data_source = DataSourceType {
         reader,
         total_size,
         start_point: 0,
-        cache_size,
+        cache_size: 0, // when created, cache is not filled
         max_cache_size: MAX_CACHE_SIZE,
         cache,
     };
