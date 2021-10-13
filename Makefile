@@ -50,8 +50,9 @@ ci:
 	cargo install moleculec --vers ${MOLC_VERSION}
 	make clean
 	make all
-	make fmt
+	cd rust && cargo test
 
+	
 install-tools:
 	if [ ! -x "$$(command -v "${MOLC}")" ] \
 			|| [ "$$(${MOLC} --version | awk '{ print $$2 }' | tr -d ' ')" != "${MOLC_VERSION}" ]; then \
