@@ -163,11 +163,13 @@ impl CellOutput {
         let cursor = self.cursor.table_slice_by_index(1).unwrap();
         cursor.into()
     }
-    // TODO:
-    // it can be optimized into Option<Script>
-    pub fn get_type_(&self) -> ScriptOpt {
+    pub fn get_type_(&self) -> Option<Script> {
         let cursor = self.cursor.table_slice_by_index(2).unwrap();
-        cursor.into()
+        if cursor.option_is_none() {
+            None
+        } else {
+            Some(cursor.into())
+        }
     }
 }
 
@@ -334,28 +336,6 @@ impl Script {
         // need extra step for fixvec
         let cur2 = cur.convert_to_rawbytes().unwrap();
         cur2.into()
-    }
-}
-
-pub struct ScriptOpt {
-    cursor: CursorType,
-}
-
-impl From<CursorType> for ScriptOpt {
-    fn from(cursor: CursorType) -> Self {
-        Self { cursor }
-    }
-}
-
-impl ScriptOpt {
-    pub fn is_some(&self) -> bool {
-        !self.cursor.option_is_none()
-    }
-    pub fn is_none(&self) -> bool {
-        self.cursor.option_is_none()
-    }
-    pub fn unwrap(&self) -> Script {
-        self.cursor.clone().into()
     }
 }
 
