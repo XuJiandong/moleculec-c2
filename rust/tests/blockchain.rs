@@ -39,11 +39,11 @@ impl From<CursorType> for Transaction {
 }
 
 impl Transaction {
-    pub fn get_raw(&self) -> RawTransaction {
+    pub fn raw(&self) -> RawTransaction {
         let cursor = self.cursor.table_slice_by_index(0).unwrap();
         cursor.into()
     }
-    pub fn get_witness(&self) -> WitnessArgs {
+    pub fn witness(&self) -> WitnessArgs {
         let cursor = self.cursor.table_slice_by_index(1).unwrap();
         cursor.into()
     }
@@ -60,24 +60,24 @@ impl From<CursorType> for RawTransaction {
 }
 
 impl RawTransaction {
-    pub fn get_version(&self) -> u32 {
+    pub fn version(&self) -> u32 {
         let cursor = self.cursor.table_slice_by_index(0).unwrap();
         cursor.into()
     }
-    pub fn get_cell_deps(&self) -> CellDepVec {
+    pub fn cell_deps(&self) -> CellDepVec {
         let cursor = self.cursor.table_slice_by_index(1).unwrap();
         cursor.into()
     }
 
-    pub fn get_inputs(&self) -> CellInputVec {
+    pub fn inputs(&self) -> CellInputVec {
         let cursor = self.cursor.table_slice_by_index(3).unwrap();
         cursor.into()
     }
-    pub fn get_outputs(&self) -> CellOutputVec {
+    pub fn outputs(&self) -> CellOutputVec {
         let cursor = self.cursor.table_slice_by_index(4).unwrap();
         cursor.into()
     }
-    pub fn get_outputs_data(&self) -> BytesVec {
+    pub fn outputs_data(&self) -> BytesVec {
         let cursor = self.cursor.table_slice_by_index(5).unwrap();
         cursor.into()
     }
@@ -113,12 +113,12 @@ impl From<CursorType> for CellDep {
 }
 
 impl CellDep {
-    pub fn get_out_point(&self) -> OutPoint {
+    pub fn out_point(&self) -> OutPoint {
         let cursor = self.cursor.slice_by_offset(0, 36).unwrap();
         cursor.into()
     }
 
-    pub fn get_dep_type(&self) -> u8 {
+    pub fn dep_type(&self) -> u8 {
         let cursor = self.cursor.slice_by_offset(36, 1).unwrap();
         cursor.into()
     }
@@ -155,15 +155,15 @@ impl From<CursorType> for CellOutput {
 }
 
 impl CellOutput {
-    pub fn get_capacity(&self) -> u64 {
+    pub fn capacity(&self) -> u64 {
         let cursor = self.cursor.table_slice_by_index(0).unwrap();
         cursor.into()
     }
-    pub fn get_lock(&self) -> Script {
+    pub fn lock(&self) -> Script {
         let cursor = self.cursor.table_slice_by_index(1).unwrap();
         cursor.into()
     }
-    pub fn get_type_(&self) -> Option<Script> {
+    pub fn type_(&self) -> Option<Script> {
         let cursor = self.cursor.table_slice_by_index(2).unwrap();
         if cursor.option_is_none() {
             None
@@ -226,11 +226,11 @@ impl From<CursorType> for CellInput {
 }
 
 impl CellInput {
-    pub fn get_since(&self) -> u64 {
+    pub fn since(&self) -> u64 {
         let cursor = self.cursor.slice_by_offset(0, 8).unwrap();
         cursor.into()
     }
-    pub fn get_previous_output(&self) -> OutPoint {
+    pub fn previous_output(&self) -> OutPoint {
         let cursor = self.cursor.slice_by_offset(8, 36).unwrap();
         cursor.into()
     }
@@ -247,12 +247,12 @@ impl From<CursorType> for OutPoint {
 }
 
 impl OutPoint {
-    pub fn get_tx_hash(&self) -> Vec<u8> {
+    pub fn tx_hash(&self) -> Vec<u8> {
         let cursor = self.cursor.slice_by_offset(0, 32).unwrap();
         cursor.into()
     }
 
-    pub fn get_index(&self) -> u32 {
+    pub fn index(&self) -> u32 {
         let cursor = self.cursor.slice_by_offset(32, 4).unwrap();
         cursor.into()
     }
@@ -269,7 +269,7 @@ impl From<CursorType> for WitnessArgs {
 }
 
 impl WitnessArgs {
-    pub fn get_lock(&self) -> BytesOpt {
+    pub fn lock(&self) -> BytesOpt {
         let cursor = self.cursor.table_slice_by_index(0).unwrap();
         cursor.into()
     }
@@ -320,22 +320,49 @@ impl From<CursorType> for Script {
 }
 
 impl Script {
-    pub fn get_code_hash(&self) -> Vec<u8> {
+    pub fn code_hash(&self) -> Vec<u8> {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         // array
         // convert_to_array can be omitted
         cur.into()
     }
-    pub fn get_hash_type(&self) -> u8 {
+    pub fn hash_type(&self) -> u8 {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         // primitive types
         cur.into()
     }
-    pub fn get_args(&self) -> Vec<u8> {
+    pub fn args(&self) -> Vec<u8> {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         // need extra step for fixvec
         let cur2 = cur.convert_to_rawbytes().unwrap();
         cur2.into()
+    }
+}
+
+// here is an example of union, it can either be script or u64
+pub struct SampleUnion {
+    cursor: CursorType,
+}
+
+impl From<CursorType> for SampleUnion {
+    fn from(cursor: CursorType) -> Self {
+        Self { cursor }
+    }
+}
+
+impl SampleUnion {
+    pub fn item_id(&self) -> usize {
+        let union = self.cursor.union_unpack();
+        union.item_id
+    }
+
+    pub fn as_script(&self) -> Script {
+        let union = self.cursor.union_unpack();
+        union.cursor.clone().into()
+    }
+    pub fn as_capacity(&self) -> u64 {
+        let union = self.cursor.union_unpack();
+        union.cursor.clone().into()
     }
 }
 
@@ -371,9 +398,9 @@ impl From<packed::Script> for Script {
 }
 
 fn verify_script(script: Script) {
-    let code_hash = script.get_code_hash();
-    let hash_type = script.get_hash_type();
-    let args = script.get_args();
+    let code_hash = script.code_hash();
+    let hash_type = script.hash_type();
+    let args = script.args();
 
     assert_eq!(HASH_TYPE, hash_type);
     assert_eq!(&CODE_HASH, &code_hash[..]);
@@ -399,18 +426,18 @@ impl From<packed::CellOutput> for CellOutput {
 }
 
 fn verify_cell_output(cell_output: CellOutput) {
-    let capacity = cell_output.get_capacity();
+    let capacity = cell_output.capacity();
     assert_eq!(capacity, CAPACITY);
 
-    let lock_script = cell_output.get_lock();
-    assert_eq!(lock_script.get_code_hash().as_slice(), &CODE_HASH);
-    assert_eq!(lock_script.get_args().as_slice(), &ARGS);
-    assert_eq!(lock_script.get_hash_type(), HASH_TYPE);
+    let lock_script = cell_output.lock();
+    assert_eq!(lock_script.code_hash().as_slice(), &CODE_HASH);
+    assert_eq!(lock_script.args().as_slice(), &ARGS);
+    assert_eq!(lock_script.hash_type(), HASH_TYPE);
 
-    let type_script = cell_output.get_type_().unwrap();
-    assert_eq!(type_script.get_code_hash().as_slice(), &CODE_HASH);
-    assert_eq!(type_script.get_args().as_slice(), &ARGS);
-    assert_eq!(type_script.get_hash_type(), HASH_TYPE);
+    let type_script = cell_output.type_().unwrap();
+    assert_eq!(type_script.code_hash().as_slice(), &CODE_HASH);
+    assert_eq!(type_script.args().as_slice(), &ARGS);
+    assert_eq!(type_script.hash_type(), HASH_TYPE);
 }
 
 fn create_cell_output_vec() -> packed::CellOutputVec {
@@ -454,8 +481,8 @@ impl From<packed::CellDep> for CellDep {
 }
 
 fn verify_cell_dep(cell_dep: CellDep) {
-    let dep_type = cell_dep.get_dep_type();
-    let out_point = cell_dep.get_out_point();
+    let dep_type = cell_dep.dep_type();
+    let out_point = cell_dep.out_point();
     assert_eq!(dep_type, DEP_TYPE);
     verify_out_point(out_point);
 }
@@ -474,38 +501,11 @@ impl From<packed::OutPoint> for OutPoint {
 }
 
 fn verify_out_point(out_point: OutPoint) {
-    let tx_hash = out_point.get_tx_hash();
-    let index = out_point.get_index();
+    let tx_hash = out_point.tx_hash();
+    let index = out_point.index();
 
     assert_eq!(tx_hash.as_slice(), &TX_HASH);
     assert_eq!(index, INDEX);
-}
-
-// here is an example of union, it can either be script or u64
-pub struct SampleUnion {
-    cursor: CursorType,
-}
-
-impl From<CursorType> for SampleUnion {
-    fn from(cursor: CursorType) -> Self {
-        Self { cursor }
-    }
-}
-
-impl SampleUnion {
-    pub fn get_item_id(&self) -> usize {
-        let union = self.cursor.union_unpack();
-        union.item_id
-    }
-
-    pub fn as_script(&self) -> Script {
-        let union = self.cursor.union_unpack();
-        union.cursor.clone().into()
-    }
-    pub fn as_capacity(&self) -> u64 {
-        let union = self.cursor.union_unpack();
-        union.cursor.clone().into()
-    }
 }
 
 #[test]
