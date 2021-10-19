@@ -20,7 +20,7 @@ pub enum Error {
     Read,
 }
 
-pub trait Reader {
+pub trait Read {
     /**
      * try to read `buf.len()` bytes from data source with `offset`, then fill it in `buf`.
      * the return size can be smaller than `buf.len()` which means the remaining data length is
@@ -33,8 +33,8 @@ pub const MAX_CACHE_SIZE: usize = 2048;
 pub const MIN_CACHE_SIZE: usize = 64;
 pub const NUM_T_SIZE: usize = 4;
 
-pub struct DataSourceType {
-    reader: Box<dyn Reader>,
+pub struct DataSource {
+    reader: Box<dyn Read>,
 
     total_size: usize,
     start_point: usize,
@@ -44,20 +44,20 @@ pub struct DataSourceType {
 }
 
 #[derive(Clone)]
-pub struct CursorType {
+pub struct Cursor {
     offset: usize,
     size: usize,
-    data_source: Rc<RefCell<DataSourceType>>,
+    data_source: Rc<RefCell<DataSource>>,
 }
 
 #[allow(dead_code)]
-pub struct UnionType {
+pub struct Union {
     pub item_id: usize,
-    pub cursor: CursorType,
+    pub cursor: Cursor,
 }
 
 // it's an example about how to build a data source from memory
-impl Reader for Vec<u8> {
+impl Read for Vec<u8> {
     fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
         let mem_len = self.len();
         assert!(offset < mem_len);
@@ -71,30 +71,34 @@ impl Reader for Vec<u8> {
     }
 }
 
-pub fn make_cursor_from_memory(mem: Vec<u8>) -> CursorType {
-    let mut cache = Vec::<u8>::new();
-    let total_size = mem.len();
+// same as `make_cursor_from_memory` in C
+impl From<Vec<u8>> for Cursor {
+    fn from(mem: Vec<u8>) -> Self {
+        let mut cache = Vec::<u8>::new();
+        let total_size = mem.len();
 
-    cache.resize(MAX_CACHE_SIZE, 0);
-    let reader = Box::new(mem);
+        cache.resize(MAX_CACHE_SIZE, 0);
+        let reader = Box::new(mem);
 
-    let data_source = DataSourceType {
-        reader,
-        total_size,
-        start_point: 0,
-        cache_size: 0, // when created, cache is not filled
-        max_cache_size: MAX_CACHE_SIZE,
-        cache,
-    };
-    CursorType {
-        offset: 0,
-        size: total_size,
-        data_source: Rc::new(RefCell::new(data_source)),
+        let data_source = DataSource {
+            reader,
+            total_size,
+            start_point: 0,
+            cache_size: 0, // when created, cache is not filled
+            max_cache_size: MAX_CACHE_SIZE,
+            cache,
+        };
+        Cursor {
+            offset: 0,
+            size: total_size,
+            data_source: Rc::new(RefCell::new(data_source)),
+        }
     }
 }
+
 // end of example
 
-pub fn read_at(cur: &CursorType, buff: &mut [u8]) -> Result<usize, Error> {
+pub fn read_at(cur: &Cursor, buff: &mut [u8]) -> Result<usize, Error> {
     let read_len = min(cur.size, buff.len() as usize);
     let mut ds = &mut *cur.data_source.borrow_mut();
     if read_len > ds.max_cache_size {
@@ -127,7 +131,7 @@ pub fn read_at(cur: &CursorType, buff: &mut [u8]) -> Result<usize, Error> {
 // mol2_seg_t : &[u8]
 // mol2_cursor_res_t, use Result<CursorType, Error>
 
-impl CursorType {
+impl Cursor {
     pub fn add_offset(&mut self, offset: usize) {
         self.offset = self.offset.checked_add(offset).unwrap();
     }
@@ -223,7 +227,7 @@ impl CursorType {
         count > field_count
     }
 
-    pub fn slice_by_offset(&self, offset: usize, size: usize) -> Result<CursorType, Error> {
+    pub fn slice_by_offset(&self, offset: usize, size: usize) -> Result<Cursor, Error> {
         let mut cur2 = self.clone();
         cur2.add_offset(offset);
         cur2.size = size;
@@ -235,7 +239,7 @@ impl CursorType {
         &self,
         item_size: usize,
         item_index: usize,
-    ) -> Result<CursorType, Error> {
+    ) -> Result<Cursor, Error> {
         let mut cur2 = self.clone();
         let item_count = self.unpack_number();
         if item_index >= item_count {
@@ -249,7 +253,7 @@ impl CursorType {
         }
     }
 
-    pub fn dynvec_slice_by_index(&self, item_index: usize) -> Result<CursorType, Error> {
+    pub fn dynvec_slice_by_index(&self, item_index: usize) -> Result<Cursor, Error> {
         let mut res = self.clone();
         let mut temp = self.clone();
         let total_size = self.unpack_number();
@@ -282,11 +286,11 @@ impl CursorType {
         Ok(res)
     }
 
-    pub fn table_slice_by_index(&self, field_index: usize) -> Result<CursorType, Error> {
+    pub fn table_slice_by_index(&self, field_index: usize) -> Result<Cursor, Error> {
         self.dynvec_slice_by_index(field_index)
     }
 
-    pub fn fixvec_slice_raw_bytes(&self) -> Result<CursorType, Error> {
+    pub fn fixvec_slice_raw_bytes(&self) -> Result<Cursor, Error> {
         let mut res = self.clone();
         res.add_offset(NUM_T_SIZE);
         res.size = self.unpack_number();
@@ -294,21 +298,21 @@ impl CursorType {
         Ok(res)
     }
 
-    pub fn convert_to_array(&self) -> Result<CursorType, Error> {
+    pub fn convert_to_array(&self) -> Result<Cursor, Error> {
         Ok(self.clone())
     }
 
-    pub fn convert_to_rawbytes(&self) -> Result<CursorType, Error> {
+    pub fn convert_to_rawbytes(&self) -> Result<Cursor, Error> {
         self.fixvec_slice_raw_bytes()
     }
 
-    pub fn union_unpack(&self) -> UnionType {
+    pub fn union_unpack(&self) -> Union {
         let item_id = self.unpack_number();
         let mut cursor = self.clone();
         cursor.add_offset(NUM_T_SIZE);
         cursor.sub_size(NUM_T_SIZE);
         cursor.validate();
-        UnionType { item_id, cursor }
+        Union { item_id, cursor }
     }
 }
 
@@ -317,8 +321,8 @@ fn calculate_offset(item_size: usize, item_count: usize, offset: usize) -> usize
     res.checked_add(offset).unwrap()
 }
 
-impl From<CursorType> for u64 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for u64 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 8];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size as usize != buf.len() {
@@ -328,8 +332,8 @@ impl From<CursorType> for u64 {
     }
 }
 
-impl From<CursorType> for i64 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for i64 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 8];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size != buf.len() {
@@ -339,8 +343,8 @@ impl From<CursorType> for i64 {
     }
 }
 
-impl From<CursorType> for u32 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for u32 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size as usize != buf.len() {
@@ -350,8 +354,8 @@ impl From<CursorType> for u32 {
     }
 }
 
-impl From<CursorType> for i32 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for i32 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size != buf.len() {
@@ -361,8 +365,8 @@ impl From<CursorType> for i32 {
     }
 }
 
-impl From<CursorType> for u16 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for u16 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 2];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size as usize != buf.len() {
@@ -372,8 +376,8 @@ impl From<CursorType> for u16 {
     }
 }
 
-impl From<CursorType> for i16 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for i16 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 2];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size as usize != buf.len() {
@@ -383,8 +387,8 @@ impl From<CursorType> for i16 {
     }
 }
 
-impl From<CursorType> for u8 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for u8 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 1];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size != buf.len() {
@@ -394,8 +398,8 @@ impl From<CursorType> for u8 {
     }
 }
 
-impl From<CursorType> for i8 {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for i8 {
+    fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 1];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size != buf.len() {
@@ -405,8 +409,8 @@ impl From<CursorType> for i8 {
     }
 }
 
-impl From<CursorType> for Vec<u8> {
-    fn from(cur: CursorType) -> Self {
+impl From<Cursor> for Vec<u8> {
+    fn from(cur: Cursor) -> Self {
         let mut buf = Vec::<u8>::new();
         buf.resize(cur.size, 0);
 
