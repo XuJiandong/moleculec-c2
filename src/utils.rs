@@ -1,7 +1,6 @@
 use crate::generator::Generator;
 use molecule_codegen::ast;
-use std::fmt::{Result, Write};
-use std::io;
+use std::fmt::Result;
 
 pub const VERSION: u32 = 7002;
 
@@ -115,18 +114,20 @@ extern "C" {{
         "###,
             name
         ));
-        return res;
+        res
     }
-    pub fn combine_rust(&self, name: &str) -> String {
+    pub fn combine_rust(&self, _: &str) -> String {
         let mut res = String::new();
-        res.push_str(r#"
+        res.push_str(
+            r#"
             #![allow(dead_code)]
             #![allow(unused_imports)]
             extern crate alloc;
             use alloc::vec::Vec;
             use molecule2::Cursor;
 
-        "#);
+        "#,
+        );
         res.push_str(self.imp.as_ref());
         res
     }

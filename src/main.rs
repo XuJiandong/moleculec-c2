@@ -1,16 +1,12 @@
-//TODO remove them
-#![allow(unused_variables)]
-#![allow(dead_code)]
-#![allow(unused_imports)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::too_many_arguments)]
 
 mod generator;
 mod utils;
 
-use crate::utils::Output;
 use clap::{App, Arg};
 use molecule_codegen::IntermediateFormat;
-use serde::{Deserialize, Serialize};
-use serde_json::{Result, Value};
 use std::ffi::OsString;
 use std::fs::File;
 use std::io::{self, Read, Write};

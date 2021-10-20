@@ -11,16 +11,16 @@
 /// - raw name, a struct name without "Type", same as name
 /// - type category, field type or item type are classified into 3 categories, see TypeCategory.
 ///   Different category has different implementation.
-/// - C/Rust type name: transformed from "field type name" or "item type name",
+/// - C/Rust transformed name: transformed from "field type name" or "item type name",
 ///   according to their type category, e.g. uint32_t, mol2_cursor_t, XXXType
 /// - name, used for class name only
 /// - class type name, name with "Type" suffix, e.g. SampleTableType
 /// - common array, the set of Array, FixVec and DynVec, they share method like "len", "get"
 /// - common table, the set of Table, Struct, they share same method like ".t->XXX"
-use crate::utils::{gen_c, gen_rust, Output};
-use molecule_codegen::ast::{self, DefaultContent, HasName, *};
+use crate::utils::Output;
+use molecule_codegen::ast::{self, HasName, *};
 use std::fmt;
-use std::fmt::{Result, Write};
+use std::fmt::Result;
 
 macro_rules! format_decl {
     ($output:expr, $($arg:tt)*) => {{
@@ -105,7 +105,7 @@ pub trait Generator: HasName {
 
 impl Generator for ast::Option_ {
     fn gen_c(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_c_type_category(self.item().typ());
+        let (transformed_name, tc) = get_c_type_category(self.item().typ());
         let name = self.name();
         self.gen_c_decl(output)?;
 
@@ -114,7 +114,7 @@ impl Generator for ast::Option_ {
         format_decl!(
             output,
             "{0} {1}_unwrap_impl(struct {1}Type *);",
-            prefix_struct(&c_type_name),
+            prefix_struct(&transformed_name),
             name
         );
         // --------- declaration above ------------
@@ -128,7 +128,7 @@ impl Generator for ast::Option_ {
             output,
             "{1} (*unwrap)(struct {0}Type *);",
             name,
-            prefix_struct(&c_type_name)
+            prefix_struct(&transformed_name)
         );
         format_def!(output, "}} {}VTable;", name);
 
@@ -168,10 +168,10 @@ impl Generator for ast::Option_ {
             name
         );
 
-        match ftc {
+        match tc {
             TypeCategory::Option => {
-              panic!("should not happen in C");
-            },
+                panic!("should not happen in C");
+            }
             TypeCategory::Type => {
                 format_imp!(
                     output,
@@ -184,8 +184,8 @@ impl Generator for ast::Option_ {
             return ret;
             }}"#,
                     name,
-                    c_type_name,
-                    raw_name(&c_type_name)
+                    transformed_name,
+                    raw_name(&transformed_name)
                 );
             }
             TypeCategory::Primitive | TypeCategory::Array => {
@@ -198,8 +198,8 @@ impl Generator for ast::Option_ {
             return ret;
             }}"#,
                     name,
-                    c_type_name,
-                    get_c_convert_func(&c_type_name, &ftc)
+                    transformed_name,
+                    get_c_convert_func(&transformed_name, &tc)
                 );
             }
             TypeCategory::FixVec => {
@@ -212,13 +212,14 @@ impl Generator for ast::Option_ {
             return ret;
             }}"#,
                     name,
-                    c_type_name
+                    transformed_name
                 );
             }
         }
 
         Ok(())
     }
+    // Rust version doesn't need this
 }
 
 impl Generator for ast::Union {
@@ -229,11 +230,11 @@ impl Generator for ast::Union {
         format_decl!(output, "uint32_t {0}_item_id_impl(struct {0}Type *);", name);
         for item in self.items() {
             let item_type_name = item.typ().name();
-            let (c_type_name, _) = get_c_type_category(item.typ());
+            let (transformed_name, _) = get_c_type_category(item.typ());
             format_decl!(
                 output,
                 "{0} {1}_as_{2}_impl(struct {1}Type *);",
-                prefix_struct(&c_type_name),
+                prefix_struct(&transformed_name),
                 name,
                 item_type_name
             );
@@ -246,11 +247,11 @@ impl Generator for ast::Union {
         format_def!(output, "uint32_t (*item_id)(struct {}Type *);", name);
         for item in self.items() {
             let item_type_name = item.typ().name();
-            let (c_type_name, _) = get_c_type_category(item.typ());
+            let (transformed_name, _) = get_c_type_category(item.typ());
             format_def!(
                 output,
                 "{0} (*as_{2})(struct {1}Type *);",
-                prefix_struct(&c_type_name),
+                prefix_struct(&transformed_name),
                 name,
                 item_type_name
             );
@@ -293,11 +294,11 @@ impl Generator for ast::Union {
         );
         for item in self.items() {
             let item_type_name = item.typ().name();
-            let (c_type_name, ftc) = get_c_type_category(item.typ());
-            match ftc {
+            let (transformed_name, tc) = get_c_type_category(item.typ());
+            match tc {
                 TypeCategory::Option => {
                     panic!("should not happen in C");
-                },
+                }
                 TypeCategory::Type => {
                     format_imp!(
                         output,
@@ -310,7 +311,7 @@ impl Generator for ast::Union {
                 return ret;
                 }}"#,
                         name,
-                        c_type_name,
+                        transformed_name,
                         item_type_name
                     );
                 }
@@ -325,8 +326,8 @@ impl Generator for ast::Union {
                 return ret;
                 }}"#,
                         name,
-                        c_type_name,
-                        get_c_convert_func(&c_type_name, &ftc),
+                        transformed_name,
+                        get_c_convert_func(&transformed_name, &tc),
                         item_type_name
                     );
                 }
@@ -341,7 +342,7 @@ impl Generator for ast::Union {
                 return ret;
                 }}"#,
                         name,
-                        c_type_name,
+                        transformed_name,
                         item_type_name
                     );
                 }
@@ -354,26 +355,25 @@ impl Generator for ast::Union {
 
 impl Generator for ast::Array {
     fn gen_c(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_c_type_category(self.item().typ());
+        let (transformed_name, tc) = get_c_type_category(self.item().typ());
         generate_c_common_array(
             self,
             output,
             self.name(),
-            c_type_name.as_str(),
-            ftc,
+            transformed_name.as_str(),
+            tc,
             Some(self),
             None,
             None,
         )
     }
     fn gen_rust(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_rust_type_category(self.item().typ());
+        let (transformed_name, tc) = get_rust_type_category(self.item().typ());
         generate_rust_common_array(
-            self,
             output,
             self.name(),
-            c_type_name.as_str(),
-            ftc,
+            transformed_name.as_str(),
+            tc,
             Some(self),
             None,
             None,
@@ -405,26 +405,25 @@ impl Generator for ast::Struct {
 // in FixVec, all item size is same and known already, the count is unknown.
 impl Generator for ast::FixVec {
     fn gen_c(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_c_type_category(self.item().typ());
+        let (transformed_name, tc) = get_c_type_category(self.item().typ());
         generate_c_common_array(
             self,
             output,
             self.name(),
-            c_type_name.as_str(),
-            ftc,
+            transformed_name.as_str(),
+            tc,
             None,
             Some(self),
             None,
         )
     }
     fn gen_rust(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_rust_type_category(self.item().typ());
+        let (transformed_name, tc) = get_rust_type_category(self.item().typ());
         generate_rust_common_array(
-            self,
             output,
             self.name(),
-            c_type_name.as_str(),
-            ftc,
+            transformed_name.as_str(),
+            tc,
             None,
             Some(self),
             None,
@@ -434,26 +433,25 @@ impl Generator for ast::FixVec {
 
 impl Generator for ast::DynVec {
     fn gen_c(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_c_type_category(self.item().typ());
+        let (transformed_name, tc) = get_c_type_category(self.item().typ());
         generate_c_common_array(
             self,
             output,
             self.name(),
-            c_type_name.as_str(),
-            ftc,
+            transformed_name.as_str(),
+            tc,
             None,
             None,
             Some(self),
         )
     }
     fn gen_rust(&self, output: &mut Output) -> Result {
-        let (c_type_name, ftc) = get_rust_type_category(self.item().typ());
+        let (transformed_name, tc) = get_rust_type_category(self.item().typ());
         generate_rust_common_array(
-            self,
             output,
             self.name(),
-            c_type_name.as_str(),
-            ftc,
+            transformed_name.as_str(),
+            tc,
             None,
             None,
             Some(self),
@@ -470,76 +468,22 @@ impl Generator for ast::Table {
     }
 }
 
-// the possible types as DynVec's item
-// 1. FixVec
-// 2. Table
-// 3. DynVec
-// 4. Option/Union
-fn get_dynvec_item_type(dynvec: &ast::DynVec) -> String {
-    let item_type = dynvec.item().typ();
-    if let TopDecl::FixVec(a) = item_type.as_ref() {
-        String::from("mol2_cursor_t")
-    } else {
-        gen_class_name(item_type.name())
-    }
-}
-
-// the possible types as Array's item
-// 1. Array
-// 2. Byte
-//
-fn get_array_item_type(array: &ast::Array) -> (Option<String>, Option<TypeCategory>) {
-    let item_type = array.item().typ();
-    if let TopDecl::Primitive(a) = item_type.as_ref() {
-        (None, None)
-    } else {
-        if let TopDecl::Array(aa) = item_type.as_ref() {
-            if let TopDecl::Primitive(aaa) = aa.item().typ().as_ref() {
-                let (c_type_name, ftc) = get_c_type_category(item_type);
-                return (Some(c_type_name), Some(ftc));
-            }
-        }
-        (
-            Some(gen_class_name(item_type.name())),
-            Some(TypeCategory::Type),
-        )
-    }
-}
-
-fn get_fixvec_item_type(fixvec: &ast::FixVec) -> (Option<String>, Option<TypeCategory>) {
-    let item_type = fixvec.item().typ();
-    if let TopDecl::Primitive(a) = item_type.as_ref() {
-        (None, None)
-    } else {
-        if let TopDecl::Array(aa) = item_type.as_ref() {
-            if let TopDecl::Primitive(aaa) = aa.item().typ().as_ref() {
-                let (c_type_name, ftc) = get_c_type_category(item_type);
-                return (Some(c_type_name), Some(ftc));
-            }
-        }
-        (
-            Some(gen_class_name(item_type.name())),
-            Some(TypeCategory::Type),
-        )
-    }
-}
-
 // Process:
 // 1. Array
 // 2. FixVec
 // 3. DynVec
 
-// c_type_name, ftc are attributes of item, not container(array, fixvec, dynvec)
+// c_type_name, tcs are attributes of item, not container(array, fixvec, dynvec)
 // same logic as generate_impl
 fn generate_c_common_array(
     gen: &dyn Generator,
     output: &mut Output,
     name: &str,
     c_type_name: &str,
-    ftc: TypeCategory,
+    tc: TypeCategory,
     array: Option<&ast::Array>,
     fixvec: Option<&ast::FixVec>,
-    dynvec: Option<&ast::DynVec>,
+    _dynvec: Option<&ast::DynVec>,
 ) -> Result {
     gen.gen_c_decl(output)?;
 
@@ -592,7 +536,7 @@ fn generate_c_common_array(
             name,
             arr.item_count()
         );
-    } else if let Some(fv) = fixvec {
+    } else if fixvec.is_some() {
         format_imp!(
             output,
             r#"
@@ -611,19 +555,18 @@ fn generate_c_common_array(
             name
         );
     }
-    generate_c_common_array_impl(output, name, c_type_name, ftc, array, fixvec);
+    generate_c_common_array_impl(output, name, c_type_name, tc, array, fixvec);
     Ok(())
 }
 
 fn generate_rust_common_array(
-    gen: &dyn Generator,
     output: &mut Output,
     name: &str,
     c_type_name: &str,
-    ftc: TypeCategory,
+    tc: TypeCategory,
     array: Option<&ast::Array>,
     fixvec: Option<&ast::FixVec>,
-    dynvec: Option<&ast::DynVec>,
+    _dynvec: Option<&ast::DynVec>,
 ) -> Result {
     format_imp!(
         output,
@@ -651,7 +594,7 @@ fn generate_rust_common_array(
             name,
             arr.item_count()
         );
-    } else if let Some(fv) = fixvec {
+    } else if fixvec.is_some() {
         format_imp!(
             output,
             r#"
@@ -671,7 +614,7 @@ fn generate_rust_common_array(
         );
     }
 
-    generate_rust_common_array_impl(output, name, c_type_name, ftc, array, fixvec);
+    generate_rust_common_array_impl(output, name, c_type_name, tc, array, fixvec);
     Ok(())
 }
 
@@ -679,21 +622,27 @@ fn generate_c_common_array_impl(
     output: &mut Output,
     name: &str,
     c_type_name: &str,
-    ftc: TypeCategory,
+    tc: TypeCategory,
     array: Option<&Array>,
     fixvec: Option<&FixVec>,
 ) {
     let slice_by = if let Some(fv) = fixvec {
-        format!("mol2_fixvec_slice_by_index(&this->cur, {}, index)", fv.item_size())
+        format!(
+            "mol2_fixvec_slice_by_index(&this->cur, {}, index)",
+            fv.item_size()
+        )
     } else if let Some(arr) = array {
-        format!("mol2_slice_by_offset2(&this->cur, {0}*index, {0})", arr.item_size())
+        format!(
+            "mol2_slice_by_offset2(&this->cur, {0}*index, {0})",
+            arr.item_size()
+        )
     } else {
-        format!("mol2_dynvec_slice_by_index(&this->cur, index)")
+        "mol2_dynvec_slice_by_index(&this->cur, index)".into()
     };
-    match ftc {
+    match tc {
         TypeCategory::Option => {
             panic!("should not happen in C");
-        },
+        }
         TypeCategory::Type => {
             format_imp!(
                 output,
@@ -736,7 +685,7 @@ fn generate_c_common_array_impl(
             }}"#,
                 name,
                 c_type_name,
-                get_c_convert_func(&c_type_name, &ftc),
+                get_c_convert_func(&c_type_name, &tc),
                 slice_by
             );
         }
@@ -767,7 +716,7 @@ fn generate_rust_common_array_impl(
     output: &mut Output,
     name: &str,
     rust_type_name: &str,
-    ftc: TypeCategory,
+    tc: TypeCategory,
     array: Option<&Array>,
     fixvec: Option<&FixVec>,
 ) {
@@ -778,7 +727,7 @@ fn generate_rust_common_array_impl(
     } else {
         format!("dynvec_slice_by_index(index)")
     };
-    match ftc {
+    match tc {
         TypeCategory::Option => {
             format_imp!(
                 output,
@@ -797,7 +746,7 @@ fn generate_rust_common_array_impl(
                 rust_type_name,
                 slice_by
             );
-        },
+        }
         TypeCategory::Type => {
             format_imp!(
                 output,
@@ -872,11 +821,11 @@ fn generate_c_common_table(
 
     for field in fields {
         let field_name = &field.name();
-        let (field_type, _) = get_c_type_category(field.typ());
+        let (transformed_name, _) = get_c_type_category(field.typ());
         format_decl!(
             output,
             "{0} {1}_get_{2}_impl(struct {1}Type *);",
-            prefix_struct(&field_type),
+            prefix_struct(&transformed_name),
             name,
             field_name
         );
@@ -888,11 +837,11 @@ fn generate_c_common_table(
     format_def!(output, "typedef struct {0}VTable {{", name);
     for field in fields {
         let field_name = &field.name();
-        let (c_type_name, _) = get_c_type_category(field.typ());
+        let (transformed_name, _) = get_c_type_category(field.typ());
         format_def!(
             output,
             "{0} (*{1})(struct {2}Type *);",
-            prefix_struct(&c_type_name),
+            prefix_struct(&transformed_name),
             field_name,
             name
         );
@@ -911,21 +860,17 @@ fn generate_c_common_table(
     );
     for field in fields {
         let field_name = &field.name();
-        let (field_type, _) = get_c_type_category(field.typ());
         format_imp!(output, "s_vtable.{0} = {1}_get_{0}_impl;", field_name, name);
     }
     format_imp!(output, "return &s_vtable; }}");
-    // entries of virtual tables
-    let mut index: usize = 0;
-    for field in fields {
+    for (index, field) in fields.iter().enumerate() {
         generate_c_common_table_impl(output, name, field, index, field_sizes);
-        index += 1;
     }
     Ok(())
 }
 
 fn generate_rust_common_table(
-    gen: &dyn Generator,
+    _gen: &dyn Generator,
     output: &mut Output,
     name: &str,
     fields: &[FieldDecl],
@@ -946,10 +891,8 @@ fn generate_rust_common_table(
         name
     );
 
-    let mut index: usize = 0;
-    for field in fields {
+    for (index, field) in fields.iter().enumerate() {
         generate_rust_common_table_impl(output, name, field, index, field_sizes);
-        index += 1;
     }
     Ok(())
 }
@@ -962,12 +905,12 @@ fn generate_c_common_table_impl(
     field_sizes: Option<&[usize]>,
 ) {
     let field_name = field.name();
-    let (field_type, ftc) = get_c_type_category(field.typ());
+    let (transformed_name, tc) = get_c_type_category(field.typ());
     let slice_by = generate_c_slice_by(index, &field_sizes);
-    match ftc {
+    match tc {
         TypeCategory::Option => {
             panic!("should not happen in C");
-        },
+        }
         TypeCategory::Type => {
             format_imp!(
                 output,
@@ -981,8 +924,8 @@ fn generate_c_common_table_impl(
             }}"#,
                 name,
                 field_name,
-                field_type,
-                raw_name(&field_type),
+                transformed_name,
+                raw_name(&transformed_name),
                 slice_by
             );
         }
@@ -998,9 +941,9 @@ fn generate_c_common_table_impl(
             }}"#,
                 name,
                 field_name,
-                field_type,
+                transformed_name,
                 slice_by,
-                get_c_convert_func(&field_type, &ftc)
+                get_c_convert_func(&transformed_name, &tc)
             );
         }
         TypeCategory::FixVec => {
@@ -1015,7 +958,7 @@ fn generate_c_common_table_impl(
             }}"#,
                 name,
                 field_name,
-                field_type,
+                transformed_name,
                 slice_by
             );
         }
@@ -1030,9 +973,9 @@ fn generate_rust_common_table_impl(
     field_sizes: Option<&[usize]>,
 ) {
     let field_name = field.name();
-    let (field_type, ftc) = get_rust_type_category(field.typ());
+    let (transformed_name, tc) = get_rust_type_category(field.typ());
     let slice_by = generate_rust_slice_by(index, &field_sizes);
-    match ftc {
+    match tc {
         TypeCategory::Option => {
             format_imp!(
                 output,
@@ -1050,10 +993,10 @@ fn generate_rust_common_table_impl(
             "#,
                 name,
                 field_name,
-                field_type,
+                transformed_name,
                 slice_by
             );
-        },
+        }
         TypeCategory::Type => {
             format_imp!(
                 output,
@@ -1067,7 +1010,7 @@ fn generate_rust_common_table_impl(
             "#,
                 name,
                 field_name,
-                field_type,
+                transformed_name,
                 slice_by
             );
         }
@@ -1083,7 +1026,7 @@ fn generate_rust_common_table_impl(
             }}"#,
                 name,
                 field_name,
-                field_type,
+                transformed_name,
                 slice_by
             );
         }
@@ -1100,7 +1043,7 @@ fn generate_rust_common_table_impl(
             }}"#,
                 name,
                 field_name,
-                field_type,
+                transformed_name,
                 slice_by
             );
         }
@@ -1132,11 +1075,12 @@ enum TypeCategory {
     Option,
 }
 
+// return: transformed name and it's type category
 fn get_c_type_category(typ: &TopDecl) -> (String, TypeCategory) {
     let name = typ.name();
     let mut tc = TypeCategory::Primitive;
 
-    let mut type_name = format!("{}", gen_class_name(&String::from(name)));
+    let mut transformed_name = gen_class_name(&String::from(name));
     match typ {
         // if the field type is array and the field type name is "uint8", "int8" ...
         // then it's primitive
@@ -1158,43 +1102,44 @@ fn get_c_type_category(typ: &TopDecl) -> (String, TypeCategory) {
                         "mol2_cursor_t"
                     } else {
                         tc = TypeCategory::Type;
-                        type_name.as_str()
+                        transformed_name.as_str()
                     }
                 }
             };
-            type_name = String::from(new_name)
+            transformed_name = String::from(new_name)
         }
-        TopDecl::Primitive(p) => {
-            type_name = String::from("uint8_t");
+        TopDecl::Primitive(_) => {
+            transformed_name = String::from("uint8_t");
         }
         TopDecl::FixVec(v) => {
             // FixVec is different than Array: it has a header.
             if let TopDecl::Primitive(_) = v.item().typ().as_ref() {
                 // array of byte
-                type_name = String::from("mol2_cursor_t");
+                transformed_name = String::from("mol2_cursor_t");
                 tc = TypeCategory::FixVec;
             } else {
                 tc = TypeCategory::Type;
             }
-        },
+        }
         _ => {
             tc = TypeCategory::Type;
         }
     }
-    (type_name, tc)
+    (transformed_name, tc)
 }
 
 // see TypeCategory
 fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
     let name = typ.name();
     let mut tc = TypeCategory::Primitive;
-    let mut type_name = format!("{}", name);
+    let mut transformed_name = String::from(name);
     match typ {
         // if the field type is array and the field type name is "uint8", "int8" ...
         // then it's primitive
         TopDecl::Array(a) => {
             let field_type_name = name.to_lowercase();
             let new_name = match field_type_name.as_ref() {
+                // see https://github.com/XuJiandong/moleculec-c2#extra-support-for-known-types
                 "uint8" => "u8",
                 "int8" => "i8",
                 "uint16" => "u16",
@@ -1211,44 +1156,43 @@ fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
                     } else {
                         // array of Types
                         tc = TypeCategory::Type;
-                        type_name.as_str()
+                        transformed_name.as_str()
                     }
                 }
             };
-            type_name = String::from(new_name);
+            transformed_name = String::from(new_name);
         }
-        TopDecl::Primitive(p) => {
-            type_name = String::from("u8");
+        TopDecl::Primitive(_) => {
+            transformed_name = String::from("u8");
         }
         TopDecl::FixVec(v) => {
             // FixVec is different than Array: it has a header.
             if let TopDecl::Primitive(_) = v.item().typ().as_ref() {
                 // array of byte
-                type_name = String::from("Vec<u8>");
+                transformed_name = String::from("Vec<u8>");
                 tc = TypeCategory::FixVec;
             } else {
                 tc = TypeCategory::Type;
             }
-        },
+        }
         TopDecl::Option_(o) => {
             // Option<Script>, etc
             let (name, _) = get_rust_type_category(o.item().typ());
-            type_name = String::from(format!("Option<{}>", name));
+            transformed_name = format!("Option<{}>", name);
             tc = TypeCategory::Option;
-        },
+        }
         _ => {
             tc = TypeCategory::Type;
         }
     }
-    (type_name, tc)
+    (transformed_name, tc)
 }
-
 
 fn raw_name(type_name: &str) -> String {
     String::from(type_name).replace("Type", "")
 }
 
-fn get_c_convert_func<'a>(c_type_name: &'a str, ftc: &TypeCategory) -> &'a str {
+fn get_c_convert_func<'a>(c_type_name: &'a str, tc: &TypeCategory) -> &'a str {
     let t = c_type_name.to_lowercase();
     match t.as_ref() {
         "int8_t" => "convert_to_Int8",
@@ -1260,11 +1204,10 @@ fn get_c_convert_func<'a>(c_type_name: &'a str, ftc: &TypeCategory) -> &'a str {
         "int64_t" => "convert_to_Int64",
         "uint64_t" => "convert_to_Uint64",
         _ => {
-            if let TypeCategory::Array = ftc {
+            if let TypeCategory::Array = tc {
                 "convert_to_array"
             } else {
-                assert!(false);
-                "N/A"
+                panic!("should not happen");
             }
         }
     }
