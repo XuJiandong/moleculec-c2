@@ -2,7 +2,7 @@
 #ifndef _BLOCKCHAIN_API2_H_
 #define _BLOCKCHAIN_API2_H_
 
-#define MOLECULEC2_VERSION 6001
+#define MOLECULEC2_VERSION 7002
 #define MOLECULE2_API_VERSION_MIN 5000
 
 #include "molecule2_reader.h"

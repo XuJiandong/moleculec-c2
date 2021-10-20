@@ -1,5 +1,5 @@
 MOLC    := moleculec
-MOLC_VERSION := 0.7.0
+MOLC_VERSION := 0.7.2
 
 RUST_SRC := $(wildcard src/*.rs)
 
@@ -22,6 +22,9 @@ blockchain: tests/blockchain/blockchain-api.h tests/blockchain/blockchain-api2.h
 
 tests/blockchain/blockchain-api2.h: mol/blockchain.json $(RUST_SRC)
 	cargo run -- --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
+
+tests/blockchain/src/blockchain.rs: mol/blockchain.json $(RUST_SRC)
+	cargo run -- --rust --input mol/blockchain.json | rustfmt > tests/blockchain_rust/src/blockchain.rs
 
 mol/blockchain.json: mol/blockchain.mol
 	moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
