@@ -20,10 +20,11 @@ impl Uint32 {
         4
     }
 }
+
 impl Uint32 {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cursor.into()
+        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
+        cur.into()
     }
 }
 
@@ -42,10 +43,11 @@ impl Uint64 {
         8
     }
 }
+
 impl Uint64 {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cursor.into()
+        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
+        cur.into()
     }
 }
 
@@ -64,10 +66,11 @@ impl Uint128 {
         16
     }
 }
+
 impl Uint128 {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cursor.into()
+        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
+        cur.into()
     }
 }
 
@@ -86,10 +89,11 @@ impl Byte32 {
         32
     }
 }
+
 impl Byte32 {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cursor.into()
+        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
+        cur.into()
     }
 }
 
@@ -108,10 +112,11 @@ impl Uint256 {
         32
     }
 }
+
 impl Uint256 {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cursor.into()
+        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
+        cur.into()
     }
 }
 
@@ -130,10 +135,11 @@ impl Bytes {
         self.cursor.fixvec_length()
     }
 }
+
 impl Bytes {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.fixvec_slice_by_index(1, index).unwrap();
-        cursor.into()
+        let cur = self.cursor.fixvec_slice_by_index(1, index).unwrap();
+        cur.into()
     }
 }
 // warning: BytesOpt not implemented for Rust
@@ -161,6 +167,7 @@ impl BytesVec {
         self.cursor.dynvec_length()
     }
 }
+
 impl BytesVec {
     pub fn get(&self, index: usize) -> Vec<u8> {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
@@ -184,10 +191,11 @@ impl Byte32Vec {
         self.cursor.fixvec_length()
     }
 }
+
 impl Byte32Vec {
     pub fn get(&self, index: usize) -> Vec<u8> {
-        let cursor = self.cursor.fixvec_slice_by_index(32, index).unwrap();
-        cursor.into()
+        let cur = self.cursor.fixvec_slice_by_index(32, index).unwrap();
+        cur.into()
     }
 }
 // warning: ScriptOpt not implemented for Rust
@@ -215,10 +223,11 @@ impl ProposalShortId {
         10
     }
 }
+
 impl ProposalShortId {
     pub fn get(&self, index: usize) -> u8 {
-        let cursor = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cursor.into()
+        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
+        cur.into()
     }
 }
 
@@ -237,10 +246,11 @@ impl UncleBlockVec {
         self.cursor.dynvec_length()
     }
 }
+
 impl UncleBlockVec {
     pub fn get(&self, index: usize) -> UncleBlock {
-        let cursor = self.cursor.dynvec_slice_by_index(index).unwrap();
-        UncleBlock { cursor }
+        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+        cur.into()
     }
 }
 
@@ -259,10 +269,11 @@ impl TransactionVec {
         self.cursor.dynvec_length()
     }
 }
+
 impl TransactionVec {
     pub fn get(&self, index: usize) -> Transaction {
-        let cursor = self.cursor.dynvec_slice_by_index(index).unwrap();
-        Transaction { cursor }
+        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+        cur.into()
     }
 }
 
@@ -281,10 +292,11 @@ impl ProposalShortIdVec {
         self.cursor.fixvec_length()
     }
 }
+
 impl ProposalShortIdVec {
     pub fn get(&self, index: usize) -> Vec<u8> {
-        let cursor = self.cursor.fixvec_slice_by_index(10, index).unwrap();
-        cursor.into()
+        let cur = self.cursor.fixvec_slice_by_index(10, index).unwrap();
+        cur.into()
     }
 }
 
@@ -303,10 +315,11 @@ impl CellDepVec {
         self.cursor.fixvec_length()
     }
 }
+
 impl CellDepVec {
     pub fn get(&self, index: usize) -> CellDep {
-        let cursor = self.cursor.fixvec_slice_by_index(37, index).unwrap();
-        CellDep { cursor }
+        let cur = self.cursor.fixvec_slice_by_index(37, index).unwrap();
+        cur.into()
     }
 }
 
@@ -325,10 +338,11 @@ impl CellInputVec {
         self.cursor.fixvec_length()
     }
 }
+
 impl CellInputVec {
     pub fn get(&self, index: usize) -> CellInput {
-        let cursor = self.cursor.fixvec_slice_by_index(44, index).unwrap();
-        CellInput { cursor }
+        let cur = self.cursor.fixvec_slice_by_index(44, index).unwrap();
+        cur.into()
     }
 }
 
@@ -347,10 +361,11 @@ impl CellOutputVec {
         self.cursor.dynvec_length()
     }
 }
+
 impl CellOutputVec {
     pub fn get(&self, index: usize) -> CellOutput {
-        let cursor = self.cursor.dynvec_slice_by_index(index).unwrap();
-        CellOutput { cursor }
+        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+        cur.into()
     }
 }
 
@@ -363,18 +378,21 @@ impl From<Cursor> for Script {
         Script { cursor }
     }
 }
+
 impl Script {
     pub fn code_hash(&self) -> Vec<u8> {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         cur.into()
     }
 }
+
 impl Script {
     pub fn hash_type(&self) -> u8 {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         cur.into()
     }
 }
+
 impl Script {
     pub fn args(&self) -> Vec<u8> {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
@@ -382,6 +400,7 @@ impl Script {
         cur2.into()
     }
 }
+
 pub struct OutPoint {
     cursor: Cursor,
 }
@@ -391,18 +410,21 @@ impl From<Cursor> for OutPoint {
         OutPoint { cursor }
     }
 }
+
 impl OutPoint {
     pub fn tx_hash(&self) -> Vec<u8> {
         let cur = self.cursor.slice_by_offset(0, 32).unwrap();
         cur.into()
     }
 }
+
 impl OutPoint {
     pub fn index(&self) -> u32 {
         let cur = self.cursor.slice_by_offset(32, 4).unwrap();
         cur.into()
     }
 }
+
 pub struct CellInput {
     cursor: Cursor,
 }
@@ -412,12 +434,14 @@ impl From<Cursor> for CellInput {
         CellInput { cursor }
     }
 }
+
 impl CellInput {
     pub fn since(&self) -> u64 {
         let cur = self.cursor.slice_by_offset(0, 8).unwrap();
         cur.into()
     }
 }
+
 impl CellInput {
     pub fn previous_output(&self) -> OutPoint {
         let cur = self.cursor.slice_by_offset(8, 36).unwrap();
@@ -434,12 +458,14 @@ impl From<Cursor> for CellOutput {
         CellOutput { cursor }
     }
 }
+
 impl CellOutput {
     pub fn capacity(&self) -> u64 {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         cur.into()
     }
 }
+
 impl CellOutput {
     pub fn lock(&self) -> Script {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
@@ -467,6 +493,7 @@ impl From<Cursor> for CellDep {
         CellDep { cursor }
     }
 }
+
 impl CellDep {
     pub fn out_point(&self) -> OutPoint {
         let cur = self.cursor.slice_by_offset(0, 36).unwrap();
@@ -480,6 +507,7 @@ impl CellDep {
         cur.into()
     }
 }
+
 pub struct RawTransaction {
     cursor: Cursor,
 }
@@ -489,12 +517,14 @@ impl From<Cursor> for RawTransaction {
         RawTransaction { cursor }
     }
 }
+
 impl RawTransaction {
     pub fn version(&self) -> u32 {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         cur.into()
     }
 }
+
 impl RawTransaction {
     pub fn cell_deps(&self) -> CellDepVec {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
@@ -539,6 +569,7 @@ impl From<Cursor> for Transaction {
         Transaction { cursor }
     }
 }
+
 impl Transaction {
     pub fn raw(&self) -> RawTransaction {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
@@ -562,66 +593,77 @@ impl From<Cursor> for RawHeader {
         RawHeader { cursor }
     }
 }
+
 impl RawHeader {
     pub fn version(&self) -> u32 {
         let cur = self.cursor.slice_by_offset(0, 4).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn compact_target(&self) -> u32 {
         let cur = self.cursor.slice_by_offset(4, 4).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn timestamp(&self) -> u64 {
         let cur = self.cursor.slice_by_offset(8, 8).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn number(&self) -> u64 {
         let cur = self.cursor.slice_by_offset(16, 8).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn epoch(&self) -> u64 {
         let cur = self.cursor.slice_by_offset(24, 8).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn parent_hash(&self) -> Vec<u8> {
         let cur = self.cursor.slice_by_offset(32, 32).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn transactions_root(&self) -> Vec<u8> {
         let cur = self.cursor.slice_by_offset(64, 32).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn proposals_hash(&self) -> Vec<u8> {
         let cur = self.cursor.slice_by_offset(96, 32).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn uncles_hash(&self) -> Vec<u8> {
         let cur = self.cursor.slice_by_offset(128, 32).unwrap();
         cur.into()
     }
 }
+
 impl RawHeader {
     pub fn dao(&self) -> Vec<u8> {
         let cur = self.cursor.slice_by_offset(160, 32).unwrap();
         cur.into()
     }
 }
+
 pub struct Header {
     cursor: Cursor,
 }
@@ -631,6 +673,7 @@ impl From<Cursor> for Header {
         Header { cursor }
     }
 }
+
 impl Header {
     pub fn raw(&self) -> RawHeader {
         let cur = self.cursor.slice_by_offset(0, 192).unwrap();
@@ -644,6 +687,7 @@ impl Header {
         cur.into()
     }
 }
+
 pub struct UncleBlock {
     cursor: Cursor,
 }
@@ -653,6 +697,7 @@ impl From<Cursor> for UncleBlock {
         UncleBlock { cursor }
     }
 }
+
 impl UncleBlock {
     pub fn header(&self) -> Header {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
@@ -676,6 +721,7 @@ impl From<Cursor> for Block {
         Block { cursor }
     }
 }
+
 impl Block {
     pub fn header(&self) -> Header {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
@@ -713,6 +759,7 @@ impl From<Cursor> for CellbaseWitness {
         CellbaseWitness { cursor }
     }
 }
+
 impl CellbaseWitness {
     pub fn lock(&self) -> Script {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
@@ -727,6 +774,7 @@ impl CellbaseWitness {
         cur2.into()
     }
 }
+
 pub struct WitnessArgs {
     cursor: Cursor,
 }
@@ -736,6 +784,7 @@ impl From<Cursor> for WitnessArgs {
         WitnessArgs { cursor }
     }
 }
+
 impl WitnessArgs {
     pub fn lock(&self) -> Option<Vec<u8>> {
         let cur = self.cursor.table_slice_by_index(0).unwrap();

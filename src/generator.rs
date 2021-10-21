@@ -169,7 +169,7 @@ impl Generator for ast::Option_ {
         );
 
         match tc {
-            TypeCategory::Option => {
+            TypeCategory::Option(_) => {
                 panic!("should not happen in C");
             }
             TypeCategory::Type => {
@@ -296,7 +296,7 @@ impl Generator for ast::Union {
             let item_type_name = item.typ().name();
             let (transformed_name, tc) = get_c_type_category(item.typ());
             match tc {
-                TypeCategory::Option => {
+                TypeCategory::Option(_) => {
                     panic!("should not happen in C");
                 }
                 TypeCategory::Type => {
@@ -347,6 +347,56 @@ impl Generator for ast::Union {
                     );
                 }
             }
+        }
+
+        Ok(())
+    }
+    fn gen_rust(&self, output: &mut Output) -> Result {
+        let name = self.name();
+
+        format_imp!(
+            output,
+            r#"
+        pub struct {0} {{
+            cursor: Cursor,
+        }}
+
+        impl From<Cursor> for {0} {{
+            fn from(cursor: Cursor) -> Self {{
+                Self {{ cursor }}
+            }}
+        }}
+
+        impl {0} {{
+            pub fn item_id(&self) -> usize {{
+                let union = self.cursor.union_unpack();
+                union.item_id
+            }}
+        }}
+        "#,
+            name
+        );
+
+        for item in self.items() {
+            let item_type_name = item.typ().name();
+            let (transformed_name, tc) = get_rust_type_category(item.typ());
+            let convert_code = tc.gen_convert_code();
+            format_imp!(
+                output,
+                r#"
+            impl {0} {{
+                pub fn as_{1}(&self) -> {2} {{
+                    let union = self.cursor.union_unpack();
+                    let cur = union.cursor.clone();
+                    {3}
+                }}
+            }}
+            "#,
+                name,
+                item_type_name.to_lowercase(),
+                transformed_name,
+                convert_code
+            );
         }
 
         Ok(())
@@ -562,7 +612,7 @@ fn generate_c_common_array(
 fn generate_rust_common_array(
     output: &mut Output,
     name: &str,
-    c_type_name: &str,
+    type_name: &str,
     tc: TypeCategory,
     array: Option<&ast::Array>,
     fixvec: Option<&ast::FixVec>,
@@ -590,7 +640,8 @@ fn generate_rust_common_array(
             r#"
             impl {0} {{
                 pub fn len(&self) -> usize {{ {1} }}
-             }}"#,
+             }}
+             "#,
             name,
             arr.item_count()
         );
@@ -600,7 +651,8 @@ fn generate_rust_common_array(
             r#"
                 impl {0} {{
                     pub fn len(&self) -> usize {{  self.cursor.fixvec_length()  }}
-                }}"#,
+                }}
+            "#,
             name
         );
     } else {
@@ -609,12 +661,13 @@ fn generate_rust_common_array(
             r#"
                 impl {0} {{
                     pub fn len(&self) -> usize {{ self.cursor.dynvec_length() }}
-                }}"#,
+                }}
+            "#,
             name
         );
     }
 
-    generate_rust_common_array_impl(output, name, c_type_name, tc, array, fixvec);
+    generate_rust_common_array_impl(output, name, type_name, tc, array, fixvec);
     Ok(())
 }
 
@@ -640,7 +693,7 @@ fn generate_c_common_array_impl(
         "mol2_dynvec_slice_by_index(&this->cur, index)".into()
     };
     match tc {
-        TypeCategory::Option => {
+        TypeCategory::Option(_) => {
             panic!("should not happen in C");
         }
         TypeCategory::Type => {
@@ -715,7 +768,7 @@ fn generate_c_common_array_impl(
 fn generate_rust_common_array_impl(
     output: &mut Output,
     name: &str,
-    rust_type_name: &str,
+    type_name: &str,
     tc: TypeCategory,
     array: Option<&Array>,
     fixvec: Option<&FixVec>,
@@ -727,76 +780,22 @@ fn generate_rust_common_array_impl(
     } else {
         format!("dynvec_slice_by_index(index)")
     };
-    match tc {
-        TypeCategory::Option => {
-            format_imp!(
-                output,
-                r#"
-                    impl {0} {{
-                        pub fn get(&self, index: usize) -> {1} {{
-                            let cur = self.cursor.{2}.unwrap();
-                            if cur.option_is_none() {{
-                                None
-                            }} else {{
-                                Some(cur.into())
-                            }}
-                    }}
-                "#,
-                name,
-                rust_type_name,
-                slice_by
-            );
-        }
-        TypeCategory::Type => {
-            format_imp!(
-                output,
-                r#"
-                    impl {0} {{
-                        pub fn get(&self, index: usize) -> {1} {{
-                            let cursor = self.cursor.{2}.unwrap();
-                            {1} {{ cursor }}
-                        }}
-                    }}
-                "#,
-                name,
-                rust_type_name,
-                slice_by
-            );
-        }
-        TypeCategory::Primitive | TypeCategory::Array => {
-            format_imp!(
-                output,
-                r#"
-                    impl {0} {{
-                        pub fn get(&self, index: usize) -> {1} {{
-                            let cursor = self.cursor.{2}.unwrap();
-                            cursor.into()
-                        }}
-                    }}
-                "#,
-                name,
-                rust_type_name,
-                slice_by
-            );
-        }
-        TypeCategory::FixVec => {
-            format_imp!(
-                output,
-                r#"
-                    impl {0} {{
-                        pub fn get(&self, index: usize) -> {1} {{
-                            let cur = self.cursor.{2}.unwrap();
-                            let cur2 = cur.convert_to_rawbytes().unwrap();
-                            cur2.into()
-                        }}
-                    }}
-                "#,
-                name,
-                rust_type_name,
-                slice_by
-            );
-        }
-    }
+    let convert_code = tc.gen_convert_code();
+    format_imp!(
+        output,
+        r#"
+        impl {0} {{
+            pub fn get(&self, index: usize) -> {1} {{
+                let cur = self.cursor.{2}.unwrap();
+                {3}
+            }}
+        }}
+        "#,
+        name,
+        type_name,
+        slice_by,
+        convert_code
+    );
 }
 
 fn prefix_struct(field_type: &str) -> String {
@@ -887,7 +886,8 @@ fn generate_rust_common_table(
             fn from(cursor: Cursor) -> Self {{
                 {0} {{ cursor }}
             }}
-        }}"#,
+        }}
+        "#,
         name
     );
 
@@ -908,7 +908,7 @@ fn generate_c_common_table_impl(
     let (transformed_name, tc) = get_c_type_category(field.typ());
     let slice_by = generate_c_slice_by(index, &field_sizes);
     match tc {
-        TypeCategory::Option => {
+        TypeCategory::Option(_) => {
             panic!("should not happen in C");
         }
         TypeCategory::Type => {
@@ -975,79 +975,23 @@ fn generate_rust_common_table_impl(
     let field_name = field.name();
     let (transformed_name, tc) = get_rust_type_category(field.typ());
     let slice_by = generate_rust_slice_by(index, &field_sizes);
-    match tc {
-        TypeCategory::Option => {
-            format_imp!(
-                output,
-                r#"
-            impl {0} {{
-                pub fn {1}(&self) -> {2} {{
-                    let cur = self.cursor.{3}.unwrap();
-                    if cur.option_is_none() {{
-                        None
-                    }} else {{
-                        Some(cur.into())
-                    }}
-                 }}
+    let convert_code = tc.gen_convert_code();
+    format_imp!(
+        output,
+        r#"
+        impl {0} {{
+            pub fn {1}(&self) -> {2} {{
+                let cur = self.cursor.{3}.unwrap();
+                {4}
              }}
-            "#,
-                name,
-                field_name,
-                transformed_name,
-                slice_by
-            );
-        }
-        TypeCategory::Type => {
-            format_imp!(
-                output,
-                r#"
-            impl {0} {{
-                pub fn {1}(&self) -> {2} {{
-                    let cur = self.cursor.{3}.unwrap();
-                    cur.into()
-                }}
-            }}
-            "#,
-                name,
-                field_name,
-                transformed_name,
-                slice_by
-            );
-        }
-        TypeCategory::Primitive | TypeCategory::Array => {
-            format_imp!(
-                output,
-                r#"
-            impl {0} {{
-                pub fn {1}(&self) -> {2} {{
-                    let cur = self.cursor.{3}.unwrap();
-                    cur.into()
-                }}
-            }}"#,
-                name,
-                field_name,
-                transformed_name,
-                slice_by
-            );
-        }
-        TypeCategory::FixVec => {
-            format_imp!(
-                output,
-                r#"
-            impl {0} {{
-                pub fn {1}(&self) -> {2} {{
-                    let cur = self.cursor.{3}.unwrap();
-                    let cur2 = cur.convert_to_rawbytes().unwrap();
-                    cur2.into()
-                }}
-            }}"#,
-                name,
-                field_name,
-                transformed_name,
-                slice_by
-            );
-        }
-    }
+         }}
+        "#,
+        name,
+        field_name,
+        transformed_name,
+        slice_by,
+        convert_code
+    );
 }
 
 fn gen_class_name(name: &str) -> String {
@@ -1072,7 +1016,38 @@ enum TypeCategory {
     Array,
     FixVec,
     Type,
-    Option,
+    Option(u32),
+}
+
+impl TypeCategory {
+    pub fn gen_convert_code(&self) -> String {
+        let str = match self {
+            &TypeCategory::Option(level) => {
+                if level == 1 {
+                    r"if cur.option_is_none() {
+                        None
+                    } else {
+                        Some(cur.into())
+                   }"
+                } else if level == 2 {
+                    r"if cur.option_is_none() {
+                        None
+                    } else {
+                        Some(Some(cur.into()))
+                   }"
+                } else {
+                    panic!("can't support")
+                }
+            }
+            TypeCategory::Type => "cur.into()",
+            TypeCategory::Primitive | TypeCategory::Array => "cur.into()",
+            TypeCategory::FixVec => {
+                r"let cur2 = cur.convert_to_rawbytes().unwrap();
+                  cur2.into()"
+            }
+        };
+        String::from(str)
+    }
 }
 
 // return: transformed name and it's type category
@@ -1177,9 +1152,17 @@ fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
         }
         TopDecl::Option_(o) => {
             // Option<Script>, etc
-            let (name, _) = get_rust_type_category(o.item().typ());
-            transformed_name = format!("Option<{}>", name);
-            tc = TypeCategory::Option;
+            let (inner_name, inner_tc) = get_rust_type_category(o.item().typ());
+            match inner_tc {
+                TypeCategory::Option(level) => {
+                    tc = TypeCategory::Option(level + 1);
+                    transformed_name = format!("Option<{}>", inner_name);
+                }
+                _ => {
+                    transformed_name = format!("Option<{}>", inner_name);
+                    tc = TypeCategory::Option(1);
+                }
+            }
         }
         _ => {
             tc = TypeCategory::Type;
@@ -1192,7 +1175,7 @@ fn raw_name(type_name: &str) -> String {
     String::from(type_name).replace("Type", "")
 }
 
-fn get_c_convert_func<'a>(c_type_name: &'a str, tc: &TypeCategory) -> &'a str {
+fn get_c_convert_func(c_type_name: &str, tc: &TypeCategory) -> &'static str {
     let t = c_type_name.to_lowercase();
     match t.as_ref() {
         "int8_t" => "convert_to_Int8",

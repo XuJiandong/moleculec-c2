@@ -3,7 +3,7 @@ MOLC_VERSION := 0.7.2
 
 RUST_SRC := $(wildcard src/*.rs)
 
-all: sample blockchain types
+all: sample blockchain types blockchain_rust
 
 sample: tests/sample/sample-api.h tests/sample/sample-api2.h
 	make -C tests/sample
@@ -23,8 +23,17 @@ blockchain: tests/blockchain/blockchain-api.h tests/blockchain/blockchain-api2.h
 tests/blockchain/blockchain-api2.h: mol/blockchain.json $(RUST_SRC)
 	cargo run -- --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
 
-tests/blockchain/src/blockchain.rs: mol/blockchain.json $(RUST_SRC)
-	cargo run -- --rust --input mol/blockchain.json | rustfmt > tests/blockchain_rust/src/blockchain.rs
+tests/blockchain_rust/src/blockchain.rs: mol/blockchain.json $(RUST_SRC)
+	cargo run -- --rust --input $< | rustfmt > $@
+
+tests/blockchain_rust/src/sample.rs: mol/sample.json $(RUST_SRC)
+	cargo run -- --rust --input $< | rustfmt > $@
+
+tests/blockchain_rust/src/types.rs: mol/types.json $(RUST_SRC)
+	cargo run -- --rust --input $< | rustfmt > $@
+
+blockchain_rust: tests/blockchain_rust/src/blockchain.rs tests/blockchain_rust/src/sample.rs tests/blockchain_rust/src/types.rs
+	cd tests/blockchain_rust && cargo test
 
 mol/blockchain.json: mol/blockchain.mol
 	moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
@@ -66,7 +75,6 @@ install-tools:
 	fi
 
 
-
 clean:
 	rm -f tests/sample/sample-api2.h
 	rm -f tests/sample/sample-api.h
@@ -74,6 +82,10 @@ clean:
 	rm -f tests/blockchain/blockchain-api.h
 	rm -f tests/types/types-api2.h
 	rm -f mol/*.json
+	rm -f tests/blockchain_rust/src/blockchain.rs
+	rm -f tests/blockchain_rust/src/sample.rs
+	rm -f tests/blockchain_rust/src/types.rs
 	make -C tests/sample clean
 	make -C tests/blockchain clean
 	make -C tests/types clean
+

@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 molecule2 = { path = "../../rust" }
+ckb-types = "0.100.0"
