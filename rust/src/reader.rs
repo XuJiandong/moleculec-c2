@@ -56,48 +56,6 @@ pub struct Union {
     pub cursor: Cursor,
 }
 
-// it's an example about how to build a data source from memory
-impl Read for Vec<u8> {
-    fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
-        let mem_len = self.len();
-        assert!(offset < mem_len);
-
-        let remaining_len = mem_len - offset;
-        let min_len = min(remaining_len, buf.len());
-
-        assert!((offset + min_len) <= mem_len);
-        buf[0..min_len].copy_from_slice(&self.as_slice()[offset..offset + min_len]);
-        Ok(min_len)
-    }
-}
-
-// same as `make_cursor_from_memory` in C
-impl From<Vec<u8>> for Cursor {
-    fn from(mem: Vec<u8>) -> Self {
-        let mut cache = Vec::<u8>::new();
-        let total_size = mem.len();
-
-        cache.resize(MAX_CACHE_SIZE, 0);
-        let reader = Box::new(mem);
-
-        let data_source = DataSource {
-            reader,
-            total_size,
-            start_point: 0,
-            cache_size: 0, // when created, cache is not filled
-            max_cache_size: MAX_CACHE_SIZE,
-            cache,
-        };
-        Cursor {
-            offset: 0,
-            size: total_size,
-            data_source: Rc::new(RefCell::new(data_source)),
-        }
-    }
-}
-
-// end of example
-
 pub fn read_at(cur: &Cursor, buff: &mut [u8]) -> Result<usize, Error> {
     let read_len = min(cur.size, buff.len() as usize);
     let mut ds = &mut *cur.data_source.borrow_mut();
@@ -132,6 +90,31 @@ pub fn read_at(cur: &Cursor, buff: &mut [u8]) -> Result<usize, Error> {
 // mol2_cursor_res_t, use Result<CursorType, Error>
 
 impl Cursor {
+    /**
+    cache_size: normally it can be set to MAX_CACHE_SIZE(2K)
+    total_size: the size of cursor. If it's set a smaller value,
+    `out of bound` will occur when `reader` try to read the data beyond that.
+    reader: interface to read underlying data
+     */
+    pub fn new(cache_size: usize, total_size: usize, reader: Box<dyn Read>) -> Self {
+        let mut cache = Vec::<u8>::new();
+        cache.resize(cache_size, 0);
+
+        let data_source = DataSource {
+            reader,
+            total_size,
+            start_point: 0,
+            cache_size: 0, // when created, cache is not filled
+            max_cache_size: cache_size,
+            cache,
+        };
+        Cursor {
+            offset: 0,
+            size: total_size,
+            data_source: Rc::new(RefCell::new(data_source)),
+        }
+    }
+
     pub fn add_offset(&mut self, offset: usize) {
         self.offset = self.offset.checked_add(offset).unwrap();
     }
@@ -260,7 +243,7 @@ impl Cursor {
         temp.add_offset(NUM_T_SIZE);
         let item_count = temp.get_item_count();
         if item_index >= item_count {
-            panic!("dynvec_slice_by_index");
+            return Err(Error::OutOfBound);
         }
         temp.offset = self.offset;
         let temp_offset = calculate_offset(NUM_T_SIZE, item_index + 1, 0);
@@ -325,7 +308,7 @@ impl From<Cursor> for u64 {
     fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 8];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_u64");
         }
         u64::from_le_bytes(buf)
@@ -347,7 +330,7 @@ impl From<Cursor> for u32 {
     fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_usize");
         }
         u32::from_le_bytes(buf)
@@ -369,7 +352,7 @@ impl From<Cursor> for u16 {
     fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 2];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_u16");
         }
         u16::from_le_bytes(buf)
@@ -380,7 +363,7 @@ impl From<Cursor> for i16 {
     fn from(cur: Cursor) -> Self {
         let mut buf = [0u8; 2];
         let size = read_at(&cur, &mut buf[..]).unwrap();
-        if size as usize != buf.len() {
+        if size != buf.len() {
             panic!("convert_to_i16");
         }
         i16::from_le_bytes(buf)
@@ -421,3 +404,30 @@ impl From<Cursor> for Vec<u8> {
         buf
     }
 }
+
+// it's an example about how to build a data source from memory
+impl Read for Vec<u8> {
+    fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
+        let mem_len = self.len();
+        if offset >= mem_len {
+            return Err(Error::OutOfBound);
+        }
+
+        let remaining_len = mem_len - offset;
+        let min_len = min(remaining_len, buf.len());
+
+        if (offset + min_len) > mem_len {
+            return Err(Error::OutOfBound);
+        }
+        buf[0..min_len].copy_from_slice(&self.as_slice()[offset..offset + min_len]);
+        Ok(min_len)
+    }
+}
+
+// same as `make_cursor_from_memory` in C
+impl From<Vec<u8>> for Cursor {
+    fn from(mem: Vec<u8>) -> Self {
+        Cursor::new(MAX_CACHE_SIZE, mem.len(), Box::new(mem))
+    }
+}
+// end of example
