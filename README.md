@@ -2,6 +2,8 @@
 
 # moleculec-c2
 Improved C/Rust plugin for the molecule serialization system.
+Read as `molecule   c   c2`: the first `c` means compiler, `c2` is the code name. 
+We already have a [moleculec](https://github.com/nervosnetwork/molecule) which is used here.
 
 ### How to use
 - Install "moleculec"
@@ -14,6 +16,7 @@ cargo build --release
 ```
 - Generate C/Rust files by moleculec-c2 and moleculec
 ```bash
+# generate intermedia json file
 moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
 # generate C
 target/release/moleculec-c2 --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
@@ -67,9 +70,9 @@ Here are the mapping list:
 | `[byte; 4]`     | uint32     |  uint32_t  |   u32    |
 | `[byte; 8]`     | int64      |  int64_t   |   i64    |
 | `[byte; 8]`     | uint64     |  uint64_t  |   u64    |
-| `[byte; N]`     | /          |  mol2_cursor_t  | Vec<u8>  |
-| `<byte>`        | /          |  mol2_cursor_t  | Vec<u8>  |
-| option          | /          |  /              | Option<_>|
+| `[byte; N]`     | /          |  mol2_cursor_t  | `Vec<u8>`  |
+| `<byte>`        | /          |  mol2_cursor_t  | `Vec<u8>`  |
+| option          | /          |  /              | `Option<_>` |
  
 The type name is case-insensitive. For example, int8, Int8, INT8 are all mapped to int8_t.
 
@@ -82,10 +85,13 @@ typedef struct {
     mol_num_t                   size;               // Full size
 } mol_seg_t;
 ```
-It comes with an assumption: the data has been loaded into memory already. It's not a good design to system like [CKB-VM](https://github.com/nervosnetwork/ckb-vm) which only has very limited memory. 
+It comes with an assumption: the data has been loaded into memory already. 
+It's not a good design to system like [CKB-VM](https://github.com/nervosnetwork/ckb-vm) 
+which only has very limited memory (4M). 
 
 As we look into the [Molecule Spec](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0008-serialization/0008-serialization.md),
-if we only need some part of data, we can get the data through some "hops". We can read the header only, estimating where to hop and don't need to read the remaining data. 
+if we only need some part of data, we can get the data through some "hops". 
+We can read the header only, estimating where to hop and don't need to read the remaining data. 
 For a lot of scenarios which only need some part of data, we can have a load-on-demand mechanic.
 
 This load-on-demand mechanic is introduced by the following data structure:
@@ -125,30 +131,31 @@ As the name "cursor" suggests, it's only an cursor. We can access memory on dema
 
 The rust version is much simpler:
 ```Rust
+impl Read for Vec<u8> {
+    fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
+        let mem_len = self.len();
+        if offset >= mem_len {
+            return Err(Error::OutOfBound);
+        }
+
+        let remaining_len = mem_len - offset;
+        let min_len = min(remaining_len, buf.len());
+
+        if (offset + min_len) > mem_len {
+            return Err(Error::OutOfBound);
+        }
+        buf[0..min_len].copy_from_slice(&self.as_slice()[offset..offset + min_len]);
+        Ok(min_len)
+    }
+}
+
 // same as `make_cursor_from_memory` in C
 impl From<Vec<u8>> for Cursor {
     fn from(mem: Vec<u8>) -> Self {
-        let mut cache = Vec::<u8>::new();
-        let total_size = mem.len();
-
-        cache.resize(MAX_CACHE_SIZE, 0);
-        let reader = Box::new(mem);
-
-        let data_source = DataSource {
-            reader,
-            total_size,
-            start_point: 0,
-            cache_size: 0, // when created, cache is not filled
-            max_cache_size: MAX_CACHE_SIZE,
-            cache,
-        };
-        Cursor {
-            offset: 0,
-            size: total_size,
-            data_source: Rc::new(RefCell::new(data_source)),
-        }
+        Cursor::new(MAX_CACHE_SIZE, mem.len(), Box::new(mem))
     }
 }
+
 ```
 
 
