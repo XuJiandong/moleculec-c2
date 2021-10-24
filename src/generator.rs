@@ -541,7 +541,7 @@ fn generate_c_common_array(
     format_decl!(
         output,
         "{0} {1}_get_impl(struct {1}Type *, uint32_t, bool *);",
-        prefix_struct(&c_type_name),
+        prefix_struct(c_type_name),
         name
     );
     // --------- declaration above ------------
@@ -1200,7 +1200,7 @@ fn get_c_convert_func(c_type_name: &str, tc: &TypeCategory) -> &'static str {
 // struct: mol2_slice_by_offset(&this->cur, 4, 2)
 // table:  mol2_table_slice_by_index(&this->cur, 1);
 fn generate_c_slice_by(index: usize, fields_sizes: &Option<&[usize]>) -> String {
-    if let Some(ref fs) = fields_sizes {
+    if let Some(fs) = fields_sizes {
         let size = fs[index];
         let mut offset = 0;
         for i in (0..index).rev() {
@@ -1213,7 +1213,7 @@ fn generate_c_slice_by(index: usize, fields_sizes: &Option<&[usize]>) -> String 
 }
 
 fn generate_rust_slice_by(index: usize, fields_sizes: &Option<&[usize]>) -> String {
-    if let Some(ref fs) = fields_sizes {
+    if let Some(fs) = fields_sizes {
         let size = fs[index];
         let mut offset = 0;
         for i in (0..index).rev() {

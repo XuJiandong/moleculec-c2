@@ -7,7 +7,6 @@ use core::cmp::min;
 
 #[derive(Debug)]
 pub enum Error {
-    Ok,
     Common,
     TotalSize,
     Header,
@@ -50,17 +49,16 @@ pub struct Cursor {
     data_source: Rc<RefCell<DataSource>>,
 }
 
-#[allow(dead_code)]
 pub struct Union {
     pub item_id: usize,
     pub cursor: Cursor,
 }
 
-pub fn read_at(cur: &Cursor, buff: &mut [u8]) -> Result<usize, Error> {
-    let read_len = min(cur.size, buff.len() as usize);
+pub fn read_at(cur: &Cursor, buf: &mut [u8]) -> Result<usize, Error> {
+    let read_len = min(cur.size, buf.len() as usize);
     let mut ds = &mut *cur.data_source.borrow_mut();
     if read_len > ds.max_cache_size {
-        return ds.reader.read(buff, cur.offset);
+        return ds.reader.read(buf, cur.offset);
     }
     if cur.offset < ds.start_point || (cur.offset + read_len) > (ds.start_point + ds.cache_size) {
         let reader = &ds.reader;
@@ -82,12 +80,9 @@ pub fn read_at(cur: &Cursor, buff: &mut [u8]) -> Result<usize, Error> {
     if read_point + read_len > ds.cache_size {
         panic!("read_at `if read_point + read_len > ds.cache_size`")
     }
-    buff.copy_from_slice(&ds.cache[read_point as usize..(read_point + read_len) as usize]);
+    buf.copy_from_slice(&ds.cache[read_point as usize..(read_point + read_len) as usize]);
     Ok(read_len)
 }
-
-// mol2_seg_t : &[u8]
-// mol2_cursor_res_t, use Result<CursorType, Error>
 
 impl Cursor {
     /**
@@ -331,7 +326,7 @@ impl From<Cursor> for u32 {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..]).unwrap();
         if size != buf.len() {
-            panic!("convert_to_usize");
+            panic!("convert_to_u32");
         }
         u32::from_le_bytes(buf)
     }
