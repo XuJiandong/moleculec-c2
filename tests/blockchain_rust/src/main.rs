@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 mod blockchain;
+mod import;
 mod sample;
 mod types;
 
@@ -9,6 +10,11 @@ extern crate alloc;
 use alloc::vec::Vec;
 use blockchain::*;
 use molecule2::Cursor;
+// test molecule "import"
+#[allow(unused_imports)]
+use import::ScriptVec;
+#[allow(unused_imports)]
+use import::ScriptVecOpt;
 
 use ckb_types::molecule::bytes;
 use ckb_types::packed;

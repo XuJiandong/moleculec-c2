@@ -26,17 +26,23 @@ tests/blockchain/blockchain-api2.h: mol/blockchain.json $(RUST_SRC)
 tests/blockchain_rust/src/blockchain.rs: mol/blockchain.json $(RUST_SRC)
 	cargo run -- --rust --input $< | rustfmt > $@
 
+tests/blockchain_rust/src/import.rs: mol/import.json $(RUST_SRC)
+	cargo run -- --rust --input $< | rustfmt > $@
+
 tests/blockchain_rust/src/sample.rs: mol/sample.json $(RUST_SRC)
 	cargo run -- --rust --input $< | rustfmt > $@
 
 tests/blockchain_rust/src/types.rs: mol/types.json $(RUST_SRC)
 	cargo run -- --rust --input $< | rustfmt > $@
 
-blockchain_rust: tests/blockchain_rust/src/blockchain.rs tests/blockchain_rust/src/sample.rs tests/blockchain_rust/src/types.rs
+blockchain_rust: tests/blockchain_rust/src/blockchain.rs tests/blockchain_rust/src/sample.rs tests/blockchain_rust/src/types.rs tests/blockchain_rust/src/import.rs
 	cd tests/blockchain_rust && cargo test
 
 mol/blockchain.json: mol/blockchain.mol
 	moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
+
+mol/import.json: mol/import.mol
+	moleculec --language - --schema-file $< --format json > $@
 
 tests/blockchain/blockchain-api.h: mol/blockchain.mol
 	moleculec --language c --schema-file mol/blockchain.mol > tests/blockchain/blockchain-api.h
@@ -85,6 +91,7 @@ clean:
 	rm -f tests/blockchain_rust/src/blockchain.rs
 	rm -f tests/blockchain_rust/src/sample.rs
 	rm -f tests/blockchain_rust/src/types.rs
+	rm -f tests/blockchain_rust/src/import.rs
 	make -C tests/sample clean
 	make -C tests/blockchain clean
 	make -C tests/types clean

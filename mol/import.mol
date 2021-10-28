@@ -1,0 +1,5 @@
+
+import blockchain;
+
+vector ScriptVec <Script>;
+option ScriptVecOpt (ScriptVec);

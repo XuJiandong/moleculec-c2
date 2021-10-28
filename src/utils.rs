@@ -21,6 +21,10 @@ pub fn gen_c(output: &mut Output, ast: &ast::Ast) -> Result {
 }
 
 pub fn gen_rust(output: &mut Output, ast: &ast::Ast) -> Result {
+    for import in ast.imports() {
+        output.write_imp(&format!("use super::{}::*; ", &import.name()));
+    }
+
     for decl in ast.major_decls() {
         match decl.as_ref() {
             ast::TopDecl::Option_(ref i) => i.gen_rust(output)?,
