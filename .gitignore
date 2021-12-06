@@ -22,3 +22,5 @@ tests/fuzzer/coverage
 tests/fuzzer/crash-*
 tests/fuzzer/fuzz-*
 
+rust/target
+tests/blockchain_rust/target

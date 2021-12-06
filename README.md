@@ -1,7 +1,9 @@
 ![moleculec-c2](https://github.com/XuJiandong/moleculec-c2/workflows/moleculec-c2/badge.svg)
 
 # moleculec-c2
-Improved C plugin for the molecule serialization system.
+Improved C/Rust plugin for the molecule serialization system.
+Read as `molecule   c   c2`: the first `c` means compiler, `c2` is the code name. 
+We already have a [moleculec](https://github.com/nervosnetwork/molecule) which is used here.
 
 ### How to use
 - Install "moleculec"
@@ -10,23 +12,26 @@ make install-tools
 ```
 - Compile Rust code to binary
 ```bash
-$cargo build --release
+cargo build --release
 ```
-- Generate the header file by moleculec-c2 and moleculec
+- Generate C/Rust files by moleculec-c2 and moleculec
 ```bash
-$moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
-$target/release/moleculec-c2 --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
+# generate intermedia json file
+moleculec --language - --schema-file mol/blockchain.mol --format json > mol/blockchain.json
+# generate C
+target/release/moleculec-c2 --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
+# generate Rust
+target/release/moleculec-c2 --rust --input mol/blockchain.json | rustfmt > tests/blockchain_rust/src/blockchain.rs
 ```
+- Include the generated file to your source file
 
-- Include the generated file (in example, it's blockchain-api2.h) and include/molecule2_reader.h to your source file
-
-The json file (in example, it's blockchain.json) is intermedia file.  
-"clang-format -style=Google" is not needed if you don't care about coding style.
+The json file is intermedia file.  
+`clang-format -style=Google` or `rustfmt` is not needed if you don't care about coding style.
 _________________
 
 
-The following are optimized compared to the old C Reader API:
-### Strong type
+The following are optimized compared to the old C/Rust API:
+### Strong type for C
 If we look into the code of old molecule API usage, 
 we find that mol_seg_t is everywhere: it's like a weak type in dynamic languages(Python, lua). 
 We can't use type system of C compilers to check whether we use the API correctly. 
@@ -54,21 +59,22 @@ Now the following type names are reserved for types:
 When they appear in schema file, it is automatically converted to the corresponding types in the generated files.
 Here are the mapping list:
 
-| Molecule type  | Type name   | C Type     |
-|----------------|-------------|------------|
-| byte           |  /          |  uint8_t   |   
-| `[byte; 1]`     | int8       |  int8_t    |   
-| `[byte; 1]`     | uint8      |  uint8_t   |   
-| `[byte; 2]`     | int16      |  int16_t   |   
-| `[byte; 2]`     | uint16     |  uint16_t  |   
-| `[byte; 4]`     | int32      |  int32_t   |   
-| `[byte; 4]`     | uint32     |  uint32_t  |   
-| `[byte; 8]`     | int64      |  int64_t   |   
-| `[byte; 8]`     | uint64     |  uint64_t  |   
-| `[byte; N]`     | /          |  mol2_cursor_t  |   
-| `<byte>`        | /          |  mol2_cursor_t  |  
+| Molecule type  | Type name   | C Type     | Rust Type |
+|----------------|-------------|------------|-----------|
+| byte           |  /          |  uint8_t   |   u8      |
+| `[byte; 1]`     | int8       |  int8_t    |   i8      |
+| `[byte; 1]`     | uint8      |  uint8_t   |   u8     |
+| `[byte; 2]`     | int16      |  int16_t   |   i16    |
+| `[byte; 2]`     | uint16     |  uint16_t  |   u16    |
+| `[byte; 4]`     | int32      |  int32_t   |   i32    |
+| `[byte; 4]`     | uint32     |  uint32_t  |   u32    |
+| `[byte; 8]`     | int64      |  int64_t   |   i64    |
+| `[byte; 8]`     | uint64     |  uint64_t  |   u64    |
+| `[byte; N]`     | /          |  mol2_cursor_t  | `Vec<u8>`  |
+| `<byte>`        | /          |  mol2_cursor_t  | `Vec<u8>`  |
+| option          | /          |  /              | `Option<_>` |
  
-The type name is case insensitive, for example, int8, Int8, INT8 are all mapped to int8_t.
+The type name is case-insensitive. For example, int8, Int8, INT8 are all mapped to int8_t.
 
 ### Load memory on demand
 
@@ -79,10 +85,13 @@ typedef struct {
     mol_num_t                   size;               // Full size
 } mol_seg_t;
 ```
-It comes with an assumption: the data has been loaded into memory already. It's not a good design to system like [CKB-VM](https://github.com/nervosnetwork/ckb-vm) which only has very limited memory. 
+It comes with an assumption: the data has been loaded into memory already. 
+It's not a good design to system like [CKB-VM](https://github.com/nervosnetwork/ckb-vm) 
+which only has very limited memory (4M). 
 
 As we look into the [Molecule Spec](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0008-serialization/0008-serialization.md),
-if we only need some part of data, we can get the data through some "hops". We can read the header only, estimating where to hop and don't need to read the remaining data. 
+if we only need some part of data, we can get the data through some "hops". 
+We can read the header only, estimating where to hop and don't need to read the remaining data. 
 For a lot of scenarios which only need some part of data, we can have a load-on-demand mechanic.
 
 This load-on-demand mechanic is introduced by the following data structure:
@@ -120,14 +129,44 @@ As the name "cursor" suggests, it's only an cursor. We can access memory on dema
     assert(witness_cur.size == 3 && witness[0] == 0x12 && witness[1] == 0x34);
 ```
 
+The rust version is much simpler:
+```Rust
+impl Read for Vec<u8> {
+    fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
+        let mem_len = self.len();
+        if offset >= mem_len {
+            return Err(Error::OutOfBound);
+        }
+
+        let remaining_len = mem_len - offset;
+        let min_len = min(remaining_len, buf.len());
+
+        if (offset + min_len) > mem_len {
+            return Err(Error::OutOfBound);
+        }
+        buf[0..min_len].copy_from_slice(&self.as_slice()[offset..offset + min_len]);
+        Ok(min_len)
+    }
+}
+
+// same as `make_cursor_from_memory` in C
+impl From<Vec<u8>> for Cursor {
+    fn from(mem: Vec<u8>) -> Self {
+        Cursor::new(MAX_CACHE_SIZE, mem.len(), Box::new(mem))
+    }
+}
+
+```
+
+
 ### Cache support
 When the data is read from data source via syscall, the costs on every syscall is expensive.
 It would be great if it can read more data for future use for each syscall: now it supports cache for every reading.
-See ```mol2_read_at``` for more information.
+See `mol2_read_at`(in C) or `read_at` (in Rust) for more information.
 
 _________________
 
-### Split declaration and definition
+### Split declaration and definition for C
 When the header file is generated, it can only be included in one single source file.
 If you choose multiple source files, it's better to split declaration and definition.
 Follow the following steps:
@@ -147,7 +186,7 @@ See [here](https://github.com/XuJiandong/moleculec-c2/blob/d00b3cfc9ceb9108507f4
 It can only be done once. 
 
 ### For CKB developer
-There is a already generated file [blockchain-api2.h](https://github.com/XuJiandong/moleculec-c2/blob/master/tests/blockchain/blockchain-api2.h), together with 
+There is an already generated file [blockchain-api2.h](https://github.com/XuJiandong/moleculec-c2/blob/master/tests/blockchain/blockchain-api2.h), together with 
 [molecule2_reader.h](https://github.com/XuJiandong/moleculec-c2/blob/master/include/molecule2_reader.h): they can be included in source file directly.
 
 The original mol file is [here](https://github.com/nervosnetwork/ckb/blob/master/util/types/schemas/blockchain.mol).
