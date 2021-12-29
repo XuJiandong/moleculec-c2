@@ -1,3 +1,4 @@
+
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -5,7 +6,7 @@ use alloc::vec::Vec;
 use molecule2::Cursor;
 
 pub struct SampleByte2 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleByte2 {
@@ -28,7 +29,7 @@ impl SampleByte2 {
 }
 
 pub struct Uint8 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint8 {
@@ -51,7 +52,7 @@ impl Uint8 {
 }
 
 pub struct Int8 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Int8 {
@@ -74,7 +75,7 @@ impl Int8 {
 }
 
 pub struct Uint16 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint16 {
@@ -97,7 +98,7 @@ impl Uint16 {
 }
 
 pub struct Int16 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Int16 {
@@ -120,7 +121,7 @@ impl Int16 {
 }
 
 pub struct Uint32 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint32 {
@@ -143,7 +144,7 @@ impl Uint32 {
 }
 
 pub struct Int32 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Int32 {
@@ -166,7 +167,7 @@ impl Int32 {
 }
 
 pub struct Uint64 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint64 {
@@ -189,7 +190,7 @@ impl Uint64 {
 }
 
 pub struct Int64 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Int64 {
@@ -212,7 +213,7 @@ impl Int64 {
 }
 
 pub struct SampleFixedVector {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleFixedVector {
@@ -235,7 +236,7 @@ impl SampleFixedVector {
 }
 
 pub struct SampleDynVector {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleDynVector {
@@ -259,7 +260,7 @@ impl SampleDynVector {
 }
 
 pub struct SampleUint64Vector {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleUint64Vector {
@@ -282,7 +283,7 @@ impl SampleUint64Vector {
 }
 
 pub struct SampleStruct {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleStruct {
@@ -306,7 +307,7 @@ impl SampleStruct {
 }
 
 pub struct SampleTable {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleTable {
@@ -337,7 +338,7 @@ impl SampleTable {
 }
 
 pub struct SampleUnion {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for SampleUnion {
@@ -370,7 +371,7 @@ impl SampleUnion {
 }
 // warning: SampleOptionTable not implemented for Rust
 pub struct SampleOptionTable {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for SampleOptionTable {
     fn from(cursor: Cursor) -> Self {

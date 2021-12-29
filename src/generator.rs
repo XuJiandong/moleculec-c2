@@ -57,7 +57,7 @@ pub trait Generator: HasName {
         format_imp!(
             output,
             r#"
-            pub struct {0} {{ cursor : Cursor }}
+            pub struct {0} {{ pub cursor : Cursor }}
             impl From<Cursor> for {0} {{
                 fn from(cursor: Cursor) -> Self {{
                     Self {{ cursor }}
@@ -358,7 +358,7 @@ impl Generator for ast::Union {
             output,
             r#"
         pub struct {0} {{
-            cursor: Cursor,
+            pub cursor: Cursor,
         }}
 
         impl From<Cursor> for {0} {{
@@ -622,7 +622,7 @@ fn generate_rust_common_array(
         output,
         r#"
         pub struct {0} {{
-            cursor: Cursor,
+            pub cursor: Cursor,
         }}
 
         impl From<Cursor> for {0} {{
@@ -879,7 +879,7 @@ fn generate_rust_common_table(
         output,
         r#"
         pub struct {0} {{
-            cursor: Cursor,
+            pub cursor: Cursor,
         }}
 
         impl From<Cursor> for {0} {{

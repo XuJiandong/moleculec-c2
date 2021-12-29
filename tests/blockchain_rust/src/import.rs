@@ -1,3 +1,4 @@
+
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -6,7 +7,7 @@ use molecule2::Cursor;
 
 use super::blockchain::*;
 pub struct ScriptVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for ScriptVec {
@@ -29,7 +30,7 @@ impl ScriptVec {
 }
 // warning: ScriptVecOpt not implemented for Rust
 pub struct ScriptVecOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for ScriptVecOpt {
     fn from(cursor: Cursor) -> Self {
