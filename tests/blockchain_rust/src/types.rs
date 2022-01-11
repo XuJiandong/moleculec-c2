@@ -1,3 +1,4 @@
+
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -5,7 +6,7 @@ use alloc::vec::Vec;
 use molecule2::Cursor;
 
 pub struct Byte2 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte2 {
@@ -28,7 +29,7 @@ impl Byte2 {
 }
 
 pub struct Byte3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte3 {
@@ -51,7 +52,7 @@ impl Byte3 {
 }
 
 pub struct Byte4 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte4 {
@@ -74,7 +75,7 @@ impl Byte4 {
 }
 
 pub struct Byte5 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte5 {
@@ -97,7 +98,7 @@ impl Byte5 {
 }
 
 pub struct Byte6 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte6 {
@@ -120,7 +121,7 @@ impl Byte6 {
 }
 
 pub struct Byte7 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte7 {
@@ -143,7 +144,7 @@ impl Byte7 {
 }
 
 pub struct Byte8 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte8 {
@@ -166,7 +167,7 @@ impl Byte8 {
 }
 
 pub struct Byte9 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte9 {
@@ -189,7 +190,7 @@ impl Byte9 {
 }
 
 pub struct Byte10 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte10 {
@@ -212,7 +213,7 @@ impl Byte10 {
 }
 
 pub struct Byte11 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte11 {
@@ -235,7 +236,7 @@ impl Byte11 {
 }
 
 pub struct Byte12 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte12 {
@@ -258,7 +259,7 @@ impl Byte12 {
 }
 
 pub struct Byte13 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte13 {
@@ -281,7 +282,7 @@ impl Byte13 {
 }
 
 pub struct Byte14 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte14 {
@@ -304,7 +305,7 @@ impl Byte14 {
 }
 
 pub struct Byte15 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte15 {
@@ -327,7 +328,7 @@ impl Byte15 {
 }
 
 pub struct Byte16 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte16 {
@@ -350,7 +351,7 @@ impl Byte16 {
 }
 
 pub struct Word {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word {
@@ -373,7 +374,7 @@ impl Word {
 }
 
 pub struct Word2 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word2 {
@@ -396,7 +397,7 @@ impl Word2 {
 }
 
 pub struct Word3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word3 {
@@ -419,7 +420,7 @@ impl Word3 {
 }
 
 pub struct Word4 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word4 {
@@ -442,7 +443,7 @@ impl Word4 {
 }
 
 pub struct Word5 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word5 {
@@ -465,7 +466,7 @@ impl Word5 {
 }
 
 pub struct Word6 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word6 {
@@ -488,7 +489,7 @@ impl Word6 {
 }
 
 pub struct Word7 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word7 {
@@ -511,7 +512,7 @@ impl Word7 {
 }
 
 pub struct Word8 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Word8 {
@@ -534,7 +535,7 @@ impl Word8 {
 }
 
 pub struct Byte3x3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte3x3 {
@@ -557,7 +558,7 @@ impl Byte3x3 {
 }
 
 pub struct Byte5x3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte5x3 {
@@ -580,7 +581,7 @@ impl Byte5x3 {
 }
 
 pub struct Byte7x3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte7x3 {
@@ -603,7 +604,7 @@ impl Byte7x3 {
 }
 
 pub struct Byte9x3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte9x3 {
@@ -626,7 +627,7 @@ impl Byte9x3 {
 }
 
 pub struct StructA {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructA {
@@ -664,7 +665,7 @@ impl StructA {
 }
 
 pub struct StructB {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructB {
@@ -702,7 +703,7 @@ impl StructB {
 }
 
 pub struct StructC {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructC {
@@ -740,7 +741,7 @@ impl StructC {
 }
 
 pub struct StructD {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructD {
@@ -778,7 +779,7 @@ impl StructD {
 }
 
 pub struct StructE {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructE {
@@ -816,7 +817,7 @@ impl StructE {
 }
 
 pub struct StructF {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructF {
@@ -847,7 +848,7 @@ impl StructF {
 }
 
 pub struct StructG {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructG {
@@ -885,7 +886,7 @@ impl StructG {
 }
 
 pub struct StructH {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructH {
@@ -923,7 +924,7 @@ impl StructH {
 }
 
 pub struct StructI {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructI {
@@ -947,7 +948,7 @@ impl StructI {
 }
 
 pub struct StructJ {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructJ {
@@ -971,7 +972,7 @@ impl StructJ {
 }
 
 pub struct StructIx3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructIx3 {
@@ -994,7 +995,7 @@ impl StructIx3 {
 }
 
 pub struct StructO {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructO {
@@ -1018,7 +1019,7 @@ impl StructO {
 }
 
 pub struct StructP {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructP {
@@ -1042,7 +1043,7 @@ impl StructP {
 }
 
 pub struct Bytes {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Bytes {
@@ -1065,7 +1066,7 @@ impl Bytes {
 }
 
 pub struct Words {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Words {
@@ -1088,7 +1089,7 @@ impl Words {
 }
 
 pub struct Byte3Vec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte3Vec {
@@ -1111,7 +1112,7 @@ impl Byte3Vec {
 }
 
 pub struct Byte7Vec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte7Vec {
@@ -1134,7 +1135,7 @@ impl Byte7Vec {
 }
 
 pub struct StructIVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructIVec {
@@ -1157,7 +1158,7 @@ impl StructIVec {
 }
 
 pub struct StructJVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructJVec {
@@ -1180,7 +1181,7 @@ impl StructJVec {
 }
 
 pub struct StructPVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for StructPVec {
@@ -1203,7 +1204,7 @@ impl StructPVec {
 }
 
 pub struct BytesVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for BytesVec {
@@ -1227,7 +1228,7 @@ impl BytesVec {
 }
 
 pub struct WordsVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for WordsVec {
@@ -1250,7 +1251,7 @@ impl WordsVec {
 }
 
 pub struct Table0 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table0 {
@@ -1260,7 +1261,7 @@ impl From<Cursor> for Table0 {
 }
 
 pub struct Table1 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table1 {
@@ -1277,7 +1278,7 @@ impl Table1 {
 }
 
 pub struct Table2 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table2 {
@@ -1301,7 +1302,7 @@ impl Table2 {
 }
 
 pub struct Table3 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table3 {
@@ -1332,7 +1333,7 @@ impl Table3 {
 }
 
 pub struct Table4 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table4 {
@@ -1371,7 +1372,7 @@ impl Table4 {
 }
 
 pub struct Table5 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table5 {
@@ -1417,7 +1418,7 @@ impl Table5 {
 }
 
 pub struct Table6 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Table6 {
@@ -1470,7 +1471,7 @@ impl Table6 {
 }
 // warning: ByteOpt not implemented for Rust
 pub struct ByteOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for ByteOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1479,7 +1480,7 @@ impl From<Cursor> for ByteOpt {
 }
 // warning: WordOpt not implemented for Rust
 pub struct WordOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for WordOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1488,7 +1489,7 @@ impl From<Cursor> for WordOpt {
 }
 // warning: StructAOpt not implemented for Rust
 pub struct StructAOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for StructAOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1497,7 +1498,7 @@ impl From<Cursor> for StructAOpt {
 }
 // warning: StructPOpt not implemented for Rust
 pub struct StructPOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for StructPOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1506,7 +1507,7 @@ impl From<Cursor> for StructPOpt {
 }
 // warning: BytesOpt not implemented for Rust
 pub struct BytesOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for BytesOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1515,7 +1516,7 @@ impl From<Cursor> for BytesOpt {
 }
 // warning: WordsOpt not implemented for Rust
 pub struct WordsOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for WordsOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1524,7 +1525,7 @@ impl From<Cursor> for WordsOpt {
 }
 // warning: BytesVecOpt not implemented for Rust
 pub struct BytesVecOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for BytesVecOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1533,7 +1534,7 @@ impl From<Cursor> for BytesVecOpt {
 }
 // warning: WordsVecOpt not implemented for Rust
 pub struct WordsVecOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for WordsVecOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1542,7 +1543,7 @@ impl From<Cursor> for WordsVecOpt {
 }
 // warning: Table0Opt not implemented for Rust
 pub struct Table0Opt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for Table0Opt {
     fn from(cursor: Cursor) -> Self {
@@ -1551,7 +1552,7 @@ impl From<Cursor> for Table0Opt {
 }
 // warning: Table6Opt not implemented for Rust
 pub struct Table6Opt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for Table6Opt {
     fn from(cursor: Cursor) -> Self {
@@ -1560,7 +1561,7 @@ impl From<Cursor> for Table6Opt {
 }
 // warning: Table6OptOpt not implemented for Rust
 pub struct Table6OptOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for Table6OptOpt {
     fn from(cursor: Cursor) -> Self {
@@ -1569,7 +1570,7 @@ impl From<Cursor> for Table6OptOpt {
 }
 
 pub struct ByteOptVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for ByteOptVec {
@@ -1596,7 +1597,7 @@ impl ByteOptVec {
 }
 
 pub struct WordOptVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for WordOptVec {
@@ -1623,7 +1624,7 @@ impl WordOptVec {
 }
 
 pub struct WordsOptVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for WordsOptVec {
@@ -1650,7 +1651,7 @@ impl WordsOptVec {
 }
 
 pub struct BytesOptVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for BytesOptVec {
@@ -1677,7 +1678,7 @@ impl BytesOptVec {
 }
 
 pub struct UnionA {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for UnionA {
@@ -1763,7 +1764,7 @@ impl UnionA {
 }
 
 pub struct TableA {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for TableA {
@@ -1834,7 +1835,7 @@ impl TableA {
 }
 
 pub struct AllInOne {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for AllInOne {

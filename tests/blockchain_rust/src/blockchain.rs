@@ -1,3 +1,4 @@
+
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -5,7 +6,7 @@ use alloc::vec::Vec;
 use molecule2::Cursor;
 
 pub struct Uint32 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint32 {
@@ -28,7 +29,7 @@ impl Uint32 {
 }
 
 pub struct Uint64 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint64 {
@@ -51,7 +52,7 @@ impl Uint64 {
 }
 
 pub struct Uint128 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint128 {
@@ -74,7 +75,7 @@ impl Uint128 {
 }
 
 pub struct Byte32 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte32 {
@@ -97,7 +98,7 @@ impl Byte32 {
 }
 
 pub struct Uint256 {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Uint256 {
@@ -120,7 +121,7 @@ impl Uint256 {
 }
 
 pub struct Bytes {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Bytes {
@@ -143,7 +144,7 @@ impl Bytes {
 }
 // warning: BytesOpt not implemented for Rust
 pub struct BytesOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for BytesOpt {
     fn from(cursor: Cursor) -> Self {
@@ -152,7 +153,7 @@ impl From<Cursor> for BytesOpt {
 }
 
 pub struct BytesVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for BytesVec {
@@ -176,7 +177,7 @@ impl BytesVec {
 }
 
 pub struct Byte32Vec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Byte32Vec {
@@ -199,7 +200,7 @@ impl Byte32Vec {
 }
 // warning: ScriptOpt not implemented for Rust
 pub struct ScriptOpt {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 impl From<Cursor> for ScriptOpt {
     fn from(cursor: Cursor) -> Self {
@@ -208,7 +209,7 @@ impl From<Cursor> for ScriptOpt {
 }
 
 pub struct ProposalShortId {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for ProposalShortId {
@@ -231,7 +232,7 @@ impl ProposalShortId {
 }
 
 pub struct UncleBlockVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for UncleBlockVec {
@@ -254,7 +255,7 @@ impl UncleBlockVec {
 }
 
 pub struct TransactionVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for TransactionVec {
@@ -277,7 +278,7 @@ impl TransactionVec {
 }
 
 pub struct ProposalShortIdVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for ProposalShortIdVec {
@@ -300,7 +301,7 @@ impl ProposalShortIdVec {
 }
 
 pub struct CellDepVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellDepVec {
@@ -323,7 +324,7 @@ impl CellDepVec {
 }
 
 pub struct CellInputVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellInputVec {
@@ -346,7 +347,7 @@ impl CellInputVec {
 }
 
 pub struct CellOutputVec {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellOutputVec {
@@ -369,7 +370,7 @@ impl CellOutputVec {
 }
 
 pub struct Script {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Script {
@@ -401,7 +402,7 @@ impl Script {
 }
 
 pub struct OutPoint {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for OutPoint {
@@ -425,7 +426,7 @@ impl OutPoint {
 }
 
 pub struct CellInput {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellInput {
@@ -449,7 +450,7 @@ impl CellInput {
 }
 
 pub struct CellOutput {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellOutput {
@@ -484,7 +485,7 @@ impl CellOutput {
 }
 
 pub struct CellDep {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellDep {
@@ -508,7 +509,7 @@ impl CellDep {
 }
 
 pub struct RawTransaction {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for RawTransaction {
@@ -560,7 +561,7 @@ impl RawTransaction {
 }
 
 pub struct Transaction {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Transaction {
@@ -584,7 +585,7 @@ impl Transaction {
 }
 
 pub struct RawHeader {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for RawHeader {
@@ -664,7 +665,7 @@ impl RawHeader {
 }
 
 pub struct Header {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Header {
@@ -688,7 +689,7 @@ impl Header {
 }
 
 pub struct UncleBlock {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for UncleBlock {
@@ -712,7 +713,7 @@ impl UncleBlock {
 }
 
 pub struct Block {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for Block {
@@ -750,7 +751,7 @@ impl Block {
 }
 
 pub struct CellbaseWitness {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for CellbaseWitness {
@@ -775,7 +776,7 @@ impl CellbaseWitness {
 }
 
 pub struct WitnessArgs {
-    cursor: Cursor,
+    pub cursor: Cursor,
 }
 
 impl From<Cursor> for WitnessArgs {
