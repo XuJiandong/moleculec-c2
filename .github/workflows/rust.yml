@@ -19,6 +19,6 @@ jobs:
     - name: install
       run: make install-tools
     - name: install2
-      run: cargo install --path .
+      run: cargo install --path moleculec-c2
     - name: Run ci tests
       run: make all
