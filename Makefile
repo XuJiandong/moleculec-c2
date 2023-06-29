@@ -71,7 +71,7 @@ ci:
 	cargo install moleculec --vers ${MOLC_VERSION}
 	make clean
 	make all
-	cd rust && cargo test
+	cargo test
 
 	
 install-tools:
