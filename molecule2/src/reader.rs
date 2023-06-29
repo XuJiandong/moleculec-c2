@@ -36,16 +36,16 @@ pub struct DataSource {
     reader: Box<dyn Read>,
 
     total_size: usize,
-    start_point: usize,
+    cache_start_point: usize,
+    // cache size may be smaller than cache.len()
     cache_size: usize,
-    max_cache_size: usize,
     cache: Vec<u8>,
 }
 
 #[derive(Clone)]
 pub struct Cursor {
-    offset: usize,
-    size: usize,
+    pub offset: usize,
+    pub size: usize,
     data_source: Rc<RefCell<DataSource>>,
 }
 
@@ -57,26 +57,28 @@ pub struct Union {
 pub fn read_at(cur: &Cursor, buf: &mut [u8]) -> Result<usize, Error> {
     let read_len = min(cur.size, buf.len() as usize);
     let mut ds = &mut *cur.data_source.borrow_mut();
-    if read_len > ds.max_cache_size {
+    if read_len > ds.cache.len() {
         return ds.reader.read(buf, cur.offset);
     }
-    if cur.offset < ds.start_point || (cur.offset + read_len) > (ds.start_point + ds.cache_size) {
+    if cur.offset < ds.cache_start_point
+        || (cur.offset + read_len) > (ds.cache_start_point + ds.cache_size)
+    {
         let reader = &ds.reader;
         let size = reader.read(&mut ds.cache[..], cur.offset).unwrap();
         if size < read_len {
             panic!("read_at `if size < read_len`");
         }
         ds.cache_size = size;
-        ds.start_point = cur.offset;
+        ds.cache_start_point = cur.offset;
 
-        if ds.cache_size > ds.max_cache_size {
-            panic!("read_at `if ds.cache_size > ds.max_cache_size`");
+        if ds.cache_size > ds.cache.len() {
+            panic!("read_at `if ds.cache_size > ds.cache.len()`");
         }
     }
-    if cur.offset < ds.start_point || (cur.offset - ds.start_point) > ds.max_cache_size {
+    if cur.offset < ds.cache_start_point || (cur.offset - ds.cache_start_point) > ds.cache.len() {
         panic!("read_at `if cur.offset < ds.start_point || ...`");
     }
-    let read_point = cur.offset - ds.start_point;
+    let read_point = cur.offset - ds.cache_start_point;
     if read_point + read_len > ds.cache_size {
         panic!("read_at `if read_point + read_len > ds.cache_size`")
     }
@@ -91,17 +93,13 @@ impl Cursor {
     `out of bound` will occur when `reader` try to read the data beyond that.
     reader: interface to read underlying data
      */
-    pub fn new(cache_size: usize, total_size: usize, reader: Box<dyn Read>) -> Self {
-        let mut cache = Vec::<u8>::new();
-        cache.resize(cache_size, 0);
-
+    pub fn new(total_size: usize, reader: Box<dyn Read>) -> Self {
         let data_source = DataSource {
             reader,
             total_size,
-            start_point: 0,
+            cache_start_point: 0,
             cache_size: 0, // when created, cache is not filled
-            max_cache_size: cache_size,
-            cache,
+            cache: vec![0u8; MAX_CACHE_SIZE],
         };
         Cursor {
             offset: 0,
@@ -419,10 +417,9 @@ impl Read for Vec<u8> {
     }
 }
 
-// same as `make_cursor_from_memory` in C
 impl From<Vec<u8>> for Cursor {
     fn from(mem: Vec<u8>) -> Self {
-        Cursor::new(MAX_CACHE_SIZE, mem.len(), Box::new(mem))
+        Cursor::new(mem.len(), Box::new(mem))
     }
 }
 // end of example
