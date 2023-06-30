@@ -1043,7 +1043,7 @@ impl TypeCategory {
             TypeCategory::Primitive | TypeCategory::Array => "cur.into()",
             TypeCategory::FixVec => {
                 r"let cur2 = cur.convert_to_rawbytes().unwrap();
-                  cur2.into()"
+                  cur2.try_into().unwrap()"
             }
         };
         String::from(str)
@@ -1127,7 +1127,7 @@ fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
                     if let TopDecl::Primitive(_) = a.item().typ().as_ref() {
                         // array of byte
                         tc = TypeCategory::Array;
-                        "Vec<u8>"
+                        "Cursor"
                     } else {
                         // array of Types
                         tc = TypeCategory::Type;
@@ -1144,7 +1144,7 @@ fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
             // FixVec is different than Array: it has a header.
             if let TopDecl::Primitive(_) = v.item().typ().as_ref() {
                 // array of byte
-                transformed_name = String::from("Vec<u8>");
+                transformed_name = String::from("Cursor");
                 tc = TypeCategory::FixVec;
             } else {
                 tc = TypeCategory::Type;

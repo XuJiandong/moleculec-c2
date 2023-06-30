@@ -3,6 +3,8 @@
 
 extern crate alloc;
 
+use std::convert::TryInto;
+
 use alloc::vec::Vec;
 use molecule2::Cursor;
 
@@ -183,10 +185,10 @@ impl From<Cursor> for BytesVec {
 }
 
 impl BytesVec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cursor = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cursor.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 
     pub fn len(&self) -> usize {
@@ -247,9 +249,9 @@ impl From<Cursor> for OutPoint {
 }
 
 impl OutPoint {
-    pub fn tx_hash(&self) -> Vec<u8> {
+    pub fn tx_hash(&self) -> Cursor {
         let cursor = self.cursor.slice_by_offset(0, 32).unwrap();
-        cursor.into()
+        cursor
     }
 
     pub fn index(&self) -> u32 {
@@ -293,9 +295,9 @@ impl BytesOpt {
         !self.cursor.option_is_none()
     }
 
-    pub fn unwrap(&self) -> Vec<u8> {
+    pub fn unwrap(&self) -> Cursor {
         let cursor = self.cursor.convert_to_rawbytes().unwrap();
-        cursor.into()
+        cursor
     }
 }
 
@@ -320,22 +322,22 @@ impl From<Cursor> for Script {
 }
 
 impl Script {
-    pub fn code_hash(&self) -> Vec<u8> {
+    pub fn code_hash(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         // array
         // convert_to_array can be omitted
-        cur.into()
+        cur
     }
     pub fn hash_type(&self) -> u8 {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         // primitive types
         cur.into()
     }
-    pub fn args(&self) -> Vec<u8> {
+    pub fn args(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         // need extra step for fixvec
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -398,9 +400,9 @@ impl From<packed::Script> for Script {
 }
 
 fn verify_script(script: Script) {
-    let code_hash = script.code_hash();
+    let code_hash: Vec<u8> = script.code_hash().try_into().unwrap();
     let hash_type = script.hash_type();
-    let args = script.args();
+    let args: Vec<u8> = script.args().try_into().unwrap();
 
     assert_eq!(HASH_TYPE, hash_type);
     assert_eq!(&CODE_HASH, &code_hash[..]);
@@ -430,13 +432,17 @@ fn verify_cell_output(cell_output: CellOutput) {
     assert_eq!(capacity, CAPACITY);
 
     let lock_script = cell_output.lock();
-    assert_eq!(lock_script.code_hash().as_slice(), &CODE_HASH);
-    assert_eq!(lock_script.args().as_slice(), &ARGS);
+    let code_hash: Vec<u8> = lock_script.code_hash().try_into().unwrap();
+    assert_eq!(code_hash.as_slice(), &CODE_HASH);
+    let args: Vec<u8> = lock_script.args().try_into().unwrap();
+    assert_eq!(args.as_slice(), &ARGS);
     assert_eq!(lock_script.hash_type(), HASH_TYPE);
 
     let type_script = cell_output.type_().unwrap();
-    assert_eq!(type_script.code_hash().as_slice(), &CODE_HASH);
-    assert_eq!(type_script.args().as_slice(), &ARGS);
+    let code_hash: Vec<u8> = type_script.code_hash().try_into().unwrap();
+    assert_eq!(code_hash.as_slice(), &CODE_HASH);
+    let args: Vec<u8> = type_script.args().try_into().unwrap();
+    assert_eq!(args.as_slice(), &ARGS);
     assert_eq!(type_script.hash_type(), HASH_TYPE);
 }
 
@@ -501,7 +507,7 @@ impl From<packed::OutPoint> for OutPoint {
 }
 
 fn verify_out_point(out_point: OutPoint) {
-    let tx_hash = out_point.tx_hash();
+    let tx_hash: Vec<u8> = out_point.tx_hash().try_into().unwrap();
     let index = out_point.index();
 
     assert_eq!(tx_hash.as_slice(), &TX_HASH);
