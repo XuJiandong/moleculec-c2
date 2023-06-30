@@ -168,10 +168,10 @@ impl BytesVec {
 }
 
 impl BytesVec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -192,7 +192,7 @@ impl Byte32Vec {
 }
 
 impl Byte32Vec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.fixvec_slice_by_index(32, index).unwrap();
         cur.into()
     }
@@ -293,7 +293,7 @@ impl ProposalShortIdVec {
 }
 
 impl ProposalShortIdVec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.fixvec_slice_by_index(10, index).unwrap();
         cur.into()
     }
@@ -379,7 +379,7 @@ impl From<Cursor> for Script {
 }
 
 impl Script {
-    pub fn code_hash(&self) -> Vec<u8> {
+    pub fn code_hash(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         cur.into()
     }
@@ -393,10 +393,10 @@ impl Script {
 }
 
 impl Script {
-    pub fn args(&self) -> Vec<u8> {
+    pub fn args(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -411,7 +411,7 @@ impl From<Cursor> for OutPoint {
 }
 
 impl OutPoint {
-    pub fn tx_hash(&self) -> Vec<u8> {
+    pub fn tx_hash(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(0, 32).unwrap();
         cur.into()
     }
@@ -629,35 +629,35 @@ impl RawHeader {
 }
 
 impl RawHeader {
-    pub fn parent_hash(&self) -> Vec<u8> {
+    pub fn parent_hash(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(32, 32).unwrap();
         cur.into()
     }
 }
 
 impl RawHeader {
-    pub fn transactions_root(&self) -> Vec<u8> {
+    pub fn transactions_root(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(64, 32).unwrap();
         cur.into()
     }
 }
 
 impl RawHeader {
-    pub fn proposals_hash(&self) -> Vec<u8> {
+    pub fn proposals_hash(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(96, 32).unwrap();
         cur.into()
     }
 }
 
 impl RawHeader {
-    pub fn uncles_hash(&self) -> Vec<u8> {
+    pub fn uncles_hash(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(128, 32).unwrap();
         cur.into()
     }
 }
 
 impl RawHeader {
-    pub fn dao(&self) -> Vec<u8> {
+    pub fn dao(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(160, 32).unwrap();
         cur.into()
     }
@@ -681,7 +681,7 @@ impl Header {
 }
 
 impl Header {
-    pub fn nonce(&self) -> Vec<u8> {
+    pub fn nonce(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(192, 16).unwrap();
         cur.into()
     }
@@ -767,10 +767,10 @@ impl CellbaseWitness {
 }
 
 impl CellbaseWitness {
-    pub fn message(&self) -> Vec<u8> {
+    pub fn message(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -785,7 +785,7 @@ impl From<Cursor> for WitnessArgs {
 }
 
 impl WitnessArgs {
-    pub fn lock(&self) -> Option<Vec<u8>> {
+    pub fn lock(&self) -> Option<Cursor> {
         let cur = self.cursor.table_slice_by_index(0).unwrap();
         if cur.option_is_none() {
             None
@@ -796,7 +796,7 @@ impl WitnessArgs {
 }
 
 impl WitnessArgs {
-    pub fn input_type(&self) -> Option<Vec<u8>> {
+    pub fn input_type(&self) -> Option<Cursor> {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         if cur.option_is_none() {
             None
@@ -807,7 +807,7 @@ impl WitnessArgs {
 }
 
 impl WitnessArgs {
-    pub fn output_type(&self) -> Option<Vec<u8>> {
+    pub fn output_type(&self) -> Option<Cursor> {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         if cur.option_is_none() {
             None

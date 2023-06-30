@@ -70,8 +70,8 @@ Here are the mapping list:
 | `[byte; 4]`     | uint32     |  uint32_t  |   u32    |
 | `[byte; 8]`     | int64      |  int64_t   |   i64    |
 | `[byte; 8]`     | uint64     |  uint64_t  |   u64    |
-| `[byte; N]`     | /          |  mol2_cursor_t  | `Vec<u8>`  |
-| `<byte>`        | /          |  mol2_cursor_t  | `Vec<u8>`  |
+| `[byte; N]`     | /          |  mol2_cursor_t  | `Cursor`  |
+| `<byte>`        | /          |  mol2_cursor_t  | `Cursor`  |
 | option          | /          |  /              | `Option<_>` |
  
 The type name is case-insensitive. For example, int8, Int8, INT8 are all mapped to int8_t.

@@ -389,7 +389,7 @@ impl Word2 {
 }
 
 impl Word2 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -412,7 +412,7 @@ impl Word3 {
 }
 
 impl Word3 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -435,7 +435,7 @@ impl Word4 {
 }
 
 impl Word4 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -458,7 +458,7 @@ impl Word5 {
 }
 
 impl Word5 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -481,7 +481,7 @@ impl Word6 {
 }
 
 impl Word6 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -504,7 +504,7 @@ impl Word7 {
 }
 
 impl Word7 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -527,7 +527,7 @@ impl Word8 {
 }
 
 impl Word8 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
         cur.into()
     }
@@ -550,7 +550,7 @@ impl Byte3x3 {
 }
 
 impl Byte3x3 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(3 * index, 3).unwrap();
         cur.into()
     }
@@ -573,7 +573,7 @@ impl Byte5x3 {
 }
 
 impl Byte5x3 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(5 * index, 5).unwrap();
         cur.into()
     }
@@ -596,7 +596,7 @@ impl Byte7x3 {
 }
 
 impl Byte7x3 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(7 * index, 7).unwrap();
         cur.into()
     }
@@ -619,7 +619,7 @@ impl Byte9x3 {
 }
 
 impl Byte9x3 {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.slice_by_offset(9 * index, 9).unwrap();
         cur.into()
     }
@@ -650,14 +650,14 @@ impl StructA {
 }
 
 impl StructA {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(2, 2).unwrap();
         cur.into()
     }
 }
 
 impl StructA {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 2).unwrap();
         cur.into()
     }
@@ -688,14 +688,14 @@ impl StructB {
 }
 
 impl StructB {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(2, 2).unwrap();
         cur.into()
     }
 }
 
 impl StructB {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 3).unwrap();
         cur.into()
     }
@@ -726,14 +726,14 @@ impl StructC {
 }
 
 impl StructC {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(2, 2).unwrap();
         cur.into()
     }
 }
 
 impl StructC {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 4).unwrap();
         cur.into()
     }
@@ -764,14 +764,14 @@ impl StructD {
 }
 
 impl StructD {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(2, 2).unwrap();
         cur.into()
     }
 }
 
 impl StructD {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 5).unwrap();
         cur.into()
     }
@@ -795,7 +795,7 @@ impl StructE {
 }
 
 impl StructE {
-    pub fn f2(&self) -> Vec<u8> {
+    pub fn f2(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(1, 2).unwrap();
         cur.into()
     }
@@ -809,7 +809,7 @@ impl StructE {
 }
 
 impl StructE {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 2).unwrap();
         cur.into()
     }
@@ -833,7 +833,7 @@ impl StructF {
 }
 
 impl StructF {
-    pub fn f2(&self) -> Vec<u8> {
+    pub fn f2(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(1, 3).unwrap();
         cur.into()
     }
@@ -857,7 +857,7 @@ impl From<Cursor> for StructG {
 }
 
 impl StructG {
-    pub fn f1(&self) -> Vec<u8> {
+    pub fn f1(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(0, 3).unwrap();
         cur.into()
     }
@@ -871,7 +871,7 @@ impl StructG {
 }
 
 impl StructG {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 2).unwrap();
         cur.into()
     }
@@ -895,7 +895,7 @@ impl From<Cursor> for StructH {
 }
 
 impl StructH {
-    pub fn f1(&self) -> Vec<u8> {
+    pub fn f1(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(0, 3).unwrap();
         cur.into()
     }
@@ -909,14 +909,14 @@ impl StructH {
 }
 
 impl StructH {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 2).unwrap();
         cur.into()
     }
 }
 
 impl StructH {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(6, 4).unwrap();
         cur.into()
     }
@@ -933,7 +933,7 @@ impl From<Cursor> for StructI {
 }
 
 impl StructI {
-    pub fn f1(&self) -> Vec<u8> {
+    pub fn f1(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(0, 3).unwrap();
         cur.into()
     }
@@ -957,7 +957,7 @@ impl From<Cursor> for StructJ {
 }
 
 impl StructJ {
-    pub fn f1(&self) -> Vec<u8> {
+    pub fn f1(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(0, 6).unwrap();
         cur.into()
     }
@@ -1081,7 +1081,7 @@ impl Words {
 }
 
 impl Words {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.fixvec_slice_by_index(2, index).unwrap();
         cur.into()
     }
@@ -1104,7 +1104,7 @@ impl Byte3Vec {
 }
 
 impl Byte3Vec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.fixvec_slice_by_index(3, index).unwrap();
         cur.into()
     }
@@ -1127,7 +1127,7 @@ impl Byte7Vec {
 }
 
 impl Byte7Vec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.fixvec_slice_by_index(7, index).unwrap();
         cur.into()
     }
@@ -1219,10 +1219,10 @@ impl BytesVec {
 }
 
 impl BytesVec {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -1363,10 +1363,10 @@ impl Table4 {
 }
 
 impl Table4 {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -1402,10 +1402,10 @@ impl Table5 {
 }
 
 impl Table5 {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -1448,10 +1448,10 @@ impl Table6 {
 }
 
 impl Table6 {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -1612,7 +1612,7 @@ impl WordOptVec {
 }
 
 impl WordOptVec {
-    pub fn get(&self, index: usize) -> Option<Vec<u8>> {
+    pub fn get(&self, index: usize) -> Option<Cursor> {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         if cur.option_is_none() {
             None
@@ -1666,7 +1666,7 @@ impl BytesOptVec {
 }
 
 impl BytesOptVec {
-    pub fn get(&self, index: usize) -> Option<Vec<u8>> {
+    pub fn get(&self, index: usize) -> Option<Cursor> {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         if cur.option_is_none() {
             None
@@ -1702,7 +1702,7 @@ impl UnionA {
 }
 
 impl UnionA {
-    pub fn as_word(&self) -> Vec<u8> {
+    pub fn as_word(&self) -> Cursor {
         let union = self.cursor.union_unpack();
         let cur = union.cursor.clone();
         cur.into()
@@ -1718,11 +1718,11 @@ impl UnionA {
 }
 
 impl UnionA {
-    pub fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Cursor {
         let union = self.cursor.union_unpack();
         let cur = union.cursor.clone();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -1787,10 +1787,10 @@ impl TableA {
 }
 
 impl TableA {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -1809,7 +1809,7 @@ impl TableA {
 }
 
 impl TableA {
-    pub fn f6(&self) -> Option<Vec<u8>> {
+    pub fn f6(&self) -> Option<Cursor> {
         let cur = self.cursor.table_slice_by_index(5).unwrap();
         if cur.option_is_none() {
             None
@@ -1851,112 +1851,112 @@ impl AllInOne {
 }
 
 impl AllInOne {
-    pub fn f1(&self) -> Vec<u8> {
+    pub fn f1(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f2(&self) -> Vec<u8> {
+    pub fn f2(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f3(&self) -> Vec<u8> {
+    pub fn f3(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f4(&self) -> Vec<u8> {
+    pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(4).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f5(&self) -> Vec<u8> {
+    pub fn f5(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(5).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f6(&self) -> Vec<u8> {
+    pub fn f6(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(6).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f7(&self) -> Vec<u8> {
+    pub fn f7(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(7).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f8(&self) -> Vec<u8> {
+    pub fn f8(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(8).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f9(&self) -> Vec<u8> {
+    pub fn f9(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(9).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f10(&self) -> Vec<u8> {
+    pub fn f10(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(10).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f11(&self) -> Vec<u8> {
+    pub fn f11(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(11).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f12(&self) -> Vec<u8> {
+    pub fn f12(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(12).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f13(&self) -> Vec<u8> {
+    pub fn f13(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(13).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f14(&self) -> Vec<u8> {
+    pub fn f14(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(14).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f15(&self) -> Vec<u8> {
+    pub fn f15(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(15).unwrap();
         cur.into()
     }
 }
 
 impl AllInOne {
-    pub fn f16(&self) -> Vec<u8> {
+    pub fn f16(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(16).unwrap();
         cur.into()
     }
@@ -2131,10 +2131,10 @@ impl AllInOne {
 }
 
 impl AllInOne {
-    pub fn f41(&self) -> Vec<u8> {
+    pub fn f41(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(41).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -2255,7 +2255,7 @@ impl AllInOne {
 }
 
 impl AllInOne {
-    pub fn f58(&self) -> Option<Vec<u8>> {
+    pub fn f58(&self) -> Option<Cursor> {
         let cur = self.cursor.table_slice_by_index(58).unwrap();
         if cur.option_is_none() {
             None
@@ -2288,7 +2288,7 @@ impl AllInOne {
 }
 
 impl AllInOne {
-    pub fn f61(&self) -> Option<Vec<u8>> {
+    pub fn f61(&self) -> Option<Cursor> {
         let cur = self.cursor.table_slice_by_index(61).unwrap();
         if cur.option_is_none() {
             None

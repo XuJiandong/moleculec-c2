@@ -251,10 +251,10 @@ impl SampleDynVector {
 }
 
 impl SampleDynVector {
-    pub fn get(&self, index: usize) -> Vec<u8> {
+    pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.into()
+        cur2
     }
 }
 
@@ -299,7 +299,7 @@ impl SampleStruct {
 }
 
 impl SampleStruct {
-    pub fn byte2(&self) -> Vec<u8> {
+    pub fn byte2(&self) -> Cursor {
         let cur = self.cursor.slice_by_offset(4, 2).unwrap();
         cur.into()
     }
@@ -323,7 +323,7 @@ impl SampleTable {
 }
 
 impl SampleTable {
-    pub fn byte2(&self) -> Vec<u8> {
+    pub fn byte2(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         cur.into()
     }
