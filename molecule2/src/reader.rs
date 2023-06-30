@@ -46,7 +46,7 @@ pub struct DataSource {
 pub struct Cursor {
     pub offset: usize,
     pub size: usize,
-    data_source: Rc<RefCell<DataSource>>,
+    pub data_source: Rc<RefCell<DataSource>>,
 }
 
 pub struct Union {
