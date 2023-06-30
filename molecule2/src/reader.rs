@@ -6,7 +6,7 @@ use alloc::vec;
 use alloc::vec::Vec;
 use core::cell::RefCell;
 use core::cmp::min;
-use core::convert::From;
+use core::convert::{From, TryFrom};
 
 #[derive(Debug)]
 pub enum Error {
@@ -388,16 +388,17 @@ impl From<Cursor> for i8 {
     }
 }
 
-impl From<Cursor> for Vec<u8> {
-    fn from(cur: Cursor) -> Self {
+impl TryFrom<Cursor> for Vec<u8> {
+    type Error = Error;
+    fn try_from(cur: Cursor) -> Result<Self, Error> {
         let mut buf = Vec::<u8>::new();
         buf.resize(cur.size, 0);
 
-        let size = read_at(&cur, buf.as_mut_slice()).unwrap();
+        let size = read_at(&cur, buf.as_mut_slice())?;
         if size != buf.len() {
-            panic!("convert to Vec<u8>");
+            return Err(Error::Read);
         }
-        buf
+        Ok(buf)
     }
 }
 

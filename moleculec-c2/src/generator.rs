@@ -1043,7 +1043,7 @@ impl TypeCategory {
             TypeCategory::Primitive | TypeCategory::Array => "cur.into()",
             TypeCategory::FixVec => {
                 r"let cur2 = cur.convert_to_rawbytes().unwrap();
-                  cur2"
+                  cur2.try_into().unwrap()"
             }
         };
         String::from(str)

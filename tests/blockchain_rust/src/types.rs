@@ -2,6 +2,7 @@
 #![allow(unused_imports)]
 extern crate alloc;
 use alloc::vec::Vec;
+use core::convert::TryInto;
 use molecule2::Cursor;
 
 pub struct Byte2 {
@@ -1222,7 +1223,7 @@ impl BytesVec {
     pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 
@@ -1366,7 +1367,7 @@ impl Table4 {
     pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 
@@ -1405,7 +1406,7 @@ impl Table5 {
     pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 
@@ -1451,7 +1452,7 @@ impl Table6 {
     pub fn f4(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(3).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 
@@ -1722,7 +1723,7 @@ impl UnionA {
         let union = self.cursor.union_unpack();
         let cur = union.cursor.clone();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 
@@ -1790,7 +1791,7 @@ impl TableA {
     pub fn f3(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 
@@ -2134,7 +2135,7 @@ impl AllInOne {
     pub fn f41(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(41).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 

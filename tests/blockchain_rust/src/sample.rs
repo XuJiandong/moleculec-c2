@@ -2,6 +2,7 @@
 #![allow(unused_imports)]
 extern crate alloc;
 use alloc::vec::Vec;
+use core::convert::TryInto;
 use molecule2::Cursor;
 
 pub struct SampleByte2 {
@@ -254,7 +255,7 @@ impl SampleDynVector {
     pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur2.try_into().unwrap()
     }
 }
 

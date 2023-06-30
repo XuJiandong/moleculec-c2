@@ -129,7 +129,8 @@ extern "C" {{
             extern crate alloc;
             use alloc::vec::Vec;
             use molecule2::Cursor;
-
+            use core::convert::TryInto;
+            
         "#,
         );
         res.push_str(self.imp.as_ref());

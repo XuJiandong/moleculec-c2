@@ -7,6 +7,8 @@ mod types;
 
 extern crate alloc;
 
+use std::convert::TryInto;
+
 use alloc::vec::Vec;
 use blockchain::*;
 use molecule2::Cursor;
@@ -55,9 +57,9 @@ impl From<packed::Script> for Script {
 }
 
 fn verify_script(script: Script) {
-    let code_hash: Vec<u8> = script.code_hash().into();
+    let code_hash: Vec<u8> = script.code_hash().try_into().unwrap();
     let hash_type = script.hash_type();
-    let args: Vec<u8> = script.args().into();
+    let args: Vec<u8> = script.args().try_into().unwrap();
 
     assert_eq!(HASH_TYPE, hash_type);
     assert_eq!(&CODE_HASH, &code_hash[..]);
@@ -87,16 +89,16 @@ fn verify_cell_output(cell_output: CellOutput) {
     assert_eq!(capacity, CAPACITY);
 
     let lock_script = cell_output.lock();
-    let code_hash: Vec<u8> = lock_script.code_hash().into();
+    let code_hash: Vec<u8> = lock_script.code_hash().try_into().unwrap();
     assert_eq!(code_hash.as_slice(), &CODE_HASH);
-    let args: Vec<u8> = lock_script.args().into();
+    let args: Vec<u8> = lock_script.args().try_into().unwrap();
     assert_eq!(args.as_slice(), &ARGS);
     assert_eq!(lock_script.hash_type(), HASH_TYPE);
 
     let type_script = cell_output.type_().unwrap();
-    let code_hash: Vec<u8> = type_script.code_hash().into();
+    let code_hash: Vec<u8> = type_script.code_hash().try_into().unwrap();
     assert_eq!(code_hash.as_slice(), &CODE_HASH);
-    let args: Vec<u8> = type_script.args().into();
+    let args: Vec<u8> = type_script.args().try_into().unwrap();
     assert_eq!(args.as_slice(), &ARGS);
     assert_eq!(type_script.hash_type(), HASH_TYPE);
 }
@@ -162,7 +164,7 @@ impl From<packed::OutPoint> for OutPoint {
 }
 
 fn verify_out_point(out_point: OutPoint) {
-    let tx_hash: Vec<u8> = out_point.tx_hash().into();
+    let tx_hash: Vec<u8> = out_point.tx_hash().try_into().unwrap();
     let index = out_point.index();
     assert_eq!(tx_hash.as_slice(), &TX_HASH);
     assert_eq!(index, INDEX);
