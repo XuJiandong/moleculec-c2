@@ -1,9 +1,12 @@
 extern crate alloc;
 
+use alloc::boxed::Box;
 use alloc::rc::Rc;
+use alloc::vec;
 use alloc::vec::Vec;
 use core::cell::RefCell;
 use core::cmp::min;
+use core::convert::From;
 
 #[derive(Debug)]
 pub enum Error {
