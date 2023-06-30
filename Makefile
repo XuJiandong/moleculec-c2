@@ -1,5 +1,5 @@
 MOLC    := moleculec
-MOLC_VERSION := 0.7.2
+MOLC_VERSION := 0.7.3
 
 RUST_SRC := $(wildcard src/*.rs)
 
@@ -9,7 +9,7 @@ sample: tests/sample/sample-api.h tests/sample/sample-api2.h
 	make -C tests/sample
 
 tests/sample/sample-api2.h: mol/sample.json $(RUST_SRC)
-	cargo run -- --input mol/sample.json | clang-format -style=Google > tests/sample/sample-api2.h
+	cargo run --bin moleculec-c2 -- --input mol/sample.json | clang-format -style=Google > tests/sample/sample-api2.h
 
 mol/sample.json: mol/sample.mol
 	moleculec --language - --schema-file mol/sample.mol --format json > mol/sample.json
@@ -21,19 +21,19 @@ blockchain: tests/blockchain/blockchain-api.h tests/blockchain/blockchain-api2.h
 	make -C tests/blockchain
 
 tests/blockchain/blockchain-api2.h: mol/blockchain.json $(RUST_SRC)
-	cargo run -- --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
+	cargo run --bin moleculec-c2 -- --input mol/blockchain.json | clang-format -style=Google > tests/blockchain/blockchain-api2.h
 
 tests/blockchain_rust/src/blockchain.rs: mol/blockchain.json $(RUST_SRC)
-	cargo run -- --rust --input $< | rustfmt > $@
+	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
 
 tests/blockchain_rust/src/import.rs: mol/import.json $(RUST_SRC)
-	cargo run -- --rust --input $< | rustfmt > $@
+	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
 
 tests/blockchain_rust/src/sample.rs: mol/sample.json $(RUST_SRC)
-	cargo run -- --rust --input $< | rustfmt > $@
+	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
 
 tests/blockchain_rust/src/types.rs: mol/types.json $(RUST_SRC)
-	cargo run -- --rust --input $< | rustfmt > $@
+	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
 
 blockchain_rust: tests/blockchain_rust/src/blockchain.rs tests/blockchain_rust/src/sample.rs tests/blockchain_rust/src/types.rs tests/blockchain_rust/src/import.rs
 	cd tests/blockchain_rust && cargo test
@@ -51,7 +51,7 @@ mol/types.json: mol/types.mol
 	moleculec --language - --schema-file mol/types.mol --format json > mol/types.json
 
 tests/types/types-api2.h: mol/types.json $(RUST_SRC)
-	cargo run -- --input mol/types.json | clang-format -style=Google > tests/types/types-api2.h
+	cargo run --bin moleculec-c2 -- --input mol/types.json | clang-format -style=Google > tests/types/types-api2.h
 
 types: mol/types.json tests/types/types-api2.h
 	make -C tests/types
@@ -68,18 +68,13 @@ fmt:
 	git diff --exit-code $(wildcard include/*.h)
 
 ci:
-	cargo install moleculec --vers ${MOLC_VERSION}
 	make clean
 	make all
-	cd rust && cargo test
-
+	cargo test
 	
 install-tools:
-	if [ ! -x "$$(command -v "${MOLC}")" ] \
-			|| [ "$$(${MOLC} --version | awk '{ print $$2 }' | tr -d ' ')" != "${MOLC_VERSION}" ]; then \
-		cargo install --force --version "${MOLC_VERSION}" "${MOLC}"; \
-	fi
-
+	cargo install --path moleculec-c2
+	cargo install --force --version "${MOLC_VERSION}" "${MOLC}"
 
 clean:
 	rm -f tests/sample/sample-api2.h

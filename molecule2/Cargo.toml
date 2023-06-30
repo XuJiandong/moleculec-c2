@@ -14,9 +14,3 @@ edition = "2018"
 [dev-dependencies]
 ckb-types = "0.100.0"
 
-
-[profile.release]
-overflow-checks = true
-
-[profile.bench]
-overflow-checks = true
