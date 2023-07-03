@@ -1,3 +1,4 @@
+
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -172,7 +173,7 @@ impl BytesVec {
     pub fn get(&self, index: usize) -> Cursor {
         let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.try_into().unwrap()
+        cur2
     }
 }
 
@@ -397,7 +398,7 @@ impl Script {
     pub fn args(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.try_into().unwrap()
+        cur2
     }
 }
 
@@ -771,7 +772,7 @@ impl CellbaseWitness {
     pub fn message(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(1).unwrap();
         let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2.try_into().unwrap()
+        cur2
     }
 }
 
