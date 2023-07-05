@@ -169,7 +169,7 @@ impl Generator for ast::Option_ {
         );
 
         match tc {
-            TypeCategory::Option(_) => {
+            TypeCategory::Option(_, _) => {
                 panic!("should not happen in C");
             }
             TypeCategory::Type => {
@@ -296,7 +296,7 @@ impl Generator for ast::Union {
             let item_type_name = item.typ().name();
             let (transformed_name, tc) = get_c_type_category(item.typ());
             match tc {
-                TypeCategory::Option(_) => {
+                TypeCategory::Option(_, _) => {
                     panic!("should not happen in C");
                 }
                 TypeCategory::Type => {
@@ -693,7 +693,7 @@ fn generate_c_common_array_impl(
         "mol2_dynvec_slice_by_index(&this->cur, index)".into()
     };
     match tc {
-        TypeCategory::Option(_) => {
+        TypeCategory::Option(_, _) => {
             panic!("should not happen in C");
         }
         TypeCategory::Type => {
@@ -908,7 +908,7 @@ fn generate_c_common_table_impl(
     let (transformed_name, tc) = get_c_type_category(field.typ());
     let slice_by = generate_c_slice_by(index, &field_sizes);
     match tc {
-        TypeCategory::Option(_) => {
+        TypeCategory::Option(_, _) => {
             panic!("should not happen in C");
         }
         TypeCategory::Type => {
@@ -1016,25 +1016,51 @@ enum TypeCategory {
     Array,
     FixVec,
     Type,
-    Option(u32),
+    // 1st: nested level
+    // 2nd: is nested type is FixVec or not
+    Option(u32, bool),
 }
 
 impl TypeCategory {
+    pub fn is_fixvec(&self) -> bool {
+        match self {
+            Self::FixVec => true,
+            _ => false,
+        }
+    }
     pub fn gen_convert_code(&self) -> String {
         let str = match self {
-            &TypeCategory::Option(level) => {
+            &TypeCategory::Option(level, flag) => {
                 if level == 1 {
-                    r"if cur.option_is_none() {
-                        None
+                    if flag {
+                        r"if cur.option_is_none() {
+                            None
+                        } else {
+                            let cur = cur.convert_to_rawbytes().unwrap();
+                            Some(cur.into())
+                       }"
                     } else {
-                        Some(cur.into())
-                   }"
+                        r"if cur.option_is_none() {
+                            None
+                        } else {
+                            Some(cur.into())
+                       }"
+                    }
                 } else if level == 2 {
-                    r"if cur.option_is_none() {
-                        None
+                    if flag {
+                        r"if cur.option_is_none() {
+                            None
+                        } else {
+                            let cur = cur.convert_to_rawbytes().unwrap();
+                            Some(Some(cur.into()))
+                       }"
                     } else {
-                        Some(Some(cur.into()))
-                   }"
+                        r"if cur.option_is_none() {
+                            None
+                        } else {
+                            Some(Some(cur.into()))
+                       }"
+                    }
                 } else {
                     panic!("can't support")
                 }
@@ -1154,13 +1180,13 @@ fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
             // Option<Script>, etc
             let (inner_name, inner_tc) = get_rust_type_category(o.item().typ());
             match inner_tc {
-                TypeCategory::Option(level) => {
-                    tc = TypeCategory::Option(level + 1);
+                TypeCategory::Option(level, flag) => {
+                    tc = TypeCategory::Option(level + 1, flag);
                     transformed_name = format!("Option<{}>", inner_name);
                 }
                 _ => {
                     transformed_name = format!("Option<{}>", inner_name);
-                    tc = TypeCategory::Option(1);
+                    tc = TypeCategory::Option(1, inner_tc.is_fixvec());
                 }
             }
         }

@@ -34,6 +34,18 @@ const CAPACITY: u64 = 1;
 const TX_HASH: [u8; 32] = [1u8; 32];
 const INDEX: u32 = 1;
 const DEP_TYPE: u8 = 1;
+const WITNESS: [u8; 2001] = [1; 2001];
+
+fn create_witness_args() -> packed::WitnessArgs {
+    let builder = packed::WitnessArgs::new_builder();
+    let witness = bytes::Bytes::copy_from_slice(&WITNESS);
+
+    builder
+        .lock(Some(witness.clone()).pack())
+        .input_type(Some(witness.clone()).pack())
+        .output_type(Some(witness.clone()).pack())
+        .build()
+}
 
 fn create_script() -> packed::Script {
     let code_hash = CODE_HASH.clone();
@@ -74,6 +86,14 @@ fn create_cell_output() -> packed::CellOutput {
         .lock(create_script())
         .type_(Some(create_script()).pack())
         .build()
+}
+
+impl From<packed::WitnessArgs> for WitnessArgs {
+    fn from(value: packed::WitnessArgs) -> Self {
+        let memory = Vec::from(value.as_slice());
+        let cursor: Cursor = memory.into();
+        cursor.into()
+    }
 }
 
 impl From<packed::CellOutput> for CellOutput {
@@ -168,6 +188,22 @@ fn verify_out_point(out_point: OutPoint) {
     let index = out_point.index();
     assert_eq!(tx_hash.as_slice(), &TX_HASH);
     assert_eq!(index, INDEX);
+}
+
+fn verify_witness_args(witness_args: WitnessArgs) {
+    let lock: Vec<u8> = witness_args.lock().unwrap().try_into().unwrap();
+    let input_type: Vec<u8> = witness_args.input_type().unwrap().try_into().unwrap();
+    let output_type: Vec<u8> = witness_args.output_type().unwrap().try_into().unwrap();
+    assert_eq!(&lock, &WITNESS);
+    assert_eq!(&input_type, &WITNESS);
+    assert_eq!(&output_type, &WITNESS);
+}
+
+#[test]
+pub fn test_witness_args() {
+    let witness_args = create_witness_args();
+    let new_witness_args = witness_args.into();
+    verify_witness_args(new_witness_args);
 }
 
 #[test]
