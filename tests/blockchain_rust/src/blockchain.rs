@@ -1,4 +1,3 @@
-
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -792,6 +791,7 @@ impl WitnessArgs {
         if cur.option_is_none() {
             None
         } else {
+            let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }
@@ -803,6 +803,7 @@ impl WitnessArgs {
         if cur.option_is_none() {
             None
         } else {
+            let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }
@@ -814,6 +815,7 @@ impl WitnessArgs {
         if cur.option_is_none() {
             None
         } else {
+            let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }

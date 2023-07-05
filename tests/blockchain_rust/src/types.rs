@@ -1,4 +1,3 @@
-
 #![allow(dead_code)]
 #![allow(unused_imports)]
 extern crate alloc;
@@ -1673,6 +1672,7 @@ impl BytesOptVec {
         if cur.option_is_none() {
             None
         } else {
+            let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }
@@ -1816,6 +1816,7 @@ impl TableA {
         if cur.option_is_none() {
             None
         } else {
+            let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }
@@ -2295,6 +2296,7 @@ impl AllInOne {
         if cur.option_is_none() {
             None
         } else {
+            let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }
