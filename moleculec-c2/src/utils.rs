@@ -1,5 +1,6 @@
 use crate::generator::Generator;
 use molecule_codegen::ast;
+use proc_macro2::Ident;
 use std::fmt::Result;
 
 pub const VERSION: u32 = 7002;
@@ -136,4 +137,8 @@ extern "C" {{
         res.push_str(self.imp.as_ref());
         res
     }
+}
+
+pub fn ident_new(name: &str) -> Ident {
+    Ident::new(name, proc_macro2::Span::call_site())
 }
