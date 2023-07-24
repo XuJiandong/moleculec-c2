@@ -19,7 +19,7 @@
 /// - common table, the set of Table, Struct, they share same method like ".t->XXX"
 use crate::utils::{ident_new, Output};
 use molecule_codegen::ast::{self, HasName, *};
-use proc_macro2::Literal;
+use proc_macro2::{Literal, TokenStream};
 use quote::quote;
 use std::fmt;
 use std::fmt::Result;
@@ -355,9 +355,9 @@ impl Generator for ast::Union {
                 pub cursor: Cursor,
             }
 
-            impl From<Cursor> for {0} {
+            impl From<Cursor> for #name {
                 fn from(cursor: Cursor) -> Self {
-                    Self {{ cursor }}
+                    Self { cursor }
                 }
             }
 
@@ -374,9 +374,8 @@ impl Generator for ast::Union {
             let item_type_name = item.typ().name();
             let item_type_name = ident_new(&format!("as_{}", item_type_name.to_lowercase()));
             let (transformed_name, tc) = get_rust_type_category(item.typ());
-            let transformed_name = ident_new(&transformed_name);
+            let transformed_name = syn::parse_str::<syn::Type>(&transformed_name).unwrap();
             let convert_code = tc.gen_convert_code();
-            let convert_code = ident_new(&convert_code);
             let q = quote! {
                 impl #name {
                     pub fn #item_type_name(&self) -> #transformed_name {
@@ -1007,8 +1006,8 @@ impl TypeCategory {
             _ => false,
         }
     }
-    pub fn gen_convert_code(&self) -> String {
-        let str = match self {
+    pub fn gen_convert_code(&self) -> TokenStream {
+        let code = match self {
             &TypeCategory::Option(level, flag) => {
                 if level == 1 {
                     if flag {
@@ -1061,7 +1060,7 @@ impl TypeCategory {
                 }
             }
         };
-        format!("{}", str)
+        code
     }
 }
 

@@ -1,3 +1,6 @@
+
+SHELL=/bin/bash -o pipefail
+
 MOLC    := moleculec
 MOLC_VERSION := 0.7.3
 
