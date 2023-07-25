@@ -17,8 +17,10 @@
 /// - class type name, name with "Type" suffix, e.g. SampleTableType
 /// - common array, the set of Array, FixVec and DynVec, they share method like "len", "get"
 /// - common table, the set of Table, Struct, they share same method like ".t->XXX"
-use crate::utils::Output;
+use crate::utils::{ident_new, Output};
 use molecule_codegen::ast::{self, HasName, *};
+use proc_macro2::{Literal, TokenStream};
+use quote::quote;
 use std::fmt;
 use std::fmt::Result;
 
@@ -49,23 +51,17 @@ pub trait Generator: HasName {
         Ok(())
     }
     fn gen_rust(&self, output: &mut Output) -> Result {
-        format_imp!(
-            output,
-            "// warning: {} not implemented for Rust ",
-            self.name()
-        );
-        format_imp!(
-            output,
-            r#"
-            pub struct {0} {{ pub cursor : Cursor }}
-            impl From<Cursor> for {0} {{
-                fn from(cursor: Cursor) -> Self {{
-                    Self {{ cursor }}
-                }}
-            }}
-            "#,
-            self.name()
-        );
+        let name = ident_new(self.name());
+        let q = quote! {
+            pub struct #name { pub cursor : Cursor }
+
+            impl From<Cursor> for #name {
+                fn from(cursor: Cursor) -> Self {
+                    Self { cursor }
+                }
+            }
+        };
+        format_imp!(output, "{}", q);
         Ok(())
     }
     fn gen_c_decl(&self, output: &mut Output) -> Result {
@@ -352,51 +348,44 @@ impl Generator for ast::Union {
         Ok(())
     }
     fn gen_rust(&self, output: &mut Output) -> Result {
-        let name = self.name();
+        let name = ident_new(self.name());
 
-        format_imp!(
-            output,
-            r#"
-        pub struct {0} {{
-            pub cursor: Cursor,
-        }}
+        let q = quote! {
+            pub struct #name {
+                pub cursor: Cursor,
+            }
 
-        impl From<Cursor> for {0} {{
-            fn from(cursor: Cursor) -> Self {{
-                Self {{ cursor }}
-            }}
-        }}
+            impl From<Cursor> for #name {
+                fn from(cursor: Cursor) -> Self {
+                    Self { cursor }
+                }
+            }
 
-        impl {0} {{
-            pub fn item_id(&self) -> usize {{
-                let union = self.cursor.union_unpack();
-                union.item_id
-            }}
-        }}
-        "#,
-            name
-        );
+            impl #name {
+                pub fn item_id(&self) -> usize {
+                    let item = self.cursor.union_unpack();
+                    item.item_id
+                }
+            }
+        };
+        format_imp!(output, "{}", q);
 
         for item in self.items() {
             let item_type_name = item.typ().name();
+            let item_type_name = ident_new(&format!("as_{}", item_type_name.to_lowercase()));
             let (transformed_name, tc) = get_rust_type_category(item.typ());
+            let transformed_name = syn::parse_str::<syn::Type>(&transformed_name).unwrap();
             let convert_code = tc.gen_convert_code();
-            format_imp!(
-                output,
-                r#"
-            impl {0} {{
-                pub fn as_{1}(&self) -> {2} {{
-                    let union = self.cursor.union_unpack();
-                    let cur = union.cursor.clone();
-                    {3}
-                }}
-            }}
-            "#,
-                name,
-                item_type_name.to_lowercase(),
-                transformed_name,
-                convert_code
-            );
+            let q = quote! {
+                impl #name {
+                    pub fn #item_type_name(&self) -> #transformed_name {
+                        let item = self.cursor.union_unpack();
+                        let cur = item.cursor.clone();
+                        #convert_code
+                    }
+                }
+            };
+            format_imp!(output, "{}", q);
         }
 
         Ok(())
@@ -618,53 +607,44 @@ fn generate_rust_common_array(
     fixvec: Option<&ast::FixVec>,
     _dynvec: Option<&ast::DynVec>,
 ) -> Result {
-    format_imp!(
-        output,
-        r#"
-        pub struct {0} {{
+    let n = ident_new(name);
+    let q = quote! {
+        pub struct #n {
             pub cursor: Cursor,
-        }}
+        }
 
-        impl From<Cursor> for {0} {{
-            fn from(cursor: Cursor) -> Self {{
-                Self {{ cursor }}
-            }}
-        }}
-    "#,
-        name
-    );
+        impl From<Cursor> for #n {
+            fn from(cursor: Cursor) -> Self {
+                Self { cursor }
+            }
+        }
+    };
+
+    format_imp!(output, "{}", q);
+
     // len
     if let Some(arr) = array {
-        format_imp!(
-            output,
-            r#"
-            impl {0} {{
-                pub fn len(&self) -> usize {{ {1} }}
-             }}
-             "#,
-            name,
-            arr.item_count()
-        );
+        let item_count = Literal::usize_unsuffixed(arr.item_count());
+        let q = quote! {
+            impl #n {
+                pub fn len(&self) -> usize { #item_count }
+             }
+        };
+        format_imp!(output, "{}", q);
     } else if fixvec.is_some() {
-        format_imp!(
-            output,
-            r#"
-                impl {0} {{
-                    pub fn len(&self) -> usize {{  self.cursor.fixvec_length()  }}
-                }}
-            "#,
-            name
-        );
+        let q = quote! {
+            impl #n {
+                pub fn len(&self) -> usize {  self.cursor.fixvec_length()  }
+            }
+        };
+        format_imp!(output, "{}", q);
     } else {
-        format_imp!(
-            output,
-            r#"
-                impl {0} {{
-                    pub fn len(&self) -> usize {{ self.cursor.dynvec_length() }}
-                }}
-            "#,
-            name
-        );
+        let q = quote! {
+            impl #n {
+                pub fn len(&self) -> usize { self.cursor.dynvec_length() }
+            }
+        };
+        format_imp!(output, "{}", q);
     }
 
     generate_rust_common_array_impl(output, name, type_name, tc, array, fixvec);
@@ -875,22 +855,20 @@ fn generate_rust_common_table(
     fields: &[FieldDecl],
     field_sizes: Option<&[usize]>,
 ) -> Result {
-    format_imp!(
-        output,
-        r#"
-        pub struct {0} {{
+    let n = ident_new(name);
+    let q = quote! {
+
+        pub struct #n {
             pub cursor: Cursor,
-        }}
+        }
 
-        impl From<Cursor> for {0} {{
-            fn from(cursor: Cursor) -> Self {{
-                {0} {{ cursor }}
-            }}
-        }}
-        "#,
-        name
-    );
-
+        impl From<Cursor> for #n {
+            fn from(cursor: Cursor) -> Self {
+                #n { cursor }
+            }
+        }
+    };
+    format_imp!(output, "{}", q);
     for (index, field) in fields.iter().enumerate() {
         generate_rust_common_table_impl(output, name, field, index, field_sizes);
     }
@@ -1028,51 +1006,61 @@ impl TypeCategory {
             _ => false,
         }
     }
-    pub fn gen_convert_code(&self) -> String {
-        let str = match self {
+    pub fn gen_convert_code(&self) -> TokenStream {
+        let code = match self {
             &TypeCategory::Option(level, flag) => {
                 if level == 1 {
                     if flag {
-                        r"if cur.option_is_none() {
-                            None
-                        } else {
-                            let cur = cur.convert_to_rawbytes().unwrap();
-                            Some(cur.into())
-                       }"
+                        quote! {
+                            if cur.option_is_none() {
+                                None
+                            } else {
+                                let cur = cur.convert_to_rawbytes().unwrap();
+                                Some(cur.into())
+                            }
+                        }
                     } else {
-                        r"if cur.option_is_none() {
-                            None
-                        } else {
-                            Some(cur.into())
-                       }"
+                        quote! {
+                            if cur.option_is_none() {
+                                None
+                            } else {
+                                Some(cur.into())
+                            }
+                        }
                     }
                 } else if level == 2 {
                     if flag {
-                        r"if cur.option_is_none() {
-                            None
-                        } else {
-                            let cur = cur.convert_to_rawbytes().unwrap();
-                            Some(Some(cur.into()))
-                       }"
+                        quote! {
+                            if cur.option_is_none() {
+                                None
+                            } else {
+                                let cur = cur.convert_to_rawbytes().unwrap();
+                                Some(Some(cur.into()))
+                           }
+                        }
                     } else {
-                        r"if cur.option_is_none() {
-                            None
-                        } else {
-                            Some(Some(cur.into()))
-                       }"
+                        quote! {
+                            if cur.option_is_none() {
+                                None
+                            } else {
+                                Some(Some(cur.into()))
+                            }
+                        }
                     }
                 } else {
                     panic!("can't support")
                 }
             }
-            TypeCategory::Type => "cur.into()",
-            TypeCategory::Primitive | TypeCategory::Array => "cur.into()",
+            TypeCategory::Type => quote! { cur.into() },
+            TypeCategory::Primitive | TypeCategory::Array => quote! { cur.into() },
             TypeCategory::FixVec => {
-                r"let cur2 = cur.convert_to_rawbytes().unwrap();
-                  cur2"
+                quote! {
+                    let cur2 = cur.convert_to_rawbytes().unwrap();
+                    cur2
+                }
             }
         };
-        String::from(str)
+        code
     }
 }
 

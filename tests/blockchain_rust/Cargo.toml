@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 molecule2 = { path = "../../molecule2" }
-ckb-types = "0.100.0"
+ckb-types = "0.110.0"

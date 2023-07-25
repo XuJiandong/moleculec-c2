@@ -16,5 +16,7 @@ serde = { version = "1.0", features = ["derive"] }
 # Each data format lives in its own crate; the sample code below uses JSON
 # but you may be using a different one.
 serde_json = "1.0"
-molecule-codegen = { version = "0.7.2", features = ["compiler-plugin"] }
-
+molecule-codegen = { version = "0.7.3", features = ["compiler-plugin"] }
+quote = "1.0.32"
+proc-macro2 = "1.0.66"
+syn = "2.0.27"
