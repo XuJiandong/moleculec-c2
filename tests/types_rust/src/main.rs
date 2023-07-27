@@ -4,7 +4,9 @@ pub mod types_api2;
 mod tests;
 
 fn main() {
-    tests::test_base::test_base();
-    // println!("Please run cargo test");
+    let test_data = tests::types_all_data::TypesAll::default();
+    let data = test_data.to_bytes();
+    test_data.check(&data);
+
     println!("Done");
 }

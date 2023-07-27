@@ -62,11 +62,10 @@ types: mol/types.json tests/types/types-api2.h
 tests/types_rust/src/types_api.rs: mol/types.mol $(RUST_SRC)
 	moleculec --language rust --schema-file $< | rustfmt > $@
 
-
 tests/types_rust/src/types_api2.rs: mol/types.json $(RUST_SRC)
 	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
 
-types_rust: tests/types_rust/src/types_api2.rs
+types_rust:
 	cd tests/types_rust && cargo test
 
 copy-files:

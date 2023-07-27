@@ -13,7 +13,7 @@ use rand::{random, rngs::ThreadRng, thread_rng, Rng, RngCore};
 use super::*;
 
 #[derive(Default)]
-struct TestDataAll {
+pub struct TypesAll {
     f0: TypesArray<u8, 1>,
     f1: TypesArray<u8, 2>,
     f2: TypesArray<u8, 3>,
@@ -98,7 +98,7 @@ struct TestDataAll {
     f73: TypesTableA,
 }
 
-impl TestDataAll {
+impl TypesAll {
     pub fn to_bytes(&self) -> Vec<u8> {
         use crate::types_api::*;
 
@@ -185,102 +185,103 @@ impl TestDataAll {
 
         builder.as_reader().as_slice().to_vec()
     }
+
+    pub fn check(&self, data: &[u8]) {
+        use crate::tests::types_api2_mol2::Mol2Vec;
+        use molecule2::Cursor;
+        use types_api2::*;
+
+        let cursor = molecule2::Cursor::new(data.len(), Box::new(data.to_vec()));
+        let all_in_one = AllInOne { cursor };
+
+        self.f0.check(&all_in_one.f0()).expect("f0");
+        self.f1.check(&all_in_one.f1().into()).expect("f1");
+        self.f2.check(&all_in_one.f2().into()).expect("f2");
+        self.f3.check(&all_in_one.f3().into()).expect("f3");
+        self.f4.check(&all_in_one.f4().into()).expect("f4");
+        self.f5.check(&all_in_one.f5().into()).expect("f5");
+        self.f6.check(&all_in_one.f6().into()).expect("f6");
+        self.f7.check(&all_in_one.f7().into()).expect("f7");
+        self.f8.check(&all_in_one.f8().into()).expect("f8");
+        self.f9.check(&all_in_one.f9().into()).expect("f9");
+        self.f10.check(&all_in_one.f10().into()).expect("f10");
+        self.f11.check(&all_in_one.f11().into()).expect("f11");
+        self.f12.check(&all_in_one.f12().into()).expect("f12");
+        self.f13.check(&all_in_one.f13().into()).expect("f13");
+        self.f14.check(&all_in_one.f14().into()).expect("f14");
+        self.f15.check(&all_in_one.f15().into()).expect("f15");
+
+        self.f16.check2(&all_in_one.f16().into()).expect("f16");
+        self.f17.check(&all_in_one.f17().into()).expect("f17");
+        self.f18.check(&all_in_one.f18().into()).expect("f18");
+        self.f19.check(&all_in_one.f19().into()).expect("f19");
+        self.f20.check(&all_in_one.f20().into()).expect("f20");
+        self.f21.check(&all_in_one.f21().into()).expect("f21");
+        self.f22.check(&all_in_one.f22().into()).expect("f22");
+        self.f23.check(&all_in_one.f23().into()).expect("f23");
+
+        self.f24.check(&all_in_one.f24().into()).expect("f24");
+        self.f25.check(&all_in_one.f25().into()).expect("f25");
+        self.f26.check(&all_in_one.f26().into()).expect("f26");
+        self.f27.check(&all_in_one.f27().into()).expect("f27");
+
+        self.f28.check(&all_in_one.f28().into()).expect("f28");
+        self.f29.check(&all_in_one.f29().into()).expect("f29");
+        self.f30.check(&all_in_one.f30().into()).expect("f30");
+        self.f31.check(&all_in_one.f31().into()).expect("f31");
+        self.f32.check(&all_in_one.f32().into()).expect("f32");
+        self.f33.check(&all_in_one.f33().into()).expect("f33");
+        self.f34.check(&all_in_one.f34().into()).expect("f34");
+        self.f35.check(&all_in_one.f35().into()).expect("f35");
+        self.f36.check(&all_in_one.f36().into()).expect("f36");
+        self.f37.check(&all_in_one.f37().into()).expect("f37");
+        self.f38.check(&all_in_one.f38().into()).expect("f38");
+        self.f39.check(&all_in_one.f39().into()).expect("f39");
+        self.f40.check(&all_in_one.f40().into()).expect("f40");
+
+        self.f41.check(&all_in_one.f41().into()).expect("f41");
+        self.f42.check(&all_in_one.f42().into()).expect("f42");
+        self.f43.check(&all_in_one.f43().into()).expect("f43");
+        self.f44.check(&all_in_one.f44().into()).expect("f44");
+        self.f45.check(&all_in_one.f45().into()).expect("f45");
+        self.f46.check(&all_in_one.f46().into()).expect("f46");
+        self.f47.check(&all_in_one.f47().into()).expect("f47");
+        self.f48.check(&all_in_one.f48().into()).expect("f48");
+        self.f49.check(&all_in_one.f49().into()).expect("f49");
+
+        self.f50.check(&all_in_one.f50().into()).expect("f50");
+        self.f51.check(&all_in_one.f51().into()).expect("f51");
+        self.f52.check(&all_in_one.f52().into()).expect("f52");
+        self.f53.check(&all_in_one.f53().into()).expect("f53");
+        self.f54.check(&all_in_one.f54().into()).expect("f54");
+        self.f55.check(&all_in_one.f55().into()).expect("f55");
+        self.f56.check(&all_in_one.f56().into()).expect("f56");
+
+        self.f57.check(&all_in_one.f57().into()).expect("f57");
+        self.f58
+            .check(&all_in_one.f58().map(|f| f.into()))
+            .expect("f58");
+        self.f59.check(&all_in_one.f59()).expect("f59");
+        self.f60.check(&all_in_one.f60()).expect("f60");
+        self.f61.check(&all_in_one.f61()).expect("f61");
+        self.f62.check(&all_in_one.f62()).expect("f62");
+        self.f63.check(&all_in_one.f63()).expect("f63");
+        self.f64.check(&all_in_one.f64()).expect("f64");
+        self.f65.check(&all_in_one.f65()).expect("f65");
+        self.f66.check(&all_in_one.f66()).expect("f66");
+        self.f67.check(&all_in_one.f67()).expect("f67"); // TODO Some(None) == None?
+        self.f68.check(&all_in_one.f68()).expect("f68");
+        self.f69.check(&all_in_one.f69()).expect("f69");
+        self.f70.check(&all_in_one.f70()).expect("f70");
+        self.f71.check(&all_in_one.f71()).expect("f71");
+        self.f72.check(&all_in_one.f72()).expect("f72");
+        self.f73.check(&all_in_one.f73()).expect("f73");
+    }
 }
 
-// #[test]
+#[test]
 pub fn test_base() {
-    use crate::tests::types_api2_mol2::Mol2Vec;
-    use molecule2::Cursor;
-    use types_api2::*;
-
-    let test_data = TestDataAll::default();
-    let buffer = test_data.to_bytes();
-    // println!("dbg: buf : \n{:02x?}", buffer);
-
-    let cursor = molecule2::Cursor::new(buffer.len(), Box::new(buffer));
-    let all_in_one = AllInOne { cursor };
-
-    test_data.f0.check(&all_in_one.f0()).expect("f0");
-    test_data.f1.check(&all_in_one.f1().into()).expect("f1");
-    test_data.f2.check(&all_in_one.f2().into()).expect("f2");
-    test_data.f3.check(&all_in_one.f3().into()).expect("f3");
-    test_data.f4.check(&all_in_one.f4().into()).expect("f4");
-    test_data.f5.check(&all_in_one.f5().into()).expect("f5");
-    test_data.f6.check(&all_in_one.f6().into()).expect("f6");
-    test_data.f7.check(&all_in_one.f7().into()).expect("f7");
-    test_data.f8.check(&all_in_one.f8().into()).expect("f8");
-    test_data.f9.check(&all_in_one.f9().into()).expect("f9");
-    test_data.f10.check(&all_in_one.f10().into()).expect("f10");
-    test_data.f11.check(&all_in_one.f11().into()).expect("f11");
-    test_data.f12.check(&all_in_one.f12().into()).expect("f12");
-    test_data.f13.check(&all_in_one.f13().into()).expect("f13");
-    test_data.f14.check(&all_in_one.f14().into()).expect("f14");
-    test_data.f15.check(&all_in_one.f15().into()).expect("f15");
-
-    test_data.f16.check2(&all_in_one.f16().into()).expect("f16");
-    test_data.f17.check(&all_in_one.f17().into()).expect("f17");
-    test_data.f18.check(&all_in_one.f18().into()).expect("f18");
-    test_data.f19.check(&all_in_one.f19().into()).expect("f19");
-    test_data.f20.check(&all_in_one.f20().into()).expect("f20");
-    test_data.f21.check(&all_in_one.f21().into()).expect("f21");
-    test_data.f22.check(&all_in_one.f22().into()).expect("f22");
-    test_data.f23.check(&all_in_one.f23().into()).expect("f23");
-
-    test_data.f24.check(&all_in_one.f24().into()).expect("f24");
-    test_data.f25.check(&all_in_one.f25().into()).expect("f25");
-    test_data.f26.check(&all_in_one.f26().into()).expect("f26");
-    test_data.f27.check(&all_in_one.f27().into()).expect("f27");
-
-    test_data.f28.check(&all_in_one.f28().into()).expect("f28");
-    test_data.f29.check(&all_in_one.f29().into()).expect("f29");
-    test_data.f30.check(&all_in_one.f30().into()).expect("f30");
-    test_data.f31.check(&all_in_one.f31().into()).expect("f31");
-    test_data.f32.check(&all_in_one.f32().into()).expect("f32");
-    test_data.f33.check(&all_in_one.f33().into()).expect("f33");
-    test_data.f34.check(&all_in_one.f34().into()).expect("f34");
-    test_data.f35.check(&all_in_one.f35().into()).expect("f35");
-    test_data.f36.check(&all_in_one.f36().into()).expect("f36");
-    test_data.f37.check(&all_in_one.f37().into()).expect("f37");
-    test_data.f38.check(&all_in_one.f38().into()).expect("f38");
-    test_data.f39.check(&all_in_one.f39().into()).expect("f39");
-    test_data.f40.check(&all_in_one.f40().into()).expect("f40");
-
-    test_data.f41.check(&all_in_one.f41().into()).expect("f41");
-    test_data.f42.check(&all_in_one.f42().into()).expect("f42");
-    test_data.f43.check(&all_in_one.f43().into()).expect("f43");
-    test_data.f44.check(&all_in_one.f44().into()).expect("f44");
-    test_data.f45.check(&all_in_one.f45().into()).expect("f45");
-    test_data.f46.check(&all_in_one.f46().into()).expect("f46");
-    test_data.f47.check(&all_in_one.f47().into()).expect("f47");
-    test_data.f48.check(&all_in_one.f48().into()).expect("f48");
-    test_data.f49.check(&all_in_one.f49().into()).expect("f49");
-
-    test_data.f50.check(&all_in_one.f50().into()).expect("f50");
-    test_data.f51.check(&all_in_one.f51().into()).expect("f51");
-    test_data.f52.check(&all_in_one.f52().into()).expect("f52");
-    test_data.f53.check(&all_in_one.f53().into()).expect("f53");
-    test_data.f54.check(&all_in_one.f54().into()).expect("f54");
-    test_data.f55.check(&all_in_one.f55().into()).expect("f55");
-    test_data.f56.check(&all_in_one.f56().into()).expect("f56");
-
-    test_data.f57.check(&all_in_one.f57().into()).expect("f57");
-    test_data
-        .f58
-        .check(&all_in_one.f58().map(|f| f.into()))
-        .expect("f58");
-    test_data.f59.check(&all_in_one.f59()).expect("f59");
-    test_data.f60.check(&all_in_one.f60()).expect("f60");
-    test_data.f61.check(&all_in_one.f61()).expect("f61");
-    test_data.f62.check(&all_in_one.f62()).expect("f62");
-    test_data.f63.check(&all_in_one.f63()).expect("f63");
-    test_data.f64.check(&all_in_one.f64()).expect("f64");
-    test_data.f65.check(&all_in_one.f65()).expect("f65");
-    test_data.f66.check(&all_in_one.f66()).expect("f66");
-    test_data.f67.check(&all_in_one.f67()).expect("f67"); // TODO Some(None) == None?
-    test_data.f68.check(&all_in_one.f68()).expect("f68");
-    test_data.f69.check(&all_in_one.f69()).expect("f69");
-    test_data.f70.check(&all_in_one.f70()).expect("f70");
-    test_data.f71.check(&all_in_one.f71()).expect("f71");
-    test_data.f72.check(&all_in_one.f72()).expect("f72");
-    test_data.f73.check(&all_in_one.f73()).expect("f73");
+    let test_data = TypesAll::default();
+    let data = test_data.to_bytes();
+    test_data.check(&data);
 }
