@@ -6,7 +6,7 @@ MOLC_VERSION := 0.7.3
 
 RUST_SRC := $(wildcard src/*.rs)
 
-all: sample blockchain types blockchain_rust
+all: sample blockchain types blockchain_rust types_rust
 
 sample: tests/sample/sample-api.h tests/sample/sample-api2.h
 	make -C tests/sample
@@ -59,6 +59,16 @@ tests/types/types-api2.h: mol/types.json $(RUST_SRC)
 types: mol/types.json tests/types/types-api2.h
 	make -C tests/types
 
+tests/types_rust/src/types_api.rs: mol/types.mol $(RUST_SRC)
+	moleculec --language rust --schema-file $< | rustfmt > $@
+
+
+tests/types_rust/src/types_api2.rs: mol/types.json $(RUST_SRC)
+	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
+
+types_rust: tests/types_rust/src/types_api2.rs
+	cd tests/types_rust && cargo test
+
 copy-files:
 	cp tests/blockchain/blockchain-api2.h ~/projects/ckb-production-scripts-xudt/deps/ckb-c-stdlib-simulator-only2/molecule
 	cp include/molecule2_reader.h ~/projects/ckb-production-scripts-xudt/deps/ckb-c-stdlib-simulator-only2/molecule
@@ -74,7 +84,7 @@ ci:
 	make clean
 	make all
 	cargo test
-	
+
 install-tools:
 	cargo install --path moleculec-c2
 	cargo install --force --version "${MOLC_VERSION}" "${MOLC}"
