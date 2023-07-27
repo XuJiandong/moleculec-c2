@@ -132,7 +132,7 @@ impl TypesUnionA {
             Self::Byte(v) => v.check(&d.as_byte()),
             Self::Word(v) => v.check2(&d.as_word().into()),
             Self::StructA(v) => v.check(&d.as_structa()),
-            Self::Bytes(v) => v.check(&d.as_bytes().into()),
+            Self::Bytes(v) => v.check(&d.as_bytes().try_into().unwrap()),
             Self::Words(v) => v.check(&d.as_words().into()),
             Self::Table0(v) => v.check(&d.as_table0()),
             Self::Table6(v) => v.check(&d.as_table6()),

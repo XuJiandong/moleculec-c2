@@ -105,7 +105,7 @@ impl TypesOption<TypesVec<u8>> {
         self.d
             .as_ref()
             .unwrap()
-            .check(&d.as_ref().unwrap().clone().into())
+            .check(&d.as_ref().unwrap().clone().try_into().unwrap())
     }
 }
 impl TypesOption<TypesVec<TypesArrayWord>> {

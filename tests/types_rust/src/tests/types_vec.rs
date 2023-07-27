@@ -32,7 +32,7 @@ impl TypesVec<u8> {
             .set(self.d.iter().map(|f| f.clone().into()).collect())
             .build()
     }
-    pub fn check(&self, d: &types_api2::Bytes) -> ResCheckErr {
+    pub fn check(&self, d: &Vec<u8>) -> ResCheckErr {
         TypesCheckErr::check_data(d, &self.d)
     }
 }
@@ -129,7 +129,7 @@ impl TypesVec<TypesVec<u8>> {
     pub fn check(&self, d: &types_api2::BytesVec) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i).try_into().unwrap())?;
         }
         Ok(())
     }

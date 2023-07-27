@@ -8,6 +8,7 @@ use core::convert::TryInto;
 use lazy_static::lazy_static;
 use molecule::prelude::{Builder, Entity, Reader};
 use molecule::{bytes::Bytes, prelude::Byte};
+use molecule2::Cursor;
 use rand::{random, rngs::ThreadRng, thread_rng, Rng, RngCore};
 
 use super::*;
@@ -239,7 +240,9 @@ impl TypesAll {
         self.f39.check(&all_in_one.f39().into()).expect("f39");
         self.f40.check(&all_in_one.f40().into()).expect("f40");
 
-        self.f41.check(&all_in_one.f41().into()).expect("f41");
+        self.f41
+            .check(&all_in_one.f41().try_into().unwrap())
+            .expect("f41");
         self.f42.check(&all_in_one.f42().into()).expect("f42");
         self.f43.check(&all_in_one.f43().into()).expect("f43");
         self.f44.check(&all_in_one.f44().into()).expect("f44");
@@ -281,6 +284,13 @@ impl TypesAll {
 
 #[test]
 pub fn test_base() {
+    let test_data = TypesAll::default();
+    let data = test_data.to_bytes();
+    test_data.check(&data);
+}
+
+#[test]
+pub fn test_opt_all_none() {
     let test_data = TypesAll::default();
     let data = test_data.to_bytes();
     test_data.check(&data);

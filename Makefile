@@ -65,7 +65,7 @@ tests/types_rust/src/types_api.rs: mol/types.mol $(RUST_SRC)
 tests/types_rust/src/types_api2.rs: mol/types.json $(RUST_SRC)
 	cargo run --bin moleculec-c2 -- --rust --input $< | rustfmt > $@
 
-types_rust:
+types_rust: tests/types_rust/src/types_api2.rs tests/types_rust/src/types_api.rs
 	cd tests/types_rust && cargo test
 
 copy-files:
@@ -99,6 +99,8 @@ clean:
 	rm -f tests/blockchain_rust/src/sample.rs
 	rm -f tests/blockchain_rust/src/types.rs
 	rm -f tests/blockchain_rust/src/import.rs
+	rm -rf tests/types_rust/src/types_api.rs
+	rm -rf tests/types_rust/src/types_api2.rs
 	make -C tests/sample clean
 	make -C tests/blockchain clean
 	make -C tests/types clean

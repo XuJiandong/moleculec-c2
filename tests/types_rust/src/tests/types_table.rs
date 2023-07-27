@@ -154,7 +154,7 @@ impl TypesTable4 {
         self.f1.check(&d.f1())?;
         self.f2.check(&d.f2())?;
         self.f3.check(&d.f3())?;
-        self.f4.check(&d.f4().into())?;
+        self.f4.check(&d.f4().try_into().unwrap())?;
         Ok(())
     }
 }
@@ -196,8 +196,8 @@ impl TypesTable5 {
         self.f1.check(&d.f1())?;
         self.f2.check(&d.f2())?;
         self.f3.check(&d.f3())?;
-        self.f4.check(&d.f4().into())?;
-        self.f5.check(&d.f5().into())?;
+        self.f4.check(&d.f4().try_into().unwrap())?;
+        self.f5.check(&d.f5().try_into().unwrap())?;
         Ok(())
     }
 }
@@ -242,9 +242,9 @@ impl TypesTable6 {
         self.f1.check(&d.f1())?;
         self.f2.check(&d.f2())?;
         self.f3.check(&d.f3())?;
-        self.f4.check(&d.f4().into())?;
-        self.f5.check(&d.f5().into())?;
-        self.f6.check(&d.f6().into())?;
+        self.f4.check(&d.f4().try_into().unwrap())?;
+        self.f5.check(&d.f5().try_into().unwrap())?;
+        self.f6.check(&d.f6().try_into().unwrap())?;
         Ok(())
     }
 }
@@ -293,10 +293,10 @@ impl TypesTableA {
     pub fn check(&self, d: &types_api2::TableA) -> ResCheckErr {
         self.f1.check(&d.f1())?;
         self.f2.check(&d.f2())?;
-        self.f3.check(&d.f3().into())?;
-        self.f4.check(&d.f4().into())?;
-        self.f5.check(&d.f5().into())?;
-        self.f6.check(&d.f6().into())?;
+        self.f3.check(&d.f3().try_into().unwrap())?;
+        self.f4.check(&d.f4().try_into().unwrap())?;
+        self.f5.check(&d.f5().try_into().unwrap())?;
+        self.f6.check(&d.f6().try_into().unwrap())?;
         Ok(())
     }
 }

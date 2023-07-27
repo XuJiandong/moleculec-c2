@@ -4,6 +4,14 @@ pub trait Mol2Vec<T> {
     fn len(&self) -> usize;
     fn get(&self, index: usize) -> T;
 }
+impl Mol2Vec<u8> for Vec<u8> {
+    fn len(&self) -> usize {
+        self.len()
+    }
+    fn get(&self, index: usize) -> u8 {
+        self[index]
+    }
+}
 impl Mol2Vec<u8> for Byte2 {
     fn len(&self) -> usize {
         self.len()
