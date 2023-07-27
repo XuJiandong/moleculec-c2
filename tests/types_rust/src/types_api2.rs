@@ -1670,7 +1670,7 @@ impl BytesOptVec {
         if cur.option_is_none() {
             None
         } else {
-            let cur = cur.convert_to_rawbytes().unwrap();
+            // let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }
@@ -1721,8 +1721,8 @@ impl UnionA {
     pub fn as_bytes(&self) -> Cursor {
         let union = self.cursor.union_unpack();
         let cur = union.cursor.clone();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        // let cur2 = cur.convert_to_rawbytes().unwrap();
+        cur
     }
 }
 
@@ -1789,8 +1789,8 @@ impl TableA {
 impl TableA {
     pub fn f3(&self) -> Cursor {
         let cur = self.cursor.table_slice_by_index(2).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        // let cur2 = cur.convert_to_rawbytes().unwrap();
+        cur
     }
 }
 
@@ -1814,7 +1814,7 @@ impl TableA {
         if cur.option_is_none() {
             None
         } else {
-            let cur = cur.convert_to_rawbytes().unwrap();
+            // let cur = cur.convert_to_rawbytes().unwrap();
             Some(cur.into())
         }
     }

@@ -276,11 +276,11 @@ pub fn test_base() {
     test_data.f64.check(&all_in_one.f64()).expect("f64");
     test_data.f65.check(&all_in_one.f65()).expect("f65");
     test_data.f66.check(&all_in_one.f66()).expect("f66");
-    // test_data.f67.check(&all_in_one.f67()).expect("f67"); // TODO Some(None) == None?
+    test_data.f67.check(&all_in_one.f67()).expect("f67"); // TODO Some(None) == None?
     test_data.f68.check(&all_in_one.f68()).expect("f68");
     test_data.f69.check(&all_in_one.f69()).expect("f69");
     test_data.f70.check(&all_in_one.f70()).expect("f70");
-    // test_data.f71.check(&all_in_one.f71()).expect("f71"); // TODO Bytes get len
+    test_data.f71.check(&all_in_one.f71()).expect("f71");
     test_data.f72.check(&all_in_one.f72()).expect("f72");
     test_data.f73.check(&all_in_one.f73()).expect("f73");
 }

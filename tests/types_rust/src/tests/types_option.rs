@@ -191,6 +191,18 @@ impl TypesOption<TypesOption<TypesTable6>> {
     }
 
     pub fn check(&self, d: &Option<Option<types_api2::Table6>>) -> ResCheckErr {
+        let f1_flag = d.is_some() && d.as_ref().is_none();
+        let f2_flag = self.d.is_some() && self.d.as_ref().is_none();
+        if f1_flag != f2_flag {
+            return Err(TypesCheckErr::Opt(format!(
+                "different option: {:?}  {:?}",
+                f1_flag, f2_flag
+            )));
+        }
+        if !f1_flag {
+            return Ok(());
+        }
+
         TypesCheckErr::check_option(d, &self.d)?;
         if d.is_none() {
             return Ok(());

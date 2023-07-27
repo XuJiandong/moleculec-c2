@@ -370,15 +370,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "golomb-coded-set"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c7076c0cd6257d84b785b0f22c36443dd47a5e86a1256d7ef82c8cb88ea9a7e"
-dependencies = [
- "siphasher",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -578,11 +569,7 @@ dependencies = [
  "pest_meta",
  "proc-macro2",
  "quote",
-<<<<<<< HEAD
  "syn 2.0.27",
-=======
- "syn 2.0.26",
->>>>>>> d84e6f1 (A test case framework for rust)
 ]
 
 [[package]]
@@ -624,15 +611,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-<<<<<<< HEAD
 version = "1.0.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50f3b39ccfb720540debaa0164757101c08ecb8d326b15358ce76a62c7e85965"
-=======
-version = "1.0.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5fe8a65d69dd0808184ebb5f836ab526bb259db23c657efa38711b1072ee47f0"
->>>>>>> d84e6f1 (A test case framework for rust)
 dependencies = [
  "proc-macro2",
 ]
@@ -758,11 +739,7 @@ checksum = "389894603bd18c46fa56231694f8d827779c0951a667087194cf9de94ed24682"
 dependencies = [
  "proc-macro2",
  "quote",
-<<<<<<< HEAD
  "syn 2.0.27",
-=======
- "syn 2.0.26",
->>>>>>> d84e6f1 (A test case framework for rust)
 ]
 
 [[package]]
@@ -824,15 +801,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-<<<<<<< HEAD
 version = "2.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b60f673f44a8255b9c8c657daf66a596d435f2da81a555b06dc644d080ba45e0"
-=======
-version = "2.0.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45c3457aacde3c65315de5031ec191ce46604304d2446e803d71ade03308d970"
->>>>>>> d84e6f1 (A test case framework for rust)
 dependencies = [
  "proc-macro2",
  "quote",
@@ -865,11 +836,7 @@ checksum = "463fe12d7993d3b327787537ce8dd4dfa058de32fc2b195ef3cde03dc4771e8f"
 dependencies = [
  "proc-macro2",
  "quote",
-<<<<<<< HEAD
  "syn 2.0.27",
-=======
- "syn 2.0.26",
->>>>>>> d84e6f1 (A test case framework for rust)
 ]
 
 [[package]]
