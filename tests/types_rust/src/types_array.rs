@@ -1,4 +1,4 @@
-use super::{BaseTypes, ResCheckErr, TypesCheckErr};
+use super::{BaseTypes, ResCheckErr, TypesCheckErr, TypesConfig};
 use crate::{types_api, types_api2};
 use molecule::prelude::{Builder, Byte, Entity};
 use rand::{rngs::ThreadRng, thread_rng};
@@ -9,21 +9,21 @@ pub struct TypesArray<T: BaseTypes, const N: usize> {
 }
 
 impl<T: BaseTypes + Copy, const N: usize> BaseTypes for TypesArray<T, N> {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
-        let mut buf = [T::new_rng(rng); N];
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
+        let mut buf = [T::new_rng(rng, config); N];
 
         for i in 0..N {
-            buf[i] = T::new_rng(rng);
+            buf[i] = T::new_rng(rng, config);
         }
 
         Self { d: buf }
     }
 }
 impl<T: BaseTypes, const N: usize> TypesArray<T, N> {
-    pub fn new_rng(rng: &mut ThreadRng) -> Self {
+    pub fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         let mut d = Vec::new();
         for _ in 0..N {
-            d.push(T::new_rng(rng));
+            d.push(T::new_rng(rng, config));
         }
 
         Self {
@@ -34,7 +34,7 @@ impl<T: BaseTypes, const N: usize> TypesArray<T, N> {
 
 impl<T: BaseTypes, const N: usize> Default for TypesArray<T, N> {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 

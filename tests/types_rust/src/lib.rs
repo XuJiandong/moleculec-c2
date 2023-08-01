@@ -1,30 +1,52 @@
+pub mod types_api;
+pub mod types_api2;
+
 pub mod types_all_data;
 pub mod types_api2_mol2;
 pub mod types_array;
+pub mod types_moleculec_check;
 pub mod types_option;
 pub mod types_struct;
 pub mod types_table;
 pub mod types_vec;
 
-use crate::{types_api, types_api2};
 use molecule::prelude::{Builder, Entity};
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 use std::fmt::Debug;
 
 pub use types_api2_mol2::*;
 pub use types_array::*;
+pub use types_moleculec_check::*;
 pub use types_option::*;
 pub use types_struct::*;
 pub use types_table::*;
 pub use types_vec::*;
 
 pub trait BaseTypes {
-    fn new_rng(rng: &mut ThreadRng) -> Self;
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self;
+}
+impl BaseTypes for u8 {
+    fn new_rng(rng: &mut ThreadRng, _config: &TypesConfig) -> Self {
+        rng.gen()
+    }
 }
 
-impl BaseTypes for u8 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
-        rng.gen()
+pub enum OptionFillType {
+    FillRand,
+    FillSome,
+    FillNone,
+}
+pub struct TypesConfig {
+    pub option_fill: OptionFillType,
+    pub large_vec: bool,
+}
+
+impl Default for TypesConfig {
+    fn default() -> Self {
+        Self {
+            option_fill: OptionFillType::FillRand,
+            large_vec: false,
+        }
     }
 }
 
@@ -37,6 +59,20 @@ pub enum TypesCheckErr {
 pub type ResCheckErr = Result<(), TypesCheckErr>;
 
 impl TypesCheckErr {
+    pub fn to(&self, des: String) -> Self {
+        match self {
+            Self::Lenght(_) => Self::Lenght(des),
+            Self::Data(_) => Self::Data(des),
+            Self::Opt(_) => Self::Opt(des),
+        }
+    }
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Lenght(v) => v,
+            Self::Data(v) => v,
+            Self::Opt(v) => v,
+        }
+    }
     pub fn check_lenght(l1: usize, l2: usize) -> Result<(), Self> {
         if l1 == l2 {
             Ok(())
@@ -57,12 +93,23 @@ impl TypesCheckErr {
     }
 
     pub fn check_data<T1: Eq + Debug, T: Mol2Vec<T1>>(d1: &T, d2: &[T1]) -> ResCheckErr {
-        TypesCheckErr::check_lenght(d1.len(), d2.len())?;
+        TypesCheckErr::check_lenght(d1.mol_len(), d2.len())?;
 
-        for i in 0..d1.len() {
-            TypesCheckErr::check_1_data(&d1.get(i), &d2[i])?;
+        for i in 0..d1.mol_len() {
+            TypesCheckErr::check_1_data(&d1.mol_get(i), &d2[i])?;
         }
 
+        Ok(())
+    }
+
+    pub fn check_mol_data<T: Eq + Debug, T1: Mol2Vec<T>, T2: Mol2Vec<T>>(
+        d1: &T1,
+        d2: &T2,
+    ) -> ResCheckErr {
+        TypesCheckErr::check_lenght(d1.mol_len(), d2.mol_len())?;
+        for i in 0..d1.mol_len() {
+            TypesCheckErr::check_1_data(&d1.mol_get(i), &d2.mol_get(i))?;
+        }
         Ok(())
     }
 
@@ -89,17 +136,17 @@ pub enum TypesUnionA {
     Table6Opt(TypesOption<TypesTable6>),
 }
 impl BaseTypes for TypesUnionA {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         let v = rng.gen_range(0..8);
         match v {
-            0 => Self::Byte(TypesArray::new_rng(rng)),
-            1 => Self::Word(TypesArrayWord::new_rng(rng)),
-            2 => Self::StructA(TypesStructA::new_rng(rng)),
-            3 => Self::Bytes(TypesVec::new_rng(rng)),
-            4 => Self::Words(TypesVec::new_rng(rng)),
-            5 => Self::Table0(TypesTable0::new_rng(rng)),
-            6 => Self::Table6(TypesTable6::new_rng(rng)),
-            7 => Self::Table6Opt(TypesOption::new_rng(rng)),
+            0 => Self::Byte(TypesArray::new_rng(rng, config)),
+            1 => Self::Word(TypesArrayWord::new_rng(rng, config)),
+            2 => Self::StructA(TypesStructA::new_rng(rng, config)),
+            3 => Self::Bytes(TypesVec::new_rng(rng, config)),
+            4 => Self::Words(TypesVec::new_rng(rng, config)),
+            5 => Self::Table0(TypesTable0::new_rng(rng, config)),
+            6 => Self::Table6(TypesTable6::new_rng(rng, config)),
+            7 => Self::Table6Opt(TypesOption::new_rng(rng, config)),
 
             _ => panic!("unknow error"),
         }
@@ -107,7 +154,7 @@ impl BaseTypes for TypesUnionA {
 }
 impl Default for TypesUnionA {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesUnionA {

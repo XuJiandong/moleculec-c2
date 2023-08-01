@@ -1,7 +1,4 @@
-use super::{
-    types_array::{TypesArray, TypesArrayWord},
-    BaseTypes, ResCheckErr, TypesCheckErr,
-};
+use super::*;
 use crate::{types_api, types_api2};
 use molecule::prelude::{Builder, Entity};
 use rand::rngs::ThreadRng;
@@ -17,12 +14,12 @@ pub struct TypesStructBytes<T1: BaseTypes, T2: BaseTypes, T3: BaseTypes, T4: Bas
 impl<T1: BaseTypes, T2: BaseTypes, T3: BaseTypes, T4: BaseTypes> BaseTypes
     for TypesStructBytes<T1, T2, T3, T4>
 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: T1::new_rng(rng),
-            f2: T2::new_rng(rng),
-            f3: T3::new_rng(rng),
-            f4: T4::new_rng(rng),
+            f1: T1::new_rng(rng, config),
+            f2: T2::new_rng(rng, config),
+            f3: T3::new_rng(rng, config),
+            f4: T4::new_rng(rng, config),
         }
     }
 }
@@ -32,11 +29,12 @@ impl<T1: BaseTypes, T2: BaseTypes, T3: BaseTypes, T4: BaseTypes> Default
 {
     fn default() -> Self {
         let mut rng = rand::thread_rng();
+        let config = TypesConfig::default();
         Self {
-            f1: T1::new_rng(&mut rng),
-            f2: T2::new_rng(&mut rng),
-            f3: T3::new_rng(&mut rng),
-            f4: T4::new_rng(&mut rng),
+            f1: T1::new_rng(&mut rng, &config),
+            f2: T2::new_rng(&mut rng, &config),
+            f3: T3::new_rng(&mut rng, &config),
+            f4: T4::new_rng(&mut rng, &config),
         }
     }
 }

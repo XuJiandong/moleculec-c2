@@ -1,6 +1,6 @@
 use super::{
-    BaseTypes, ResCheckErr, TypesArray, TypesArrayWord, TypesOption, TypesStructA, TypesUnionA,
-    TypesVec,
+    BaseTypes, ResCheckErr, TypesArray, TypesArrayWord, TypesConfig, TypesOption, TypesStructA,
+    TypesUnionA, TypesVec,
 };
 use crate::{types_api, types_api2};
 use molecule::prelude::{Builder, Entity};
@@ -8,7 +8,7 @@ use rand::{rngs::ThreadRng, thread_rng};
 
 pub struct TypesTable0 {}
 impl BaseTypes for TypesTable0 {
-    fn new_rng(_rng: &mut ThreadRng) -> Self {
+    fn new_rng(_rng: &mut ThreadRng, _config: &TypesConfig) -> Self {
         Self {}
     }
 }
@@ -31,15 +31,15 @@ pub struct TypesTable1 {
     f1: TypesArray<u8, 1>,
 }
 impl BaseTypes for TypesTable1 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTable1 {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTable1 {
@@ -59,16 +59,16 @@ pub struct TypesTable2 {
     f2: TypesArray<TypesArrayWord, 2>,
 }
 impl BaseTypes for TypesTable2 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
-            f2: TypesArray::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
+            f2: TypesArray::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTable2 {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTable2 {
@@ -91,17 +91,17 @@ pub struct TypesTable3 {
     f3: TypesStructA,
 }
 impl BaseTypes for TypesTable3 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
-            f2: TypesArray::new_rng(rng),
-            f3: TypesStructA::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
+            f2: TypesArray::new_rng(rng, config),
+            f3: TypesStructA::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTable3 {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTable3 {
@@ -127,18 +127,18 @@ pub struct TypesTable4 {
     f4: TypesVec<u8>,
 }
 impl BaseTypes for TypesTable4 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
-            f2: TypesArray::new_rng(rng),
-            f3: TypesStructA::new_rng(rng),
-            f4: TypesVec::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
+            f2: TypesArray::new_rng(rng, config),
+            f3: TypesStructA::new_rng(rng, config),
+            f4: TypesVec::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTable4 {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTable4 {
@@ -167,19 +167,19 @@ pub struct TypesTable5 {
     f5: TypesVec<TypesVec<u8>>,
 }
 impl BaseTypes for TypesTable5 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
-            f2: TypesArray::new_rng(rng),
-            f3: TypesStructA::new_rng(rng),
-            f4: TypesVec::new_rng(rng),
-            f5: TypesVec::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
+            f2: TypesArray::new_rng(rng, config),
+            f3: TypesStructA::new_rng(rng, config),
+            f4: TypesVec::new_rng(rng, config),
+            f5: TypesVec::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTable5 {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTable5 {
@@ -211,20 +211,20 @@ pub struct TypesTable6 {
     f6: TypesTable5,
 }
 impl BaseTypes for TypesTable6 {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
-            f2: TypesArray::new_rng(rng),
-            f3: TypesStructA::new_rng(rng),
-            f4: TypesVec::new_rng(rng),
-            f5: TypesVec::new_rng(rng),
-            f6: TypesTable5::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
+            f2: TypesArray::new_rng(rng, config),
+            f3: TypesStructA::new_rng(rng, config),
+            f4: TypesVec::new_rng(rng, config),
+            f5: TypesVec::new_rng(rng, config),
+            f6: TypesTable5::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTable6 {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTable6 {
@@ -259,22 +259,22 @@ pub struct TypesTableA {
     f8: TypesArray<u8, 1>,
 }
 impl BaseTypes for TypesTableA {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         Self {
-            f1: TypesArray::new_rng(rng),
-            f2: TypesStructA::new_rng(rng),
-            f3: TypesVec::new_rng(rng),
-            f4: TypesVec::new_rng(rng),
-            f5: TypesTable1::new_rng(rng),
-            f6: TypesOption::new_rng(rng),
-            f7: TypesUnionA::new_rng(rng),
-            f8: TypesArray::new_rng(rng),
+            f1: TypesArray::new_rng(rng, config),
+            f2: TypesStructA::new_rng(rng, config),
+            f3: TypesVec::new_rng(rng, config),
+            f4: TypesVec::new_rng(rng, config),
+            f5: TypesTable1::new_rng(rng, config),
+            f6: TypesOption::new_rng(rng, config),
+            f7: TypesUnionA::new_rng(rng, config),
+            f8: TypesArray::new_rng(rng, config),
         }
     }
 }
 impl Default for TypesTableA {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 impl TypesTableA {

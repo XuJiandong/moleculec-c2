@@ -8,13 +8,16 @@ pub struct TypesVec<T: BaseTypes> {
 }
 
 impl<T: BaseTypes> BaseTypes for TypesVec<T> {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
         let mut d = Vec::new();
 
-        let size: usize = rng.gen();
-        let size = size % 128;
+        let size = if config.large_vec {
+            rng.gen_range(128..1024)
+        } else {
+            rng.gen_range(1..128)
+        };
         for _i in 0..size {
-            d.push(T::new_rng(rng));
+            d.push(T::new_rng(rng, config));
         }
 
         Self { d }
@@ -22,7 +25,7 @@ impl<T: BaseTypes> BaseTypes for TypesVec<T> {
 }
 impl<T: BaseTypes> Default for TypesVec<T> {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 

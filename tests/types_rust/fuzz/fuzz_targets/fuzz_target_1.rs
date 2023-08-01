@@ -1,0 +1,15 @@
+#![no_main]
+
+use libfuzzer_sys::fuzz_target;
+use molecule::prelude::Entity;
+use molecule2::Cursor;
+use types_rust::{types_api, types_api2, types_moleculec_check::check_mol};
+
+fuzz_target!(|data: &[u8]| {
+    let cursor = Cursor::new(data.len(), Box::new(data.to_vec()));
+
+    let all1 = types_api::AllInOne::new_unchecked(molecule::bytes::Bytes::from(data.to_vec()));
+    let all2: types_api2::AllInOne = cursor.into();
+
+    check_mol(&all1, &all2).expect("check mol");
+});

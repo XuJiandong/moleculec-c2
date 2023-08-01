@@ -1,6 +1,6 @@
 use super::{
-    BaseTypes, ResCheckErr, TypesArrayWord, TypesCheckErr, TypesStructA, TypesStructP, TypesTable0,
-    TypesTable6, TypesVec,
+    BaseTypes, ResCheckErr, TypesArrayWord, TypesCheckErr, TypesConfig, TypesStructA, TypesStructP,
+    TypesTable0, TypesTable6, TypesVec,
 };
 use crate::{types_api, types_api2};
 use molecule::prelude::{Builder, Entity};
@@ -10,11 +10,15 @@ pub struct TypesOption<T> {
     d: Option<T>,
 }
 impl<T: BaseTypes> BaseTypes for TypesOption<T> {
-    fn new_rng(rng: &mut ThreadRng) -> Self {
-        let new_d: bool = rng.gen();
-        if new_d {
+    fn new_rng(rng: &mut ThreadRng, config: &TypesConfig) -> Self {
+        let fill = match config.option_fill {
+            super::OptionFillType::FillRand => rng.gen(),
+            super::OptionFillType::FillSome => true,
+            super::OptionFillType::FillNone => false,
+        };
+        if fill {
             Self {
-                d: Some(T::new_rng(rng)),
+                d: Some(T::new_rng(rng, config)),
             }
         } else {
             Self { d: None }
@@ -23,7 +27,7 @@ impl<T: BaseTypes> BaseTypes for TypesOption<T> {
 }
 impl<T: BaseTypes> Default for TypesOption<T> {
     fn default() -> Self {
-        Self::new_rng(&mut thread_rng())
+        Self::new_rng(&mut thread_rng(), &TypesConfig::default())
     }
 }
 
