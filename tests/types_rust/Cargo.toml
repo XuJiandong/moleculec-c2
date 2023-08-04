@@ -5,8 +5,12 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = [ "error_description" ]
+error_description = [ "molecule2/error_description" ]
+
 [dependencies]
-molecule2 = { path = "../../molecule2" }
+molecule2 = { path = "../../molecule2", default-features = false }
 molecule = "0.7.3"
 lazy_static = "1.4.0"
 rand = "0.8.5"

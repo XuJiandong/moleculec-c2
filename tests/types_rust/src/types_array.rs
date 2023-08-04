@@ -219,7 +219,7 @@ impl TypesArray<TypesArrayWord, 2> {
     }
     pub fn check(&self, d: &types_api2::Word2) -> ResCheckErr {
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -233,7 +233,7 @@ impl TypesArray<TypesArrayWord, 3> {
     pub fn check(&self, d: &types_api2::Word3) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -247,7 +247,7 @@ impl TypesArray<TypesArrayWord, 4> {
     pub fn check(&self, d: &types_api2::Word4) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -261,7 +261,7 @@ impl TypesArray<TypesArrayWord, 5> {
     pub fn check(&self, d: &types_api2::Word5) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -275,7 +275,7 @@ impl TypesArray<TypesArrayWord, 6> {
     pub fn check(&self, d: &types_api2::Word6) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -289,7 +289,7 @@ impl TypesArray<TypesArrayWord, 7> {
     pub fn check(&self, d: &types_api2::Word7) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -303,7 +303,7 @@ impl TypesArray<TypesArrayWord, 8> {
     pub fn check(&self, d: &types_api2::Word8) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -317,7 +317,7 @@ impl TypesArray<TypesArray<u8, 3>, 3> {
     pub fn check(&self, d: &types_api2::Byte3x3) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -332,7 +332,7 @@ impl TypesArray<TypesArray<u8, 5>, 3> {
     pub fn check(&self, d: &types_api2::Byte5x3) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -346,7 +346,7 @@ impl TypesArray<TypesArray<u8, 7>, 3> {
     pub fn check(&self, d: &types_api2::Byte7x3) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }
@@ -360,7 +360,7 @@ impl TypesArray<TypesArray<u8, 9>, 3> {
     pub fn check(&self, d: &types_api2::Byte9x3) -> ResCheckErr {
         TypesCheckErr::check_lenght(d.len(), self.d.len())?;
         for i in 0..d.len() {
-            self.d[i].check(&d.get(i).into())?;
+            self.d[i].check(&d.get(i)?.into())?;
         }
         Ok(())
     }

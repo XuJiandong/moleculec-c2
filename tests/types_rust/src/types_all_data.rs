@@ -275,231 +275,231 @@ impl TypesAll {
         let all_in_one = AllInOne { cursor };
 
         self.f0
-            .check(&all_in_one.f0())
+            .check(&all_in_one.f0()?)
             .map_err(|f| f.to(format!("f0:{}", f.as_str())))?;
         self.f1
-            .check(&all_in_one.f1().into())
+            .check(&all_in_one.f1()?.into())
             .map_err(|f| f.to(format!("f1:{}", f.as_str())))?;
         self.f2
-            .check(&all_in_one.f2().into())
+            .check(&all_in_one.f2()?.into())
             .map_err(|f| f.to(format!("f2:{}", f.as_str())))?;
         self.f3
-            .check(&all_in_one.f3().into())
+            .check(&all_in_one.f3()?.into())
             .map_err(|f| f.to(format!("f3:{}", f.as_str())))?;
         self.f4
-            .check(&all_in_one.f4().into())
+            .check(&all_in_one.f4()?.into())
             .map_err(|f| f.to(format!("f74:{}", f.as_str())))?;
         self.f5
-            .check(&all_in_one.f5().into())
+            .check(&all_in_one.f5()?.into())
             .map_err(|f| f.to(format!("f5:{}", f.as_str())))?;
         self.f6
-            .check(&all_in_one.f6().into())
+            .check(&all_in_one.f6()?.into())
             .map_err(|f| f.to(format!("f6:{}", f.as_str())))?;
         self.f7
-            .check(&all_in_one.f7().into())
+            .check(&all_in_one.f7()?.into())
             .map_err(|f| f.to(format!("f7:{}", f.as_str())))?;
         self.f8
-            .check(&all_in_one.f8().into())
+            .check(&all_in_one.f8()?.into())
             .map_err(|f| f.to(format!("f8:{}", f.as_str())))?;
         self.f9
-            .check(&all_in_one.f9().into())
+            .check(&all_in_one.f9()?.into())
             .map_err(|f| f.to(format!("f9:{}", f.as_str())))?;
         self.f10
-            .check(&all_in_one.f10().into())
+            .check(&all_in_one.f10()?.into())
             .map_err(|f| f.to(format!("f10:{}", f.as_str())))?;
         self.f11
-            .check(&all_in_one.f11().into())
+            .check(&all_in_one.f11()?.into())
             .map_err(|f| f.to(format!("f11:{}", f.as_str())))?;
         self.f12
-            .check(&all_in_one.f12().into())
+            .check(&all_in_one.f12()?.into())
             .map_err(|f| f.to(format!("f12:{}", f.as_str())))?;
         self.f13
-            .check(&all_in_one.f13().into())
+            .check(&all_in_one.f13()?.into())
             .map_err(|f| f.to(format!("f13:{}", f.as_str())))?;
         self.f14
-            .check(&all_in_one.f14().into())
+            .check(&all_in_one.f14()?.into())
             .map_err(|f| f.to(format!("f14:{}", f.as_str())))?;
         self.f15
-            .check(&all_in_one.f15().into())
+            .check(&all_in_one.f15()?.into())
             .map_err(|f| f.to(format!("f15:{}", f.as_str())))?;
 
         self.f16
-            .check2(&all_in_one.f16().into())
+            .check2(&all_in_one.f16()?.into())
             .map_err(|f| f.to(format!("f16:{}", f.as_str())))?;
         self.f17
-            .check(&all_in_one.f17().into())
+            .check(&all_in_one.f17()?.into())
             .map_err(|f| f.to(format!("f17:{}", f.as_str())))?;
         self.f18
-            .check(&all_in_one.f18().into())
+            .check(&all_in_one.f18()?.into())
             .map_err(|f| f.to(format!("f18:{}", f.as_str())))?;
         self.f19
-            .check(&all_in_one.f19().into())
+            .check(&all_in_one.f19()?.into())
             .map_err(|f| f.to(format!("f19:{}", f.as_str())))?;
         self.f20
-            .check(&all_in_one.f20().into())
+            .check(&all_in_one.f20()?.into())
             .map_err(|f| f.to(format!("f20:{}", f.as_str())))?;
         self.f21
-            .check(&all_in_one.f21().into())
+            .check(&all_in_one.f21()?.into())
             .map_err(|f| f.to(format!("f21:{}", f.as_str())))?;
         self.f22
-            .check(&all_in_one.f22().into())
+            .check(&all_in_one.f22()?.into())
             .map_err(|f| f.to(format!("f22:{}", f.as_str())))?;
         self.f23
-            .check(&all_in_one.f23().into())
+            .check(&all_in_one.f23()?.into())
             .map_err(|f| f.to(format!("f23:{}", f.as_str())))?;
 
         self.f24
-            .check(&all_in_one.f24().into())
+            .check(&all_in_one.f24()?.into())
             .map_err(|f| f.to(format!("f24:{}", f.as_str())))?;
         self.f25
-            .check(&all_in_one.f25().into())
+            .check(&all_in_one.f25()?.into())
             .map_err(|f| f.to(format!("f25:{}", f.as_str())))?;
         self.f26
-            .check(&all_in_one.f26().into())
+            .check(&all_in_one.f26()?.into())
             .map_err(|f| f.to(format!("f26:{}", f.as_str())))?;
         self.f27
-            .check(&all_in_one.f27().into())
+            .check(&all_in_one.f27()?.into())
             .map_err(|f| f.to(format!("f27:{}", f.as_str())))?;
 
         self.f28
-            .check(&all_in_one.f28().into())
+            .check(&all_in_one.f28()?.into())
             .map_err(|f| f.to(format!("f28:{}", f.as_str())))?;
         self.f29
-            .check(&all_in_one.f29().into())
+            .check(&all_in_one.f29()?.into())
             .map_err(|f| f.to(format!("f29:{}", f.as_str())))?;
         self.f30
-            .check(&all_in_one.f30().into())
+            .check(&all_in_one.f30()?.into())
             .map_err(|f| f.to(format!("f30:{}", f.as_str())))?;
         self.f31
-            .check(&all_in_one.f31().into())
+            .check(&all_in_one.f31()?.into())
             .map_err(|f| f.to(format!("f31:{}", f.as_str())))?;
         self.f32
-            .check(&all_in_one.f32().into())
+            .check(&all_in_one.f32()?.into())
             .map_err(|f| f.to(format!("f32:{}", f.as_str())))?;
         self.f33
-            .check(&all_in_one.f33().into())
+            .check(&all_in_one.f33()?.into())
             .map_err(|f| f.to(format!("f33:{}", f.as_str())))?;
         self.f34
-            .check(&all_in_one.f34().into())
+            .check(&all_in_one.f34()?.into())
             .map_err(|f| f.to(format!("f34:{}", f.as_str())))?;
         self.f35
-            .check(&all_in_one.f35().into())
+            .check(&all_in_one.f35()?.into())
             .map_err(|f| f.to(format!("f35:{}", f.as_str())))?;
         self.f36
-            .check(&all_in_one.f36().into())
+            .check(&all_in_one.f36()?.into())
             .map_err(|f| f.to(format!("f36:{}", f.as_str())))?;
         self.f37
-            .check(&all_in_one.f37().into())
+            .check(&all_in_one.f37()?.into())
             .map_err(|f| f.to(format!("f37:{}", f.as_str())))?;
         self.f38
-            .check(&all_in_one.f38().into())
+            .check(&all_in_one.f38()?.into())
             .map_err(|f| f.to(format!("f38:{}", f.as_str())))?;
         self.f39
-            .check(&all_in_one.f39().into())
+            .check(&all_in_one.f39()?.into())
             .map_err(|f| f.to(format!("f39:{}", f.as_str())))?;
         self.f40
-            .check(&all_in_one.f40().into())
+            .check(&all_in_one.f40()?.into())
             .map_err(|f| f.to(format!("f40:{}", f.as_str())))?;
 
         self.f41
-            .check(&all_in_one.f41().try_into().unwrap())
+            .check(&all_in_one.f41()?.try_into().unwrap())
             .map_err(|f| f.to(format!("f41:{}", f.as_str())))?;
         self.f42
-            .check(&all_in_one.f42().into())
+            .check(&all_in_one.f42()?.into())
             .map_err(|f| f.to(format!("f42:{}", f.as_str())))?;
         self.f43
-            .check(&all_in_one.f43().into())
+            .check(&all_in_one.f43()?.into())
             .map_err(|f| f.to(format!("f43:{}", f.as_str())))?;
         self.f44
-            .check(&all_in_one.f44().into())
+            .check(&all_in_one.f44()?.into())
             .map_err(|f| f.to(format!("f44:{}", f.as_str())))?;
         self.f45
-            .check(&all_in_one.f45().into())
+            .check(&all_in_one.f45()?.into())
             .map_err(|f| f.to(format!("f45:{}", f.as_str())))?;
         self.f46
-            .check(&all_in_one.f46().into())
+            .check(&all_in_one.f46()?.into())
             .map_err(|f| f.to(format!("f46:{}", f.as_str())))?;
         self.f47
-            .check(&all_in_one.f47().into())
+            .check(&all_in_one.f47()?.into())
             .map_err(|f| f.to(format!("f47:{}", f.as_str())))?;
         self.f48
-            .check(&all_in_one.f48().into())
+            .check(&all_in_one.f48()?.into())
             .map_err(|f| f.to(format!("f48:{}", f.as_str())))?;
         self.f49
-            .check(&all_in_one.f49().into())
+            .check(&all_in_one.f49()?.into())
             .map_err(|f| f.to(format!("f49:{}", f.as_str())))?;
 
         self.f50
-            .check(&all_in_one.f50().into())
+            .check(&all_in_one.f50()?.into())
             .map_err(|f| f.to(format!("f50:{}", f.as_str())))?;
         self.f51
-            .check(&all_in_one.f51().into())
+            .check(&all_in_one.f51()?.into())
             .map_err(|f| f.to(format!("f51:{}", f.as_str())))?;
         self.f52
-            .check(&all_in_one.f52().into())
+            .check(&all_in_one.f52()?.into())
             .map_err(|f| f.to(format!("f52:{}", f.as_str())))?;
         self.f53
-            .check(&all_in_one.f53().into())
+            .check(&all_in_one.f53()?.into())
             .map_err(|f| f.to(format!("f53:{}", f.as_str())))?;
         self.f54
-            .check(&all_in_one.f54().into())
+            .check(&all_in_one.f54()?.into())
             .map_err(|f| f.to(format!("f54:{}", f.as_str())))?;
         self.f55
-            .check(&all_in_one.f55().into())
+            .check(&all_in_one.f55()?.into())
             .map_err(|f| f.to(format!("f55:{}", f.as_str())))?;
         self.f56
-            .check(&all_in_one.f56().into())
+            .check(&all_in_one.f56()?.into())
             .map_err(|f| f.to(format!("f56:{}", f.as_str())))?;
         self.f57
-            .check(&all_in_one.f57().into())
+            .check(&all_in_one.f57()?.into())
             .map_err(|f| f.to(format!("f57:{}", f.as_str())))?;
         self.f58
-            .check(&all_in_one.f58().map(|f| f.into()))
+            .check(&all_in_one.f58()?.map(|f| f.into()))
             .map_err(|f| f.to(format!("f58:{}", f.as_str())))?;
         self.f59
-            .check(&all_in_one.f59())
+            .check(&all_in_one.f59()?)
             .map_err(|f| f.to(format!("f59:{}", f.as_str())))?;
         self.f60
-            .check(&all_in_one.f60())
+            .check(&all_in_one.f60()?)
             .map_err(|f| f.to(format!("f60:{}", f.as_str())))?;
         self.f61
-            .check(&all_in_one.f61())
+            .check(&all_in_one.f61()?)
             .map_err(|f| f.to(format!("f61:{}", f.as_str())))?;
         self.f62
-            .check(&all_in_one.f62())
+            .check(&all_in_one.f62()?)
             .map_err(|f| f.to(format!("f62:{}", f.as_str())))?;
         self.f63
-            .check(&all_in_one.f63())
+            .check(&all_in_one.f63()?)
             .map_err(|f| f.to(format!("f63:{}", f.as_str())))?;
         self.f64
-            .check(&all_in_one.f64())
+            .check(&all_in_one.f64()?)
             .map_err(|f| f.to(format!("f64:{}", f.as_str())))?;
         self.f65
-            .check(&all_in_one.f65())
+            .check(&all_in_one.f65()?)
             .map_err(|f| f.to(format!("f65:{}", f.as_str())))?;
         self.f66
-            .check(&all_in_one.f66())
+            .check(&all_in_one.f66()?)
             .map_err(|f| f.to(format!("f66:{}", f.as_str())))?;
         self.f67
-            .check(&all_in_one.f67())
+            .check(&all_in_one.f67()?)
             .map_err(|f| f.to(format!("f67:{}", f.as_str())))?;
         self.f68
-            .check(&all_in_one.f68())
+            .check(&all_in_one.f68()?)
             .map_err(|f| f.to(format!("f68:{}", f.as_str())))?;
         self.f69
-            .check(&all_in_one.f69())
+            .check(&all_in_one.f69()?)
             .map_err(|f| f.to(format!("f69:{}", f.as_str())))?;
         self.f70
-            .check(&all_in_one.f70())
+            .check(&all_in_one.f70()?)
             .map_err(|f| f.to(format!("f70:{}", f.as_str())))?;
         self.f71
-            .check(&all_in_one.f71())
+            .check(&all_in_one.f71()?)
             .map_err(|f| f.to(format!("f71:{}", f.as_str())))?;
         self.f72
-            .check(&all_in_one.f72())
+            .check(&all_in_one.f72()?)
             .map_err(|f| f.to(format!("f72:{}", f.as_str())))?;
         self.f73
-            .check(&all_in_one.f73())
+            .check(&all_in_one.f73()?)
             .map_err(|f| f.to(format!("f73:{}", f.as_str())))?;
 
         check_mol(

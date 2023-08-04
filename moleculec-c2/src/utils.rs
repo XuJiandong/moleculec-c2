@@ -130,6 +130,7 @@ extern "C" {{
             extern crate alloc;
             use alloc::vec::Vec;
             use molecule2::Cursor;
+            use molecule2::Error;
             use core::convert::TryInto;
             
         "#,

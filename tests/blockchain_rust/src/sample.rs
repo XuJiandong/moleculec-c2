@@ -5,6 +5,7 @@ extern crate alloc;
 use alloc::vec::Vec;
 use core::convert::TryInto;
 use molecule2::Cursor;
+use molecule2::Error;
 
 pub struct SampleByte2 {
     pub cursor: Cursor,
@@ -20,9 +21,9 @@ impl SampleByte2 {
     }
 }
 impl SampleByte2 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Uint8 {
@@ -39,9 +40,9 @@ impl Uint8 {
     }
 }
 impl Uint8 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Int8 {
@@ -58,9 +59,9 @@ impl Int8 {
     }
 }
 impl Int8 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Uint16 {
@@ -77,9 +78,9 @@ impl Uint16 {
     }
 }
 impl Uint16 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Int16 {
@@ -96,9 +97,9 @@ impl Int16 {
     }
 }
 impl Int16 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Uint32 {
@@ -115,9 +116,9 @@ impl Uint32 {
     }
 }
 impl Uint32 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Int32 {
@@ -134,9 +135,9 @@ impl Int32 {
     }
 }
 impl Int32 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Uint64 {
@@ -153,9 +154,9 @@ impl Uint64 {
     }
 }
 impl Uint64 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Int64 {
@@ -172,9 +173,9 @@ impl Int64 {
     }
 }
 impl Int64 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct SampleFixedVector {
@@ -186,14 +187,14 @@ impl From<Cursor> for SampleFixedVector {
     }
 }
 impl SampleFixedVector {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl SampleFixedVector {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.fixvec_slice_by_index(1, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(1, index)?;
+        cur.try_into()
     }
 }
 pub struct SampleDynVector {
@@ -205,15 +206,14 @@ impl From<Cursor> for SampleDynVector {
     }
 }
 impl SampleDynVector {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl SampleDynVector {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
+        cur.convert_to_rawbytes()
     }
 }
 pub struct SampleUint64Vector {
@@ -225,14 +225,14 @@ impl From<Cursor> for SampleUint64Vector {
     }
 }
 impl SampleUint64Vector {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl SampleUint64Vector {
-    pub fn get(&self, index: usize) -> u64 {
-        let cur = self.cursor.fixvec_slice_by_index(8, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u64, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(8, index)?;
+        cur.try_into()
     }
 }
 pub struct SampleStruct {
@@ -244,16 +244,16 @@ impl From<Cursor> for SampleStruct {
     }
 }
 impl SampleStruct {
-    pub fn u32(&self) -> u32 {
-        let cur = self.cursor.slice_by_offset(0, 4).unwrap();
-        cur.into()
+    pub fn u32(&self) -> Result<u32, Error> {
+        let cur = self.cursor.slice_by_offset(0, 4)?;
+        cur.try_into()
     }
 }
 
 impl SampleStruct {
-    pub fn byte2(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 2).unwrap();
-        cur.into()
+    pub fn byte2(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 2)?;
+        Ok(cur)
     }
 }
 pub struct SampleTable {
@@ -265,23 +265,23 @@ impl From<Cursor> for SampleTable {
     }
 }
 impl SampleTable {
-    pub fn byte_2d_vector(&self) -> SampleDynVector {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn byte_2d_vector(&self) -> Result<SampleDynVector, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        Ok(cur.into())
     }
 }
 
 impl SampleTable {
-    pub fn byte2(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn byte2(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur)
     }
 }
 
 impl SampleTable {
-    pub fn u64_vector(&self) -> SampleUint64Vector {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        cur.into()
+    pub fn u64_vector(&self) -> Result<SampleUint64Vector, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        Ok(cur.into())
     }
 }
 pub struct SampleUnion {
@@ -293,23 +293,23 @@ impl From<Cursor> for SampleUnion {
     }
 }
 impl SampleUnion {
-    pub fn item_id(&self) -> usize {
-        let item = self.cursor.union_unpack();
-        item.item_id
+    pub fn item_id(&self) -> Result<usize, Error> {
+        let item = self.cursor.union_unpack()?;
+        Ok(item.item_id)
     }
 }
 impl SampleUnion {
-    pub fn as_samplestruct(&self) -> SampleStruct {
-        let item = self.cursor.union_unpack();
+    pub fn as_samplestruct(&self) -> Result<SampleStruct, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur.into())
     }
 }
 impl SampleUnion {
-    pub fn as_sampletable(&self) -> SampleTable {
-        let item = self.cursor.union_unpack();
+    pub fn as_sampletable(&self) -> Result<SampleTable, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur.into())
     }
 }
 pub struct SampleOptionTable {

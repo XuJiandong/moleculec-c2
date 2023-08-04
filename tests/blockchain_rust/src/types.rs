@@ -5,6 +5,7 @@ extern crate alloc;
 use alloc::vec::Vec;
 use core::convert::TryInto;
 use molecule2::Cursor;
+use molecule2::Error;
 
 pub struct Byte2 {
     pub cursor: Cursor,
@@ -20,9 +21,9 @@ impl Byte2 {
     }
 }
 impl Byte2 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte3 {
@@ -39,9 +40,9 @@ impl Byte3 {
     }
 }
 impl Byte3 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte4 {
@@ -58,9 +59,9 @@ impl Byte4 {
     }
 }
 impl Byte4 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte5 {
@@ -77,9 +78,9 @@ impl Byte5 {
     }
 }
 impl Byte5 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte6 {
@@ -96,9 +97,9 @@ impl Byte6 {
     }
 }
 impl Byte6 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte7 {
@@ -115,9 +116,9 @@ impl Byte7 {
     }
 }
 impl Byte7 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte8 {
@@ -134,9 +135,9 @@ impl Byte8 {
     }
 }
 impl Byte8 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte9 {
@@ -153,9 +154,9 @@ impl Byte9 {
     }
 }
 impl Byte9 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte10 {
@@ -172,9 +173,9 @@ impl Byte10 {
     }
 }
 impl Byte10 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte11 {
@@ -191,9 +192,9 @@ impl Byte11 {
     }
 }
 impl Byte11 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte12 {
@@ -210,9 +211,9 @@ impl Byte12 {
     }
 }
 impl Byte12 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte13 {
@@ -229,9 +230,9 @@ impl Byte13 {
     }
 }
 impl Byte13 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte14 {
@@ -248,9 +249,9 @@ impl Byte14 {
     }
 }
 impl Byte14 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte15 {
@@ -267,9 +268,9 @@ impl Byte15 {
     }
 }
 impl Byte15 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Byte16 {
@@ -286,9 +287,9 @@ impl Byte16 {
     }
 }
 impl Byte16 {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Word {
@@ -305,9 +306,9 @@ impl Word {
     }
 }
 impl Word {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.slice_by_offset(1 * index, 1).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1 * index, 1)?;
+        cur.try_into()
     }
 }
 pub struct Word2 {
@@ -324,9 +325,9 @@ impl Word2 {
     }
 }
 impl Word2 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Word3 {
@@ -343,9 +344,9 @@ impl Word3 {
     }
 }
 impl Word3 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Word4 {
@@ -362,9 +363,9 @@ impl Word4 {
     }
 }
 impl Word4 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Word5 {
@@ -381,9 +382,9 @@ impl Word5 {
     }
 }
 impl Word5 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Word6 {
@@ -400,9 +401,9 @@ impl Word6 {
     }
 }
 impl Word6 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Word7 {
@@ -419,9 +420,9 @@ impl Word7 {
     }
 }
 impl Word7 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Word8 {
@@ -438,9 +439,9 @@ impl Word8 {
     }
 }
 impl Word8 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2 * index, 2).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2 * index, 2)?;
+        Ok(cur)
     }
 }
 pub struct Byte3x3 {
@@ -457,9 +458,9 @@ impl Byte3x3 {
     }
 }
 impl Byte3x3 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(3 * index, 3).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(3 * index, 3)?;
+        Ok(cur)
     }
 }
 pub struct Byte5x3 {
@@ -476,9 +477,9 @@ impl Byte5x3 {
     }
 }
 impl Byte5x3 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(5 * index, 5).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(5 * index, 5)?;
+        Ok(cur)
     }
 }
 pub struct Byte7x3 {
@@ -495,9 +496,9 @@ impl Byte7x3 {
     }
 }
 impl Byte7x3 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(7 * index, 7).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(7 * index, 7)?;
+        Ok(cur)
     }
 }
 pub struct Byte9x3 {
@@ -514,9 +515,9 @@ impl Byte9x3 {
     }
 }
 impl Byte9x3 {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.slice_by_offset(9 * index, 9).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(9 * index, 9)?;
+        Ok(cur)
     }
 }
 pub struct StructA {
@@ -528,30 +529,30 @@ impl From<Cursor> for StructA {
     }
 }
 impl StructA {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(0, 1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(0, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructA {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(1, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructA {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2, 2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructA {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 2).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 2)?;
+        Ok(cur)
     }
 }
 pub struct StructB {
@@ -563,30 +564,30 @@ impl From<Cursor> for StructB {
     }
 }
 impl StructB {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(0, 1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(0, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructB {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(1, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructB {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2, 2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructB {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 3).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 3)?;
+        Ok(cur)
     }
 }
 pub struct StructC {
@@ -598,30 +599,30 @@ impl From<Cursor> for StructC {
     }
 }
 impl StructC {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(0, 1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(0, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructC {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(1, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructC {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2, 2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructC {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 4).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 4)?;
+        Ok(cur)
     }
 }
 pub struct StructD {
@@ -633,30 +634,30 @@ impl From<Cursor> for StructD {
     }
 }
 impl StructD {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(0, 1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(0, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructD {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(1, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(1, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructD {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(2, 2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(2, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructD {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 5).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 5)?;
+        Ok(cur)
     }
 }
 pub struct StructE {
@@ -668,30 +669,30 @@ impl From<Cursor> for StructE {
     }
 }
 impl StructE {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(0, 1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(0, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructE {
-    pub fn f2(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(1, 2).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(1, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructE {
-    pub fn f3(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(3, 1).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(3, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructE {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 2).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 2)?;
+        Ok(cur)
     }
 }
 pub struct StructF {
@@ -703,23 +704,23 @@ impl From<Cursor> for StructF {
     }
 }
 impl StructF {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(0, 1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(0, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructF {
-    pub fn f2(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(1, 3).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(1, 3)?;
+        Ok(cur)
     }
 }
 
 impl StructF {
-    pub fn f3(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(4, 1).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(4, 1)?;
+        cur.try_into()
     }
 }
 pub struct StructG {
@@ -731,30 +732,30 @@ impl From<Cursor> for StructG {
     }
 }
 impl StructG {
-    pub fn f1(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(0, 3).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(0, 3)?;
+        Ok(cur)
     }
 }
 
 impl StructG {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(3, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(3, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructG {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructG {
-    pub fn f4(&self) -> Word2 {
-        let cur = self.cursor.slice_by_offset(6, 4).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.slice_by_offset(6, 4)?;
+        Ok(cur.into())
     }
 }
 pub struct StructH {
@@ -766,30 +767,30 @@ impl From<Cursor> for StructH {
     }
 }
 impl StructH {
-    pub fn f1(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(0, 3).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(0, 3)?;
+        Ok(cur)
     }
 }
 
 impl StructH {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(3, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(3, 1)?;
+        cur.try_into()
     }
 }
 
 impl StructH {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(4, 2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(4, 2)?;
+        Ok(cur)
     }
 }
 
 impl StructH {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(6, 4).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(6, 4)?;
+        Ok(cur)
     }
 }
 pub struct StructI {
@@ -801,16 +802,16 @@ impl From<Cursor> for StructI {
     }
 }
 impl StructI {
-    pub fn f1(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(0, 3).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(0, 3)?;
+        Ok(cur)
     }
 }
 
 impl StructI {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(3, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(3, 1)?;
+        cur.try_into()
     }
 }
 pub struct StructJ {
@@ -822,16 +823,16 @@ impl From<Cursor> for StructJ {
     }
 }
 impl StructJ {
-    pub fn f1(&self) -> Cursor {
-        let cur = self.cursor.slice_by_offset(0, 6).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.slice_by_offset(0, 6)?;
+        Ok(cur)
     }
 }
 
 impl StructJ {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(6, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(6, 1)?;
+        cur.try_into()
     }
 }
 pub struct StructIx3 {
@@ -848,9 +849,9 @@ impl StructIx3 {
     }
 }
 impl StructIx3 {
-    pub fn get(&self, index: usize) -> StructI {
-        let cur = self.cursor.slice_by_offset(4 * index, 4).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<StructI, Error> {
+        let cur = self.cursor.slice_by_offset(4 * index, 4)?;
+        Ok(cur.into())
     }
 }
 pub struct StructO {
@@ -862,16 +863,16 @@ impl From<Cursor> for StructO {
     }
 }
 impl StructO {
-    pub fn f1(&self) -> StructIx3 {
-        let cur = self.cursor.slice_by_offset(0, 12).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<StructIx3, Error> {
+        let cur = self.cursor.slice_by_offset(0, 12)?;
+        Ok(cur.into())
     }
 }
 
 impl StructO {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(12, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(12, 1)?;
+        cur.try_into()
     }
 }
 pub struct StructP {
@@ -883,16 +884,16 @@ impl From<Cursor> for StructP {
     }
 }
 impl StructP {
-    pub fn f1(&self) -> StructJ {
-        let cur = self.cursor.slice_by_offset(0, 7).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<StructJ, Error> {
+        let cur = self.cursor.slice_by_offset(0, 7)?;
+        Ok(cur.into())
     }
 }
 
 impl StructP {
-    pub fn f2(&self) -> u8 {
-        let cur = self.cursor.slice_by_offset(7, 1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<u8, Error> {
+        let cur = self.cursor.slice_by_offset(7, 1)?;
+        cur.try_into()
     }
 }
 pub struct Bytes {
@@ -904,14 +905,14 @@ impl From<Cursor> for Bytes {
     }
 }
 impl Bytes {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl Bytes {
-    pub fn get(&self, index: usize) -> u8 {
-        let cur = self.cursor.fixvec_slice_by_index(1, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<u8, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(1, index)?;
+        cur.try_into()
     }
 }
 pub struct Words {
@@ -923,14 +924,14 @@ impl From<Cursor> for Words {
     }
 }
 impl Words {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl Words {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.fixvec_slice_by_index(2, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(2, index)?;
+        Ok(cur)
     }
 }
 pub struct Byte3Vec {
@@ -942,14 +943,14 @@ impl From<Cursor> for Byte3Vec {
     }
 }
 impl Byte3Vec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl Byte3Vec {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.fixvec_slice_by_index(3, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(3, index)?;
+        Ok(cur)
     }
 }
 pub struct Byte7Vec {
@@ -961,14 +962,14 @@ impl From<Cursor> for Byte7Vec {
     }
 }
 impl Byte7Vec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl Byte7Vec {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.fixvec_slice_by_index(7, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(7, index)?;
+        Ok(cur)
     }
 }
 pub struct StructIVec {
@@ -980,14 +981,14 @@ impl From<Cursor> for StructIVec {
     }
 }
 impl StructIVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl StructIVec {
-    pub fn get(&self, index: usize) -> StructI {
-        let cur = self.cursor.fixvec_slice_by_index(4, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<StructI, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(4, index)?;
+        Ok(cur.into())
     }
 }
 pub struct StructJVec {
@@ -999,14 +1000,14 @@ impl From<Cursor> for StructJVec {
     }
 }
 impl StructJVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl StructJVec {
-    pub fn get(&self, index: usize) -> StructJ {
-        let cur = self.cursor.fixvec_slice_by_index(7, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<StructJ, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(7, index)?;
+        Ok(cur.into())
     }
 }
 pub struct StructPVec {
@@ -1018,14 +1019,14 @@ impl From<Cursor> for StructPVec {
     }
 }
 impl StructPVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.fixvec_length()
     }
 }
 impl StructPVec {
-    pub fn get(&self, index: usize) -> StructP {
-        let cur = self.cursor.fixvec_slice_by_index(8, index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<StructP, Error> {
+        let cur = self.cursor.fixvec_slice_by_index(8, index)?;
+        Ok(cur.into())
     }
 }
 pub struct BytesVec {
@@ -1037,15 +1038,14 @@ impl From<Cursor> for BytesVec {
     }
 }
 impl BytesVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl BytesVec {
-    pub fn get(&self, index: usize) -> Cursor {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn get(&self, index: usize) -> Result<Cursor, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
+        cur.convert_to_rawbytes()
     }
 }
 pub struct WordsVec {
@@ -1057,14 +1057,14 @@ impl From<Cursor> for WordsVec {
     }
 }
 impl WordsVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl WordsVec {
-    pub fn get(&self, index: usize) -> Words {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Words, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
+        Ok(cur.into())
     }
 }
 pub struct Table0 {
@@ -1084,9 +1084,9 @@ impl From<Cursor> for Table1 {
     }
 }
 impl Table1 {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 pub struct Table2 {
@@ -1098,16 +1098,16 @@ impl From<Cursor> for Table2 {
     }
 }
 impl Table2 {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 
 impl Table2 {
-    pub fn f2(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur.into())
     }
 }
 pub struct Table3 {
@@ -1119,23 +1119,23 @@ impl From<Cursor> for Table3 {
     }
 }
 impl Table3 {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 
 impl Table3 {
-    pub fn f2(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur.into())
     }
 }
 
 impl Table3 {
-    pub fn f3(&self) -> StructA {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<StructA, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        Ok(cur.into())
     }
 }
 pub struct Table4 {
@@ -1147,31 +1147,30 @@ impl From<Cursor> for Table4 {
     }
 }
 impl Table4 {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 
 impl Table4 {
-    pub fn f2(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur.into())
     }
 }
 
 impl Table4 {
-    pub fn f3(&self) -> StructA {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<StructA, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        Ok(cur.into())
     }
 }
 
 impl Table4 {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(3).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(3)?;
+        cur.convert_to_rawbytes()
     }
 }
 pub struct Table5 {
@@ -1183,38 +1182,37 @@ impl From<Cursor> for Table5 {
     }
 }
 impl Table5 {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 
 impl Table5 {
-    pub fn f2(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur.into())
     }
 }
 
 impl Table5 {
-    pub fn f3(&self) -> StructA {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<StructA, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        Ok(cur.into())
     }
 }
 
 impl Table5 {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(3).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(3)?;
+        cur.convert_to_rawbytes()
     }
 }
 
 impl Table5 {
-    pub fn f5(&self) -> BytesVec {
-        let cur = self.cursor.table_slice_by_index(4).unwrap();
-        cur.into()
+    pub fn f5(&self) -> Result<BytesVec, Error> {
+        let cur = self.cursor.table_slice_by_index(4)?;
+        Ok(cur.into())
     }
 }
 pub struct Table6 {
@@ -1226,45 +1224,44 @@ impl From<Cursor> for Table6 {
     }
 }
 impl Table6 {
-    pub fn f1(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 
 impl Table6 {
-    pub fn f2(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur.into())
     }
 }
 
 impl Table6 {
-    pub fn f3(&self) -> StructA {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<StructA, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        Ok(cur.into())
     }
 }
 
 impl Table6 {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(3).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(3)?;
+        cur.convert_to_rawbytes()
     }
 }
 
 impl Table6 {
-    pub fn f5(&self) -> BytesVec {
-        let cur = self.cursor.table_slice_by_index(4).unwrap();
-        cur.into()
+    pub fn f5(&self) -> Result<BytesVec, Error> {
+        let cur = self.cursor.table_slice_by_index(4)?;
+        Ok(cur.into())
     }
 }
 
 impl Table6 {
-    pub fn f6(&self) -> Table5 {
-        let cur = self.cursor.table_slice_by_index(5).unwrap();
-        cur.into()
+    pub fn f6(&self) -> Result<Table5, Error> {
+        let cur = self.cursor.table_slice_by_index(5)?;
+        Ok(cur.into())
     }
 }
 pub struct ByteOpt {
@@ -1364,17 +1361,17 @@ impl From<Cursor> for ByteOptVec {
     }
 }
 impl ByteOptVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl ByteOptVec {
-    pub fn get(&self, index: usize) -> Option<u8> {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+    pub fn get(&self, index: usize) -> Result<Option<u8>, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.try_into()?))
         }
     }
 }
@@ -1387,17 +1384,17 @@ impl From<Cursor> for WordOptVec {
     }
 }
 impl WordOptVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl WordOptVec {
-    pub fn get(&self, index: usize) -> Option<Cursor> {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+    pub fn get(&self, index: usize) -> Result<Option<Cursor>, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
@@ -1410,17 +1407,17 @@ impl From<Cursor> for WordsOptVec {
     }
 }
 impl WordsOptVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl WordsOptVec {
-    pub fn get(&self, index: usize) -> Option<Words> {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+    pub fn get(&self, index: usize) -> Result<Option<Words>, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
@@ -1433,18 +1430,18 @@ impl From<Cursor> for BytesOptVec {
     }
 }
 impl BytesOptVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl BytesOptVec {
-    pub fn get(&self, index: usize) -> Option<Cursor> {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
+    pub fn get(&self, index: usize) -> Result<Option<Cursor>, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            let cur = cur.convert_to_rawbytes().unwrap();
-            Some(cur.into())
+            let cur = cur.convert_to_rawbytes()?;
+            Ok(Some(cur.into()))
         }
     }
 }
@@ -1457,69 +1454,68 @@ impl From<Cursor> for UnionA {
     }
 }
 impl UnionA {
-    pub fn item_id(&self) -> usize {
-        let item = self.cursor.union_unpack();
-        item.item_id
+    pub fn item_id(&self) -> Result<usize, Error> {
+        let item = self.cursor.union_unpack()?;
+        Ok(item.item_id)
     }
 }
 impl UnionA {
-    pub fn as_byte(&self) -> u8 {
-        let item = self.cursor.union_unpack();
+    pub fn as_byte(&self) -> Result<u8, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        cur.try_into()
     }
 }
 impl UnionA {
-    pub fn as_word(&self) -> Cursor {
-        let item = self.cursor.union_unpack();
+    pub fn as_word(&self) -> Result<Cursor, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur)
     }
 }
 impl UnionA {
-    pub fn as_structa(&self) -> StructA {
-        let item = self.cursor.union_unpack();
+    pub fn as_structa(&self) -> Result<StructA, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur.into())
     }
 }
 impl UnionA {
-    pub fn as_bytes(&self) -> Cursor {
-        let item = self.cursor.union_unpack();
+    pub fn as_bytes(&self) -> Result<Cursor, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+        cur.convert_to_rawbytes()
     }
 }
 impl UnionA {
-    pub fn as_words(&self) -> Words {
-        let item = self.cursor.union_unpack();
+    pub fn as_words(&self) -> Result<Words, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur.into())
     }
 }
 impl UnionA {
-    pub fn as_table0(&self) -> Table0 {
-        let item = self.cursor.union_unpack();
+    pub fn as_table0(&self) -> Result<Table0, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur.into())
     }
 }
 impl UnionA {
-    pub fn as_table6(&self) -> Table6 {
-        let item = self.cursor.union_unpack();
+    pub fn as_table6(&self) -> Result<Table6, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
-        cur.into()
+        Ok(cur.into())
     }
 }
 impl UnionA {
-    pub fn as_table6opt(&self) -> Option<Table6> {
-        let item = self.cursor.union_unpack();
+    pub fn as_table6opt(&self) -> Result<Option<Table6>, Error> {
+        let item = self.cursor.union_unpack()?;
         let cur = item.cursor.clone();
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
@@ -1532,64 +1528,63 @@ impl From<Cursor> for TableA {
     }
 }
 impl TableA {
-    pub fn f1(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        Ok(cur.into())
     }
 }
 
 impl TableA {
-    pub fn f2(&self) -> StructA {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<StructA, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur.into())
     }
 }
 
 impl TableA {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        cur.convert_to_rawbytes()
     }
 }
 
 impl TableA {
-    pub fn f4(&self) -> BytesVec {
-        let cur = self.cursor.table_slice_by_index(3).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<BytesVec, Error> {
+        let cur = self.cursor.table_slice_by_index(3)?;
+        Ok(cur.into())
     }
 }
 
 impl TableA {
-    pub fn f5(&self) -> Table1 {
-        let cur = self.cursor.table_slice_by_index(4).unwrap();
-        cur.into()
+    pub fn f5(&self) -> Result<Table1, Error> {
+        let cur = self.cursor.table_slice_by_index(4)?;
+        Ok(cur.into())
     }
 }
 
 impl TableA {
-    pub fn f6(&self) -> Option<Cursor> {
-        let cur = self.cursor.table_slice_by_index(5).unwrap();
+    pub fn f6(&self) -> Result<Option<Cursor>, Error> {
+        let cur = self.cursor.table_slice_by_index(5)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            let cur = cur.convert_to_rawbytes().unwrap();
-            Some(cur.into())
+            let cur = cur.convert_to_rawbytes()?;
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl TableA {
-    pub fn f7(&self) -> UnionA {
-        let cur = self.cursor.table_slice_by_index(6).unwrap();
-        cur.into()
+    pub fn f7(&self) -> Result<UnionA, Error> {
+        let cur = self.cursor.table_slice_by_index(6)?;
+        Ok(cur.into())
     }
 }
 
 impl TableA {
-    pub fn f8(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(7).unwrap();
-        cur.into()
+    pub fn f8(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(7)?;
+        cur.try_into()
     }
 }
 pub struct AllInOne {
@@ -1601,565 +1596,564 @@ impl From<Cursor> for AllInOne {
     }
 }
 impl AllInOne {
-    pub fn f0(&self) -> u8 {
-        let cur = self.cursor.table_slice_by_index(0).unwrap();
-        cur.into()
+    pub fn f0(&self) -> Result<u8, Error> {
+        let cur = self.cursor.table_slice_by_index(0)?;
+        cur.try_into()
     }
 }
 
 impl AllInOne {
-    pub fn f1(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(1).unwrap();
-        cur.into()
+    pub fn f1(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(1)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f2(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(2).unwrap();
-        cur.into()
+    pub fn f2(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(2)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f3(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(3).unwrap();
-        cur.into()
+    pub fn f3(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(3)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f4(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(4).unwrap();
-        cur.into()
+    pub fn f4(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(4)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f5(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(5).unwrap();
-        cur.into()
+    pub fn f5(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(5)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f6(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(6).unwrap();
-        cur.into()
+    pub fn f6(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(6)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f7(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(7).unwrap();
-        cur.into()
+    pub fn f7(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(7)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f8(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(8).unwrap();
-        cur.into()
+    pub fn f8(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(8)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f9(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(9).unwrap();
-        cur.into()
+    pub fn f9(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(9)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f10(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(10).unwrap();
-        cur.into()
+    pub fn f10(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(10)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f11(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(11).unwrap();
-        cur.into()
+    pub fn f11(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(11)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f12(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(12).unwrap();
-        cur.into()
+    pub fn f12(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(12)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f13(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(13).unwrap();
-        cur.into()
+    pub fn f13(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(13)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f14(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(14).unwrap();
-        cur.into()
+    pub fn f14(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(14)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f15(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(15).unwrap();
-        cur.into()
+    pub fn f15(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(15)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f16(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(16).unwrap();
-        cur.into()
+    pub fn f16(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(16)?;
+        Ok(cur)
     }
 }
 
 impl AllInOne {
-    pub fn f17(&self) -> Word2 {
-        let cur = self.cursor.table_slice_by_index(17).unwrap();
-        cur.into()
+    pub fn f17(&self) -> Result<Word2, Error> {
+        let cur = self.cursor.table_slice_by_index(17)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f18(&self) -> Word3 {
-        let cur = self.cursor.table_slice_by_index(18).unwrap();
-        cur.into()
+    pub fn f18(&self) -> Result<Word3, Error> {
+        let cur = self.cursor.table_slice_by_index(18)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f19(&self) -> Word4 {
-        let cur = self.cursor.table_slice_by_index(19).unwrap();
-        cur.into()
+    pub fn f19(&self) -> Result<Word4, Error> {
+        let cur = self.cursor.table_slice_by_index(19)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f20(&self) -> Word5 {
-        let cur = self.cursor.table_slice_by_index(20).unwrap();
-        cur.into()
+    pub fn f20(&self) -> Result<Word5, Error> {
+        let cur = self.cursor.table_slice_by_index(20)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f21(&self) -> Word6 {
-        let cur = self.cursor.table_slice_by_index(21).unwrap();
-        cur.into()
+    pub fn f21(&self) -> Result<Word6, Error> {
+        let cur = self.cursor.table_slice_by_index(21)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f22(&self) -> Word7 {
-        let cur = self.cursor.table_slice_by_index(22).unwrap();
-        cur.into()
+    pub fn f22(&self) -> Result<Word7, Error> {
+        let cur = self.cursor.table_slice_by_index(22)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f23(&self) -> Word8 {
-        let cur = self.cursor.table_slice_by_index(23).unwrap();
-        cur.into()
+    pub fn f23(&self) -> Result<Word8, Error> {
+        let cur = self.cursor.table_slice_by_index(23)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f24(&self) -> Byte3x3 {
-        let cur = self.cursor.table_slice_by_index(24).unwrap();
-        cur.into()
+    pub fn f24(&self) -> Result<Byte3x3, Error> {
+        let cur = self.cursor.table_slice_by_index(24)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f25(&self) -> Byte5x3 {
-        let cur = self.cursor.table_slice_by_index(25).unwrap();
-        cur.into()
+    pub fn f25(&self) -> Result<Byte5x3, Error> {
+        let cur = self.cursor.table_slice_by_index(25)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f26(&self) -> Byte7x3 {
-        let cur = self.cursor.table_slice_by_index(26).unwrap();
-        cur.into()
+    pub fn f26(&self) -> Result<Byte7x3, Error> {
+        let cur = self.cursor.table_slice_by_index(26)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f27(&self) -> Byte9x3 {
-        let cur = self.cursor.table_slice_by_index(27).unwrap();
-        cur.into()
+    pub fn f27(&self) -> Result<Byte9x3, Error> {
+        let cur = self.cursor.table_slice_by_index(27)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f28(&self) -> StructA {
-        let cur = self.cursor.table_slice_by_index(28).unwrap();
-        cur.into()
+    pub fn f28(&self) -> Result<StructA, Error> {
+        let cur = self.cursor.table_slice_by_index(28)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f29(&self) -> StructB {
-        let cur = self.cursor.table_slice_by_index(29).unwrap();
-        cur.into()
+    pub fn f29(&self) -> Result<StructB, Error> {
+        let cur = self.cursor.table_slice_by_index(29)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f30(&self) -> StructC {
-        let cur = self.cursor.table_slice_by_index(30).unwrap();
-        cur.into()
+    pub fn f30(&self) -> Result<StructC, Error> {
+        let cur = self.cursor.table_slice_by_index(30)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f31(&self) -> StructD {
-        let cur = self.cursor.table_slice_by_index(31).unwrap();
-        cur.into()
+    pub fn f31(&self) -> Result<StructD, Error> {
+        let cur = self.cursor.table_slice_by_index(31)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f32(&self) -> StructE {
-        let cur = self.cursor.table_slice_by_index(32).unwrap();
-        cur.into()
+    pub fn f32(&self) -> Result<StructE, Error> {
+        let cur = self.cursor.table_slice_by_index(32)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f33(&self) -> StructF {
-        let cur = self.cursor.table_slice_by_index(33).unwrap();
-        cur.into()
+    pub fn f33(&self) -> Result<StructF, Error> {
+        let cur = self.cursor.table_slice_by_index(33)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f34(&self) -> StructG {
-        let cur = self.cursor.table_slice_by_index(34).unwrap();
-        cur.into()
+    pub fn f34(&self) -> Result<StructG, Error> {
+        let cur = self.cursor.table_slice_by_index(34)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f35(&self) -> StructH {
-        let cur = self.cursor.table_slice_by_index(35).unwrap();
-        cur.into()
+    pub fn f35(&self) -> Result<StructH, Error> {
+        let cur = self.cursor.table_slice_by_index(35)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f36(&self) -> StructI {
-        let cur = self.cursor.table_slice_by_index(36).unwrap();
-        cur.into()
+    pub fn f36(&self) -> Result<StructI, Error> {
+        let cur = self.cursor.table_slice_by_index(36)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f37(&self) -> StructJ {
-        let cur = self.cursor.table_slice_by_index(37).unwrap();
-        cur.into()
+    pub fn f37(&self) -> Result<StructJ, Error> {
+        let cur = self.cursor.table_slice_by_index(37)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f38(&self) -> StructIx3 {
-        let cur = self.cursor.table_slice_by_index(38).unwrap();
-        cur.into()
+    pub fn f38(&self) -> Result<StructIx3, Error> {
+        let cur = self.cursor.table_slice_by_index(38)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f39(&self) -> StructO {
-        let cur = self.cursor.table_slice_by_index(39).unwrap();
-        cur.into()
+    pub fn f39(&self) -> Result<StructO, Error> {
+        let cur = self.cursor.table_slice_by_index(39)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f40(&self) -> StructP {
-        let cur = self.cursor.table_slice_by_index(40).unwrap();
-        cur.into()
+    pub fn f40(&self) -> Result<StructP, Error> {
+        let cur = self.cursor.table_slice_by_index(40)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f41(&self) -> Cursor {
-        let cur = self.cursor.table_slice_by_index(41).unwrap();
-        let cur2 = cur.convert_to_rawbytes().unwrap();
-        cur2
+    pub fn f41(&self) -> Result<Cursor, Error> {
+        let cur = self.cursor.table_slice_by_index(41)?;
+        cur.convert_to_rawbytes()
     }
 }
 
 impl AllInOne {
-    pub fn f42(&self) -> Words {
-        let cur = self.cursor.table_slice_by_index(42).unwrap();
-        cur.into()
+    pub fn f42(&self) -> Result<Words, Error> {
+        let cur = self.cursor.table_slice_by_index(42)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f43(&self) -> Byte3Vec {
-        let cur = self.cursor.table_slice_by_index(43).unwrap();
-        cur.into()
+    pub fn f43(&self) -> Result<Byte3Vec, Error> {
+        let cur = self.cursor.table_slice_by_index(43)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f44(&self) -> Byte7Vec {
-        let cur = self.cursor.table_slice_by_index(44).unwrap();
-        cur.into()
+    pub fn f44(&self) -> Result<Byte7Vec, Error> {
+        let cur = self.cursor.table_slice_by_index(44)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f45(&self) -> StructIVec {
-        let cur = self.cursor.table_slice_by_index(45).unwrap();
-        cur.into()
+    pub fn f45(&self) -> Result<StructIVec, Error> {
+        let cur = self.cursor.table_slice_by_index(45)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f46(&self) -> StructJVec {
-        let cur = self.cursor.table_slice_by_index(46).unwrap();
-        cur.into()
+    pub fn f46(&self) -> Result<StructJVec, Error> {
+        let cur = self.cursor.table_slice_by_index(46)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f47(&self) -> StructPVec {
-        let cur = self.cursor.table_slice_by_index(47).unwrap();
-        cur.into()
+    pub fn f47(&self) -> Result<StructPVec, Error> {
+        let cur = self.cursor.table_slice_by_index(47)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f48(&self) -> BytesVec {
-        let cur = self.cursor.table_slice_by_index(48).unwrap();
-        cur.into()
+    pub fn f48(&self) -> Result<BytesVec, Error> {
+        let cur = self.cursor.table_slice_by_index(48)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f49(&self) -> WordsVec {
-        let cur = self.cursor.table_slice_by_index(49).unwrap();
-        cur.into()
+    pub fn f49(&self) -> Result<WordsVec, Error> {
+        let cur = self.cursor.table_slice_by_index(49)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f50(&self) -> Table0 {
-        let cur = self.cursor.table_slice_by_index(50).unwrap();
-        cur.into()
+    pub fn f50(&self) -> Result<Table0, Error> {
+        let cur = self.cursor.table_slice_by_index(50)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f51(&self) -> Table1 {
-        let cur = self.cursor.table_slice_by_index(51).unwrap();
-        cur.into()
+    pub fn f51(&self) -> Result<Table1, Error> {
+        let cur = self.cursor.table_slice_by_index(51)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f52(&self) -> Table2 {
-        let cur = self.cursor.table_slice_by_index(52).unwrap();
-        cur.into()
+    pub fn f52(&self) -> Result<Table2, Error> {
+        let cur = self.cursor.table_slice_by_index(52)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f53(&self) -> Table3 {
-        let cur = self.cursor.table_slice_by_index(53).unwrap();
-        cur.into()
+    pub fn f53(&self) -> Result<Table3, Error> {
+        let cur = self.cursor.table_slice_by_index(53)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f54(&self) -> Table4 {
-        let cur = self.cursor.table_slice_by_index(54).unwrap();
-        cur.into()
+    pub fn f54(&self) -> Result<Table4, Error> {
+        let cur = self.cursor.table_slice_by_index(54)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f55(&self) -> Table5 {
-        let cur = self.cursor.table_slice_by_index(55).unwrap();
-        cur.into()
+    pub fn f55(&self) -> Result<Table5, Error> {
+        let cur = self.cursor.table_slice_by_index(55)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f56(&self) -> Table6 {
-        let cur = self.cursor.table_slice_by_index(56).unwrap();
-        cur.into()
+    pub fn f56(&self) -> Result<Table6, Error> {
+        let cur = self.cursor.table_slice_by_index(56)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f57(&self) -> Option<u8> {
-        let cur = self.cursor.table_slice_by_index(57).unwrap();
+    pub fn f57(&self) -> Result<Option<u8>, Error> {
+        let cur = self.cursor.table_slice_by_index(57)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.try_into()?))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f58(&self) -> Option<Cursor> {
-        let cur = self.cursor.table_slice_by_index(58).unwrap();
+    pub fn f58(&self) -> Result<Option<Cursor>, Error> {
+        let cur = self.cursor.table_slice_by_index(58)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f59(&self) -> Option<StructA> {
-        let cur = self.cursor.table_slice_by_index(59).unwrap();
+    pub fn f59(&self) -> Result<Option<StructA>, Error> {
+        let cur = self.cursor.table_slice_by_index(59)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f60(&self) -> Option<StructP> {
-        let cur = self.cursor.table_slice_by_index(60).unwrap();
+    pub fn f60(&self) -> Result<Option<StructP>, Error> {
+        let cur = self.cursor.table_slice_by_index(60)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f61(&self) -> Option<Cursor> {
-        let cur = self.cursor.table_slice_by_index(61).unwrap();
+    pub fn f61(&self) -> Result<Option<Cursor>, Error> {
+        let cur = self.cursor.table_slice_by_index(61)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            let cur = cur.convert_to_rawbytes().unwrap();
-            Some(cur.into())
+            let cur = cur.convert_to_rawbytes()?;
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f62(&self) -> Option<Words> {
-        let cur = self.cursor.table_slice_by_index(62).unwrap();
+    pub fn f62(&self) -> Result<Option<Words>, Error> {
+        let cur = self.cursor.table_slice_by_index(62)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f63(&self) -> Option<BytesVec> {
-        let cur = self.cursor.table_slice_by_index(63).unwrap();
+    pub fn f63(&self) -> Result<Option<BytesVec>, Error> {
+        let cur = self.cursor.table_slice_by_index(63)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f64(&self) -> Option<WordsVec> {
-        let cur = self.cursor.table_slice_by_index(64).unwrap();
+    pub fn f64(&self) -> Result<Option<WordsVec>, Error> {
+        let cur = self.cursor.table_slice_by_index(64)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f65(&self) -> Option<Table0> {
-        let cur = self.cursor.table_slice_by_index(65).unwrap();
+    pub fn f65(&self) -> Result<Option<Table0>, Error> {
+        let cur = self.cursor.table_slice_by_index(65)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f66(&self) -> Option<Table6> {
-        let cur = self.cursor.table_slice_by_index(66).unwrap();
+    pub fn f66(&self) -> Result<Option<Table6>, Error> {
+        let cur = self.cursor.table_slice_by_index(66)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(cur.into())
+            Ok(Some(cur.into()))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f67(&self) -> Option<Option<Table6>> {
-        let cur = self.cursor.table_slice_by_index(67).unwrap();
+    pub fn f67(&self) -> Result<Option<Option<Table6>>, Error> {
+        let cur = self.cursor.table_slice_by_index(67)?;
         if cur.option_is_none() {
-            None
+            Ok(None)
         } else {
-            Some(Some(cur.into()))
+            Ok(Some(Some(cur.into())))
         }
     }
 }
 
 impl AllInOne {
-    pub fn f68(&self) -> ByteOptVec {
-        let cur = self.cursor.table_slice_by_index(68).unwrap();
-        cur.into()
+    pub fn f68(&self) -> Result<ByteOptVec, Error> {
+        let cur = self.cursor.table_slice_by_index(68)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f69(&self) -> WordOptVec {
-        let cur = self.cursor.table_slice_by_index(69).unwrap();
-        cur.into()
+    pub fn f69(&self) -> Result<WordOptVec, Error> {
+        let cur = self.cursor.table_slice_by_index(69)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f70(&self) -> WordsOptVec {
-        let cur = self.cursor.table_slice_by_index(70).unwrap();
-        cur.into()
+    pub fn f70(&self) -> Result<WordsOptVec, Error> {
+        let cur = self.cursor.table_slice_by_index(70)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f71(&self) -> BytesOptVec {
-        let cur = self.cursor.table_slice_by_index(71).unwrap();
-        cur.into()
+    pub fn f71(&self) -> Result<BytesOptVec, Error> {
+        let cur = self.cursor.table_slice_by_index(71)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f72(&self) -> UnionA {
-        let cur = self.cursor.table_slice_by_index(72).unwrap();
-        cur.into()
+    pub fn f72(&self) -> Result<UnionA, Error> {
+        let cur = self.cursor.table_slice_by_index(72)?;
+        Ok(cur.into())
     }
 }
 
 impl AllInOne {
-    pub fn f73(&self) -> TableA {
-        let cur = self.cursor.table_slice_by_index(73).unwrap();
-        cur.into()
+    pub fn f73(&self) -> Result<TableA, Error> {
+        let cur = self.cursor.table_slice_by_index(73)?;
+        Ok(cur.into())
     }
 }

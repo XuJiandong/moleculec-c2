@@ -165,7 +165,7 @@ impl Generator for ast::Option_ {
         );
 
         match tc {
-            TypeCategory::Option(_, _) => {
+            TypeCategory::Option(_, _, _) => {
                 panic!("should not happen in C");
             }
             TypeCategory::Type => {
@@ -292,7 +292,7 @@ impl Generator for ast::Union {
             let item_type_name = item.typ().name();
             let (transformed_name, tc) = get_c_type_category(item.typ());
             match tc {
-                TypeCategory::Option(_, _) => {
+                TypeCategory::Option(_, _, _) => {
                     panic!("should not happen in C");
                 }
                 TypeCategory::Type => {
@@ -362,9 +362,9 @@ impl Generator for ast::Union {
             }
 
             impl #name {
-                pub fn item_id(&self) -> usize {
-                    let item = self.cursor.union_unpack();
-                    item.item_id
+                pub fn item_id(&self) -> Result<usize, Error> {
+                    let item = self.cursor.union_unpack()?;
+                    Ok(item.item_id)
                 }
             }
         };
@@ -378,8 +378,8 @@ impl Generator for ast::Union {
             let convert_code = tc.gen_convert_code();
             let q = quote! {
                 impl #name {
-                    pub fn #item_type_name(&self) -> #transformed_name {
-                        let item = self.cursor.union_unpack();
+                    pub fn #item_type_name(&self) -> Result<#transformed_name, Error> {
+                        let item = self.cursor.union_unpack()?;
                         let cur = item.cursor.clone();
                         #convert_code
                     }
@@ -634,14 +634,14 @@ fn generate_rust_common_array(
     } else if fixvec.is_some() {
         let q = quote! {
             impl #n {
-                pub fn len(&self) -> usize {  self.cursor.fixvec_length()  }
+                pub fn len(&self) -> Result<usize, Error> {  self.cursor.fixvec_length()  }
             }
         };
         format_imp!(output, "{}", q);
     } else {
         let q = quote! {
             impl #n {
-                pub fn len(&self) -> usize { self.cursor.dynvec_length() }
+                pub fn len(&self) -> Result<usize, Error> { self.cursor.dynvec_length() }
             }
         };
         format_imp!(output, "{}", q);
@@ -673,7 +673,7 @@ fn generate_c_common_array_impl(
         "mol2_dynvec_slice_by_index(&this->cur, index)".into()
     };
     match tc {
-        TypeCategory::Option(_, _) => {
+        TypeCategory::Option(_, _, _) => {
             panic!("should not happen in C");
         }
         TypeCategory::Type => {
@@ -765,8 +765,8 @@ fn generate_rust_common_array_impl(
         output,
         r#"
         impl {0} {{
-            pub fn get(&self, index: usize) -> {1} {{
-                let cur = self.cursor.{2}.unwrap();
+            pub fn get(&self, index: usize) -> Result<{1}, Error> {{
+                let cur = self.cursor.{2}?;
                 {3}
             }}
         }}
@@ -886,7 +886,7 @@ fn generate_c_common_table_impl(
     let (transformed_name, tc) = get_c_type_category(field.typ());
     let slice_by = generate_c_slice_by(index, &field_sizes);
     match tc {
-        TypeCategory::Option(_, _) => {
+        TypeCategory::Option(_, _, _) => {
             panic!("should not happen in C");
         }
         TypeCategory::Type => {
@@ -958,8 +958,8 @@ fn generate_rust_common_table_impl(
         output,
         r#"
         impl {0} {{
-            pub fn {1}(&self) -> {2} {{
-                let cur = self.cursor.{3}.unwrap();
+            pub fn {1}(&self) -> Result<{2}, Error> {{
+                let cur = self.cursor.{3}?;
                 {4}
              }}
          }}
@@ -996,7 +996,8 @@ enum TypeCategory {
     Type,
     // 1st: nested level
     // 2nd: is nested type is FixVec or not
-    Option(u32, bool),
+    // 3rd: has From<T>
+    Option(u32, bool, bool),
 }
 
 impl TypeCategory {
@@ -1006,25 +1007,42 @@ impl TypeCategory {
             _ => false,
         }
     }
+    pub fn has_from(&self) -> bool {
+        match self {
+            Self::Type | Self::Array => true,
+
+            _ => false,
+        }
+    }
     pub fn gen_convert_code(&self) -> TokenStream {
         let code = match self {
-            &TypeCategory::Option(level, flag) => {
+            &TypeCategory::Option(level, flag, has_from) => {
                 if level == 1 {
                     if flag {
                         quote! {
                             if cur.option_is_none() {
-                                None
+                                Ok(None)
                             } else {
-                                let cur = cur.convert_to_rawbytes().unwrap();
-                                Some(cur.into())
+                                let cur = cur.convert_to_rawbytes()?;
+                                Ok(Some(cur.into()))
                             }
                         }
                     } else {
-                        quote! {
-                            if cur.option_is_none() {
-                                None
-                            } else {
-                                Some(cur.into())
+                        if has_from {
+                            quote! {
+                                if cur.option_is_none() {
+                                    Ok(None)
+                                } else {
+                                    Ok(Some(cur.into()))
+                                }
+                            }
+                        } else {
+                            quote! {
+                                if cur.option_is_none() {
+                                    Ok(None)
+                                } else {
+                                    Ok(Some(cur.try_into()?))
+                                }
                             }
                         }
                     }
@@ -1032,18 +1050,18 @@ impl TypeCategory {
                     if flag {
                         quote! {
                             if cur.option_is_none() {
-                                None
+                                Ok(None)
                             } else {
-                                let cur = cur.convert_to_rawbytes().unwrap();
-                                Some(Some(cur.into()))
+                                let cur = cur.convert_to_rawbytes()?;
+                                Ok(Some(Some(cur.try_into())))
                            }
                         }
                     } else {
                         quote! {
                             if cur.option_is_none() {
-                                None
+                                Ok(None)
                             } else {
-                                Some(Some(cur.into()))
+                                Ok(Some(Some(cur.into())))
                             }
                         }
                     }
@@ -1051,12 +1069,12 @@ impl TypeCategory {
                     panic!("can't support")
                 }
             }
-            TypeCategory::Type => quote! { cur.into() },
-            TypeCategory::Primitive | TypeCategory::Array => quote! { cur.into() },
+            TypeCategory::Type => quote! { Ok(cur.into()) },
+            TypeCategory::Primitive => quote! { cur.try_into() },
+            TypeCategory::Array => quote! { Ok(cur) },
             TypeCategory::FixVec => {
                 quote! {
-                    let cur2 = cur.convert_to_rawbytes().unwrap();
-                    cur2
+                    cur.convert_to_rawbytes()
                 }
             }
         };
@@ -1168,13 +1186,13 @@ fn get_rust_type_category(typ: &TopDecl) -> (String, TypeCategory) {
             // Option<Script>, etc
             let (inner_name, inner_tc) = get_rust_type_category(o.item().typ());
             match inner_tc {
-                TypeCategory::Option(level, flag) => {
-                    tc = TypeCategory::Option(level + 1, flag);
+                TypeCategory::Option(level, flag, has_from) => {
+                    tc = TypeCategory::Option(level + 1, flag, has_from);
                     transformed_name = format!("Option<{}>", inner_name);
                 }
                 _ => {
                     transformed_name = format!("Option<{}>", inner_name);
-                    tc = TypeCategory::Option(1, inner_tc.is_fixvec());
+                    tc = TypeCategory::Option(1, inner_tc.is_fixvec(), inner_tc.has_from());
                 }
             }
         }

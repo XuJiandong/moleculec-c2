@@ -55,6 +55,7 @@ pub enum TypesCheckErr {
     Lenght(String),
     Data(String),
     Opt(String),
+    Mol2Err(String),
 }
 pub type ResCheckErr = Result<(), TypesCheckErr>;
 
@@ -64,6 +65,7 @@ impl TypesCheckErr {
             Self::Lenght(_) => Self::Lenght(des),
             Self::Data(_) => Self::Data(des),
             Self::Opt(_) => Self::Opt(des),
+            Self::Mol2Err(_) => Self::Mol2Err(des),
         }
     }
     pub fn as_str(&self) -> &str {
@@ -71,6 +73,7 @@ impl TypesCheckErr {
             Self::Lenght(v) => v,
             Self::Data(v) => v,
             Self::Opt(v) => v,
+            Self::Mol2Err(v) => v,
         }
     }
     pub fn check_lenght(l1: usize, l2: usize) -> Result<(), Self> {
@@ -92,23 +95,23 @@ impl TypesCheckErr {
         }
     }
 
-    pub fn check_data<T1: Eq + Debug, T: Mol2Vec<T1>>(d1: &T, d2: &[T1]) -> ResCheckErr {
-        TypesCheckErr::check_lenght(d1.mol_len(), d2.len())?;
+    pub fn check_data<T1: Eq + Debug, T: Mol2Vec<RetType = T1>>(d1: &T, d2: &[T1]) -> ResCheckErr {
+        TypesCheckErr::check_lenght(d1.mol_len()?, d2.len())?;
 
-        for i in 0..d1.mol_len() {
-            TypesCheckErr::check_1_data(&d1.mol_get(i), &d2[i])?;
+        for i in 0..d1.mol_len()? {
+            TypesCheckErr::check_1_data(&d1.mol_get(i)?, &d2[i])?;
         }
 
         Ok(())
     }
 
-    pub fn check_mol_data<T: Eq + Debug, T1: Mol2Vec<T>, T2: Mol2Vec<T>>(
+    pub fn check_mol_data<T: Eq + Debug, T1: Mol2Vec<RetType = T>, T2: Mol2Vec<RetType = T>>(
         d1: &T1,
         d2: &T2,
     ) -> ResCheckErr {
-        TypesCheckErr::check_lenght(d1.mol_len(), d2.mol_len())?;
-        for i in 0..d1.mol_len() {
-            TypesCheckErr::check_1_data(&d1.mol_get(i), &d2.mol_get(i))?;
+        TypesCheckErr::check_lenght(d1.mol_len()?, d2.mol_len()?)?;
+        for i in 0..d1.mol_len()? {
+            TypesCheckErr::check_1_data(&d1.mol_get(i)?, &d2.mol_get(i)?)?;
         }
         Ok(())
     }
@@ -122,6 +125,41 @@ impl TypesCheckErr {
             )));
         }
         Ok(())
+    }
+}
+impl From<molecule2::Error> for TypesCheckErr {
+    #[cfg(feature = "error_description")]
+    fn from(value: molecule2::Error) -> Self {
+        use molecule2::Error::*;
+        match value {
+            Common(v) => Self::Mol2Err(format!("Common({})", v)),
+            TotalSize(v) => Self::Mol2Err(format!("TotalSize({})", v)),
+            Header(v) => Self::Mol2Err(format!("Header({})", v)),
+            Offset(v) => Self::Mol2Err(format!("Offset({})", v)),
+            UnknownItem(v) => Self::Mol2Err(format!("UnknownItem({})", v)),
+            OutOfBound(v) => Self::Mol2Err(format!("OutOfBound({})", v)),
+            FieldCount(v) => Self::Mol2Err(format!("FieldCount({})", v)),
+            Data(v) => Self::Mol2Err(format!("Data({})", v)),
+            Overflow(v) => Self::Mol2Err(format!("Overflow({})", v)),
+            Read(v) => Self::Mol2Err(format!("Read({})", v)),
+        }
+    }
+
+    #[cfg(not(feature = "error_description"))]
+    fn from(value: molecule2::Error) -> Self {
+        use molecule2::Error::*;
+        match value {
+            Common => Self::Mol2Err("Common".into()),
+            TotalSize => Self::Mol2Err("TotalSize({})".into()),
+            Header => Self::Mol2Err("Header({})".into()),
+            Offset => Self::Mol2Err("Offset({})".into()),
+            UnknownItem => Self::Mol2Err("UnknownItem({})".into()),
+            OutOfBound => Self::Mol2Err("OutOfBound({})".into()),
+            FieldCount => Self::Mol2Err("FieldCount({})".into()),
+            Data => Self::Mol2Err("Data({})".into()),
+            Overflow => Self::Mol2Err("Overflow({})".into()),
+            Read => Self::Mol2Err("Read({})".into()),
+        }
     }
 }
 
@@ -176,14 +214,14 @@ impl TypesUnionA {
         // let item_id = d.item_id();
 
         match self {
-            Self::Byte(v) => v.check(&d.as_byte()),
-            Self::Word(v) => v.check2(&d.as_word().into()),
-            Self::StructA(v) => v.check(&d.as_structa()),
-            Self::Bytes(v) => v.check(&d.as_bytes().try_into().unwrap()),
-            Self::Words(v) => v.check(&d.as_words().into()),
-            Self::Table0(v) => v.check(&d.as_table0()),
-            Self::Table6(v) => v.check(&d.as_table6()),
-            Self::Table6Opt(v) => v.check(&d.as_table6opt()),
+            Self::Byte(v) => v.check(&d.as_byte()?),
+            Self::Word(v) => v.check2(&d.as_word()?.into()),
+            Self::StructA(v) => v.check(&d.as_structa()?),
+            Self::Bytes(v) => v.check(&d.as_bytes()?.try_into().unwrap()),
+            Self::Words(v) => v.check(&d.as_words()?.into()),
+            Self::Table0(v) => v.check(&d.as_table0()?),
+            Self::Table6(v) => v.check(&d.as_table6()?),
+            Self::Table6Opt(v) => v.check(&d.as_table6opt()?),
         }
     }
 }
