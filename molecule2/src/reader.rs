@@ -1,6 +1,7 @@
 extern crate alloc;
 
 use alloc::boxed::Box;
+use alloc::format;
 use alloc::rc::Rc;
 use alloc::string::String;
 use alloc::vec;
@@ -9,7 +10,6 @@ use core::cell::RefCell;
 use core::cmp::min;
 use core::convert::{From, TryFrom};
 
-#[cfg(feature = "error_description")]
 #[derive(Debug)]
 pub enum Error {
     Common(String),
@@ -23,102 +23,6 @@ pub enum Error {
     Overflow(String),
     Read(String),
 }
-#[cfg(feature = "error_description")]
-impl Error {
-    pub fn common<T>(des: &str) -> Result<T, Self> {
-        Err(Self::Common(des.into()))
-    }
-    pub fn total_size<T>(des: &str) -> Result<T, Self> {
-        Err(Self::TotalSize(des.into()))
-    }
-    pub fn header<T>(des: &str) -> Result<T, Self> {
-        Err(Self::Header(des.into()))
-    }
-    pub fn offset<T>(des: &str) -> Result<T, Self> {
-        Err(Self::Offset(des.into()))
-    }
-    pub fn unknow_item<T>(des: &str) -> Result<T, Self> {
-        Err(Self::UnknownItem(des.into()))
-    }
-    pub fn out_of_bound<T>(des: &str) -> Result<T, Self> {
-        Err(Self::OutOfBound(des.into()))
-    }
-    pub fn field_count<T>(des: &str) -> Result<T, Self> {
-        Err(Self::FieldCount(des.into()))
-    }
-    pub fn data<T>(des: &str) -> Result<T, Self> {
-        Err(Self::Data(des.into()))
-    }
-    pub fn overflow<T>(des: &str) -> Result<T, Self> {
-        Err(Self::Overflow(des.into()))
-    }
-    pub fn read<T>(des: &str) -> Result<T, Self> {
-        Err(Self::Read(des.into()))
-    }
-}
-
-#[cfg(not(feature = "error_description"))]
-#[derive(Debug)]
-pub enum Error {
-    Common,
-    TotalSize,
-    Header,
-    Offset,
-    UnknownItem,
-    OutOfBound,
-    FieldCount,
-    Data,
-    Overflow,
-    Read,
-}
-#[cfg(not(feature = "error_description"))]
-impl Error {
-    pub fn common<T>(_: &str) -> Result<T, Self> {
-        Err(Self::Common)
-    }
-    pub fn total_size<T>(_: &str) -> Result<T, Self> {
-        Err(Self::TotalSize)
-    }
-    pub fn header<T>(_: &str) -> Result<T, Self> {
-        Err(Self::Header)
-    }
-    pub fn offset<T>(_: &str) -> Result<T, Self> {
-        Err(Self::Offset)
-    }
-    pub fn unknow_item<T>(_: &str) -> Result<T, Self> {
-        Err(Self::UnknownItem)
-    }
-    pub fn out_of_bound<T>(_: &str) -> Result<T, Self> {
-        Err(Self::OutOfBound)
-    }
-    pub fn field_count<T>(_: &str) -> Result<T, Self> {
-        Err(Self::FieldCount)
-    }
-    pub fn data<T>(_: &str) -> Result<T, Self> {
-        Err(Self::Data)
-    }
-    pub fn overflow<T>(_: &str) -> Result<T, Self> {
-        Err(Self::Overflow)
-    }
-    pub fn read<T>(_: &str) -> Result<T, Self> {
-        Err(Self::Read)
-    }
-}
-
-#[cfg(feature = "error_description")]
-macro_rules! err_format {
-    ($($arg:tt)*) => {{
-        let res = alloc::fmt::format(alloc::__export::format_args!($($arg)*));
-        res
-    }}
-}
-#[cfg(not(feature = "error_description"))]
-macro_rules! err_format {
-    ($($arg:tt)*) => {{
-        String::new()
-    }};
-}
-
 pub trait Read {
     /**
      * try to read `buf.len()` bytes from data source with `offset`, then fill it in `buf`.
@@ -166,29 +70,32 @@ pub fn read_at(cur: &Cursor, buf: &mut [u8]) -> Result<usize, Error> {
         let reader = &ds.reader;
         let size = reader.read(&mut ds.cache[..], cur.offset).unwrap();
         if size < read_len {
-            return Error::read(&err_format!(
+            return Err(Error::Read(format!(
                 "read_at `if size({}) < read_len({})`",
-                size,
-                read_len
-            ));
+                size, read_len
+            )));
         }
         ds.cache_size = size;
         ds.cache_start_point = cur.offset;
 
         if ds.cache_size > ds.cache.len() {
-            return Error::read(&err_format!(
+            return Err(Error::Read(format!(
                 "read_at `if ds.cache_size({}) > ds.cache.len()({})`",
                 ds.cache_size,
                 ds.cache.len()
-            ));
+            )));
         }
     }
     if cur.offset < ds.cache_start_point || (cur.offset - ds.cache_start_point) > ds.cache.len() {
-        return Error::read("read_at `if cur.offset < ds.start_point || ...`");
+        return Err(Error::Read(
+            "read_at `if cur.offset < ds.start_point || ...`".into(),
+        ));
     }
     let read_point = cur.offset - ds.cache_start_point;
     if read_point + read_len > ds.cache_size {
-        return Error::read("read_at `if read_point + read_len > ds.cache_size`");
+        return Err(Error::Read(
+            "read_at `if read_point + read_len > ds.cache_size`".into(),
+        ));
     }
     buf.copy_from_slice(&ds.cache[read_point as usize..(read_point + read_len) as usize]);
     Ok(read_len)
@@ -227,12 +134,14 @@ impl Cursor {
     pub fn validate(&self) -> Result<(), Error> {
         if let Some(size) = self.offset.checked_add(self.size) {
             if size > self.data_source.borrow().total_size {
-                Error::total_size("validate: size > cur.source.total_size")
+                Err(Error::TotalSize(
+                    "validate: size > cur.source.total_size".into(),
+                ))
             } else {
                 Ok(())
             }
         } else {
-            Error::overflow("validate")
+            Err(Error::Overflow("validate".into()))
         }
     }
 
@@ -240,7 +149,7 @@ impl Cursor {
         let mut src = [0u8; 4];
         let size = read_at(self, &mut src[..]).unwrap();
         if size != 4 {
-            Error::field_count("unpack_number")
+            Err(Error::FieldCount("unpack_number".into()))
         } else {
             let res = u32::from_le_bytes(src);
             Ok(res as usize)
@@ -251,27 +160,29 @@ impl Cursor {
         if self.size == total_size {
             Ok(())
         } else {
-            Error::total_size(&err_format!(
+            Err(Error::TotalSize(format!(
                 "self.size({}) == total_size({})",
-                self.size,
-                total_size
-            ))
+                self.size, total_size
+            )))
         }
     }
 
     pub fn fixvec_verify(&self, item_size: usize) -> Result<(), Error> {
         if self.size < NUM_T_SIZE {
-            return Error::field_count(&err_format!(
+            return Err(Error::FieldCount(format!(
                 "fixvec_verify, self.size({}) < NUM_T_SIZE",
                 self.size
-            ));
+            )));
         }
         let item_count = self.unpack_number()?;
         if item_count == 0 {
             if self.size == NUM_T_SIZE {
                 return Ok(());
             } else {
-                return Error::header(&err_format!("self.size({}) == NUM_T_SIZE", self.size));
+                return Err(Error::Header(format!(
+                    "self.size({}) == NUM_T_SIZE",
+                    self.size
+                )));
             }
         }
 
@@ -279,11 +190,10 @@ impl Cursor {
         if self.size == total_size {
             Ok(())
         } else {
-            Error::total_size(&err_format!(
+            Err(Error::TotalSize(format!(
                 "self.size({}) == total_size({})",
-                self.size,
-                total_size
-            ))
+                self.size, total_size
+            )))
         }
     }
 
@@ -309,7 +219,7 @@ impl Cursor {
     pub fn get_item_count(&self) -> Result<usize, Error> {
         let count = self.unpack_number()? / 4;
         if count == 0 {
-            Error::unknow_item("get_item_count")
+            Err(Error::UnknownItem("get_item_count".into()))
         } else {
             Ok(count - 1)
         }
@@ -340,11 +250,10 @@ impl Cursor {
         let mut cur2 = self.clone();
         let item_count = self.unpack_number()?;
         if item_index >= item_count {
-            Error::out_of_bound(&err_format!(
+            Err(Error::OutOfBound(format!(
                 "item_index({}) >= item_count({})",
-                item_index,
-                item_count
-            ))
+                item_index, item_count
+            )))
         } else {
             let offset = calculate_offset(item_size, item_index, NUM_T_SIZE);
             cur2.add_offset(offset);
@@ -361,11 +270,10 @@ impl Cursor {
         temp.add_offset(NUM_T_SIZE);
         let item_count = temp.get_item_count()?;
         if item_index >= item_count {
-            return Error::out_of_bound(&err_format!(
+            return Err(Error::OutOfBound(format!(
                 "item_index({}) >= item_count({})",
-                item_index,
-                item_count
-            ));
+                item_index, item_count
+            )));
         }
         temp.offset = self.offset;
         let temp_offset = calculate_offset(NUM_T_SIZE, item_index + 1, 0);
@@ -432,7 +340,7 @@ impl TryFrom<Cursor> for u64 {
         let mut buf = [0u8; 8];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_u64")
+            Err(Error::FieldCount("convert_to_u64".into()))
         } else {
             Ok(u64::from_le_bytes(buf))
         }
@@ -445,7 +353,7 @@ impl TryFrom<Cursor> for i64 {
         let mut buf = [0u8; 8];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_i64")
+            Err(Error::FieldCount("convert_to_i64".into()))
         } else {
             Ok(i64::from_le_bytes(buf))
         }
@@ -458,7 +366,7 @@ impl TryFrom<Cursor> for u32 {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_u32")
+            Err(Error::FieldCount("convert_to_u32".into()))
         } else {
             Ok(u32::from_le_bytes(buf))
         }
@@ -471,7 +379,7 @@ impl TryFrom<Cursor> for i32 {
         let mut buf = [0u8; 4];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_i32")
+            Err(Error::FieldCount("convert_to_i32".into()))
         } else {
             Ok(i32::from_le_bytes(buf))
         }
@@ -484,7 +392,7 @@ impl TryFrom<Cursor> for u16 {
         let mut buf = [0u8; 2];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_u16")
+            Err(Error::FieldCount("convert_to_u16".into()))
         } else {
             Ok(u16::from_le_bytes(buf))
         }
@@ -497,7 +405,7 @@ impl TryFrom<Cursor> for i16 {
         let mut buf = [0u8; 2];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_i16")
+            Err(Error::FieldCount("convert_to_i16".into()))
         } else {
             Ok(i16::from_le_bytes(buf))
         }
@@ -510,7 +418,7 @@ impl TryFrom<Cursor> for u8 {
         let mut buf = [0u8; 1];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_u8")
+            Err(Error::FieldCount("convert_to_u8".into()))
         } else {
             Ok(u8::from_le_bytes(buf))
         }
@@ -523,7 +431,7 @@ impl TryFrom<Cursor> for i8 {
         let mut buf = [0u8; 1];
         let size = read_at(&cur, &mut buf[..])?;
         if size != buf.len() {
-            Error::field_count("convert_to_i8")
+            Err(Error::FieldCount("convert_to_i8".into()))
         } else {
             Ok(i8::from_le_bytes(buf))
         }
@@ -538,7 +446,11 @@ impl TryFrom<Cursor> for Vec<u8> {
 
         let size = read_at(&cur, buf.as_mut_slice())?;
         if size != buf.len() {
-            return Error::read(&err_format!("size({}) != buf.len()({})", size, buf.len()));
+            return Err(Error::Read(format!(
+                "size({}) != buf.len()({})",
+                size,
+                buf.len()
+            )));
         }
         Ok(buf)
     }
@@ -549,14 +461,17 @@ impl Read for Vec<u8> {
     fn read(&self, buf: &mut [u8], offset: usize) -> Result<usize, Error> {
         let mem_len = self.len();
         if offset >= mem_len {
-            return Error::out_of_bound(&err_format!("offset({}) >= mem_len({})", offset, mem_len));
+            return Err(Error::OutOfBound(format!(
+                "offset({}) >= mem_len({})",
+                offset, mem_len
+            )));
         }
 
         let remaining_len = mem_len - offset;
         let min_len = min(remaining_len, buf.len());
 
         if (offset + min_len) > mem_len {
-            return Error::out_of_bound(&err_format!("(offset + min_len) > mem_len"));
+            return Err(Error::OutOfBound(format!("(offset + min_len) > mem_len")));
         }
         buf[0..min_len].copy_from_slice(&self.as_slice()[offset..offset + min_len]);
         Ok(min_len)

@@ -128,7 +128,6 @@ impl TypesCheckErr {
     }
 }
 impl From<molecule2::Error> for TypesCheckErr {
-    #[cfg(feature = "error_description")]
     fn from(value: molecule2::Error) -> Self {
         use molecule2::Error::*;
         match value {
@@ -142,23 +141,6 @@ impl From<molecule2::Error> for TypesCheckErr {
             Data(v) => Self::Mol2Err(format!("Data({})", v)),
             Overflow(v) => Self::Mol2Err(format!("Overflow({})", v)),
             Read(v) => Self::Mol2Err(format!("Read({})", v)),
-        }
-    }
-
-    #[cfg(not(feature = "error_description"))]
-    fn from(value: molecule2::Error) -> Self {
-        use molecule2::Error::*;
-        match value {
-            Common => Self::Mol2Err("Common".into()),
-            TotalSize => Self::Mol2Err("TotalSize({})".into()),
-            Header => Self::Mol2Err("Header({})".into()),
-            Offset => Self::Mol2Err("Offset({})".into()),
-            UnknownItem => Self::Mol2Err("UnknownItem({})".into()),
-            OutOfBound => Self::Mol2Err("OutOfBound({})".into()),
-            FieldCount => Self::Mol2Err("FieldCount({})".into()),
-            Data => Self::Mol2Err("Data({})".into()),
-            Overflow => Self::Mol2Err("Overflow({})".into()),
-            Read => Self::Mol2Err("Read({})".into()),
         }
     }
 }
