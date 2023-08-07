@@ -5,6 +5,7 @@ extern crate alloc;
 use alloc::vec::Vec;
 use core::convert::TryInto;
 use molecule2::Cursor;
+use molecule2::Error;
 
 use super::blockchain::*;
 pub struct ScriptVec {
@@ -16,14 +17,14 @@ impl From<Cursor> for ScriptVec {
     }
 }
 impl ScriptVec {
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> Result<usize, Error> {
         self.cursor.dynvec_length()
     }
 }
 impl ScriptVec {
-    pub fn get(&self, index: usize) -> Script {
-        let cur = self.cursor.dynvec_slice_by_index(index).unwrap();
-        cur.into()
+    pub fn get(&self, index: usize) -> Result<Script, Error> {
+        let cur = self.cursor.dynvec_slice_by_index(index)?;
+        Ok(cur.into())
     }
 }
 pub struct ScriptVecOpt {

@@ -1,5 +1,5 @@
 [workspace]
-members = ["molecule2", "moleculec-c2", "tests/blockchain_rust"]
+members = ["molecule2", "moleculec-c2", "tests/blockchain_rust", "tests/types_rust"]
 
 
 [profile.release]

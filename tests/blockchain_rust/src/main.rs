@@ -69,9 +69,13 @@ impl From<packed::Script> for Script {
 }
 
 fn verify_script(script: Script) {
-    let code_hash: Vec<u8> = script.code_hash().try_into().unwrap();
-    let hash_type = script.hash_type();
-    let args: Vec<u8> = script.args().try_into().unwrap();
+    let code_hash: Vec<u8> = script
+        .code_hash()
+        .expect("get code_hash")
+        .try_into()
+        .unwrap();
+    let hash_type = script.hash_type().expect("get hash_type");
+    let args: Vec<u8> = script.args().expect("args").try_into().unwrap();
 
     assert_eq!(HASH_TYPE, hash_type);
     assert_eq!(&CODE_HASH, &code_hash[..]);
@@ -105,22 +109,30 @@ impl From<packed::CellOutput> for CellOutput {
 }
 
 fn verify_cell_output(cell_output: CellOutput) {
-    let capacity = cell_output.capacity();
+    let capacity = cell_output.capacity().expect("capacity");
     assert_eq!(capacity, CAPACITY);
 
-    let lock_script = cell_output.lock();
-    let code_hash: Vec<u8> = lock_script.code_hash().try_into().unwrap();
+    let lock_script = cell_output.lock().expect("lock");
+    let code_hash: Vec<u8> = lock_script
+        .code_hash()
+        .expect("code_hash")
+        .try_into()
+        .unwrap();
     assert_eq!(code_hash.as_slice(), &CODE_HASH);
-    let args: Vec<u8> = lock_script.args().try_into().unwrap();
+    let args: Vec<u8> = lock_script.args().expect("args").try_into().unwrap();
     assert_eq!(args.as_slice(), &ARGS);
-    assert_eq!(lock_script.hash_type(), HASH_TYPE);
+    assert_eq!(lock_script.hash_type().expect("hash_type"), HASH_TYPE);
 
-    let type_script = cell_output.type_().unwrap();
-    let code_hash: Vec<u8> = type_script.code_hash().try_into().unwrap();
+    let type_script = cell_output.type_().expect("type_").unwrap();
+    let code_hash: Vec<u8> = type_script
+        .code_hash()
+        .expect("code_hash")
+        .try_into()
+        .unwrap();
     assert_eq!(code_hash.as_slice(), &CODE_HASH);
-    let args: Vec<u8> = type_script.args().try_into().unwrap();
+    let args: Vec<u8> = type_script.args().expect("args").try_into().unwrap();
     assert_eq!(args.as_slice(), &ARGS);
-    assert_eq!(type_script.hash_type(), HASH_TYPE);
+    assert_eq!(type_script.hash_type().expect("hash_type"), HASH_TYPE);
 }
 
 fn create_cell_output_vec() -> packed::CellOutputVec {
@@ -140,9 +152,9 @@ impl From<packed::CellOutputVec> for CellOutputVec {
 }
 
 fn verify_cell_output_vec(cell_output_vec: CellOutputVec) {
-    let len = cell_output_vec.len();
+    let len = cell_output_vec.len().expect("len");
     for i in 0..len {
-        let cell_output = cell_output_vec.get(i);
+        let cell_output = cell_output_vec.get(i).expect("get");
         verify_cell_output(cell_output);
     }
 }
@@ -164,8 +176,8 @@ impl From<packed::CellDep> for CellDep {
 }
 
 fn verify_cell_dep(cell_dep: CellDep) {
-    let dep_type = cell_dep.dep_type();
-    let out_point = cell_dep.out_point();
+    let dep_type = cell_dep.dep_type().expect("dep_type");
+    let out_point = cell_dep.out_point().expect("out_point");
     assert_eq!(dep_type, DEP_TYPE);
     verify_out_point(out_point);
 }
@@ -184,16 +196,31 @@ impl From<packed::OutPoint> for OutPoint {
 }
 
 fn verify_out_point(out_point: OutPoint) {
-    let tx_hash: Vec<u8> = out_point.tx_hash().try_into().unwrap();
-    let index = out_point.index();
+    let tx_hash: Vec<u8> = out_point.tx_hash().expect("tx_hash").try_into().unwrap();
+    let index = out_point.index().expect("index");
     assert_eq!(tx_hash.as_slice(), &TX_HASH);
     assert_eq!(index, INDEX);
 }
 
 fn verify_witness_args(witness_args: WitnessArgs) {
-    let lock: Vec<u8> = witness_args.lock().unwrap().try_into().unwrap();
-    let input_type: Vec<u8> = witness_args.input_type().unwrap().try_into().unwrap();
-    let output_type: Vec<u8> = witness_args.output_type().unwrap().try_into().unwrap();
+    let lock: Vec<u8> = witness_args
+        .lock()
+        .expect("lock")
+        .unwrap()
+        .try_into()
+        .unwrap();
+    let input_type: Vec<u8> = witness_args
+        .input_type()
+        .expect("input_type")
+        .unwrap()
+        .try_into()
+        .unwrap();
+    let output_type: Vec<u8> = witness_args
+        .output_type()
+        .expect("output_type")
+        .unwrap()
+        .try_into()
+        .unwrap();
     assert_eq!(&lock, &WITNESS);
     assert_eq!(&input_type, &WITNESS);
     assert_eq!(&output_type, &WITNESS);
